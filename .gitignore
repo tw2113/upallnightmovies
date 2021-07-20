@@ -1,0 +1,7 @@
+/plugins/*
+
+/uploads/
+/vendor/
+index.php
+
+/themes/*
