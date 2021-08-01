@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e9d5aa628ec44761ea2e562c29d164d",
+    "content-hash": "0fe5c3cf32f21afedac462d271d28b40",
     "packages": [
         {
             "name": "composer/installers",
@@ -248,15 +248,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "6.1.9",
+            "version": "6.2.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/6.1.9"
+                "reference": "tags/6.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.1.9.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.2.1.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -284,15 +284,15 @@
         },
         {
             "name": "wpackagist-plugin/jsonfeed",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jsonfeed/",
-                "reference": "tags/1.4.1"
+                "reference": "tags/1.4.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jsonfeed.1.4.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/jsonfeed.1.4.2.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -338,15 +338,15 @@
         },
         {
             "name": "wpackagist-plugin/semantic-linkbacks",
-            "version": "3.10.4",
+            "version": "3.11.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/semantic-linkbacks/",
-                "reference": "tags/3.10.4"
+                "reference": "tags/3.11.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/semantic-linkbacks.3.10.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/semantic-linkbacks.3.11.0.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -356,15 +356,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.5.4",
+            "version": "1.6.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.5.4"
+                "reference": "tags/1.6.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.5.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.1.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
