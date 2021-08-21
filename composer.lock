@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "925a8d37c7bf1fd3ea917710fd5bede4",
+    "content-hash": "057484a227561f80e021bc5bdb1ab5e1",
     "packages": [
         {
             "name": "composer/installers",
@@ -302,15 +302,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.3.4",
+            "version": "3.3.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.3.4"
+                "reference": "tags/3.3.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.3.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.3.6.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -374,15 +374,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.6.3",
+            "version": "1.6.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.6.3"
+                "reference": "tags/1.6.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.4.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
