@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "057484a227561f80e021bc5bdb1ab5e1",
+    "content-hash": "92d4d8a4519e23e3f9b9acba8608b121",
     "packages": [
         {
             "name": "composer/installers",
@@ -392,15 +392,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-piwik",
-            "version": "1.0.25",
+            "version": "1.0.26",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-piwik/",
-                "reference": "tags/1.0.25"
+                "reference": "tags/1.0.26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-piwik.1.0.25.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-piwik.1.0.26.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
