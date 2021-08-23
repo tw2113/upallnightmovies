@@ -53,3 +53,8 @@ function verbosa_header_section() { ?>
     <div id="sidebar-back"></div>
 <?php
 }
+
+add_action( 'cryout_post_meta_hook', function() {
+    echo '<i class="icon-clock icon-metas" title="Reading Time"></i>';
+    echo do_shortcode('[rt_reading_time postfix="minutes" postfix_singular="minute"]');
+}, 15 );
