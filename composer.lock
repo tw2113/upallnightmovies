@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d5aab45935449803a3231812c5fb7674",
+    "content-hash": "07d84e10709f880dbda1d348f657de1e",
     "packages": [
         {
             "name": "composer/installers",
@@ -248,15 +248,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "6.2.3",
+            "version": "6.2.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/6.2.3"
+                "reference": "tags/6.2.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.2.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.2.4.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -302,15 +302,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.3.8",
+            "version": "3.3.9",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.3.8"
+                "reference": "tags/3.3.9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.3.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.3.9.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -320,15 +320,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress",
-            "version": "3.5.0",
+            "version": "3.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress/",
-                "reference": "tags/3.5.0"
+                "reference": "tags/3.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress.3.5.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress.3.5.1.zip"
             },
             "require": {
                 "composer/installers": "~1.0"

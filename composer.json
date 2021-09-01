@@ -17,12 +17,12 @@
     "wpackagist-plugin/custom-post-type-ui": "1.9.2",
     "wpackagist-plugin/cmb2": "2.9.0",
     "wpackagist-plugin/autodescription": "4.1.5.1",
-    "wpackagist-plugin/ewww-image-optimizer": "6.2.3",
+    "wpackagist-plugin/ewww-image-optimizer": "6.2.4",
     "wpackagist-plugin/wp-graphql": "1.6.4",
     "wpackagist-plugin/wp-piwik": "1.0.26",
     "wpackagist-plugin/blogroll-block": "1.2.0",
-    "wpackagist-plugin/publishpress": "3.5.0",
-    "wpackagist-plugin/poll-maker": "3.3.8"
+    "wpackagist-plugin/publishpress": "3.5.1",
+    "wpackagist-plugin/poll-maker": "3.3.9"
   },
   "extra": {
     "installer-paths": {
