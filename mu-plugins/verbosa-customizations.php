@@ -58,3 +58,33 @@ add_action( 'cryout_post_meta_hook', function() {
     echo '<i class="icon-clock icon-metas" title="Reading Time"></i>';
     echo do_shortcode('[rt_reading_time postfix="minutes" postfix_singular="minute"]');
 }, 15 );
+
+add_filter( 'the_content', function( $content ) {
+
+    if ( ! is_single() ) {
+        return $content;
+    }
+
+    global $post;
+
+    if ( ! has_term( 'show', 'sponsored_content', $post ) ) {
+        return $content;
+    }
+
+    $bookmarks = get_bookmarks( [
+        'orderby'  => 'rand',
+        'limit'    => 1,
+        'category' => 12,
+    ] );
+
+    $link = '<a href="%s" target="_blank" rel="noopener">%s</a>';
+    $link = sprintf(
+        $link,
+	    esc_url( $bookmarks[0]->link_url ),
+        esc_html( $bookmarks[0]->link_name )
+    );
+
+    $sponsor = "<div class=\"sponsor\">This post was sponsored by {$link}. {$bookmarks[0]->link_description}</div>";
+
+    return $content . $sponsor;
+} );
