@@ -21,8 +21,8 @@
     "wpackagist-plugin/wp-graphql": "1.6.4",
     "wpackagist-plugin/wp-piwik": "1.0.26",
     "wpackagist-plugin/blogroll-block": "1.2.0",
-    "wpackagist-plugin/publishpress": "3.5.1",
-    "wpackagist-plugin/poll-maker": "3.3.9"
+    "wpackagist-plugin/publishpress": "3.6.0",
+    "wpackagist-plugin/poll-maker": "3.4.0"
   },
   "extra": {
     "installer-paths": {
