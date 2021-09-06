@@ -59,7 +59,14 @@ html { font-size: 62.5%; }
 body {
 	font-size: 16px;
 	font-size: 1.6rem;
+	background-color: #383746;
+	color: #fff;
 } /* =16px */
+
+a {
+	color: #fff;
+}
+
 #container {
 	font-size: 1.6rem;
 	margin: 0 auto;
@@ -75,22 +82,6 @@ body {
 	margin-right: auto;
 }
 
-@media only screen and (min-width: 1224px) {
-	#container {
-		width: 1224px;
-	}
-}
-
-
-body {
-	background-color: #383746;
-	color: #fff;
-}
-
-a {
-	color: #fff;
-}
-
 #colophon {
 	background-color: #d40000;
 	padding: 20px;
@@ -102,8 +93,6 @@ a {
 	display: block;
 	margin-bottom: 20px;
 }
-
-
 
 .flexwrap {
 	display: flex;
@@ -123,11 +112,10 @@ a {
 #access {
 	padding: 10px;
 }
-/** WordPress Nav Menu Selectors ****************/
-nav #menu-primary {
+
+#menu-primary {
 	background-color: #d40000;
-	display: flex;
-	justify-content: space-between;
+	display: none;
 	margin: 0;
 	padding: 0;
 }
@@ -136,12 +124,43 @@ nav #menu-primary {
 	padding: 15px;
 }
 
-/*Disable current page/menu link*/
-nav .current-menu-item > a {
-       pointer-events: none;
-       cursor: default;
+#menu-primary svg {
+	fill: #fff;
+	height: auto;
+	width: 25px;
 }
 
+header h2 {
+	font-size: 4.5rem;
+}
+
+.post-meta {
+	font-size: 1.4rem;
+}
+.e-content p {
+	font-size: 1.8rem;
+	line-height: 3rem;
+	margin: 0 0 2em;
+}
+
+.e-content figcaption {
+	font-size: 1.4rem;
+}
+
+.footer-widgets {
+	display: flex;
+}
+
+.footer-widget {
+	width: 33%;
+}
+
+@media only screen and (min-width: 700px) {
+	#menu-primary {
+		display: flex;
+		justify-content: space-between;
+	}
+}
 
 @media only screen and (min-width: 900px) {
 	#branding {
@@ -152,16 +171,12 @@ nav .current-menu-item > a {
 	nav #menu-primary {
 		display: flex;
 		justify-content: flex-end;
+		align-items: center;
 	}
 }
 
-#colophon {
-
-}
-.footer-widgets {
-	display: flex;
-}
-
-.footer-widget {
-	width: 33%;
+@media only screen and (min-width: 1224px) {
+	#container {
+		width: 1224px;
+	}
 }

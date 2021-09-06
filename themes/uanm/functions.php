@@ -1,5 +1,10 @@
 <?php
 
+function uanm_includes() {
+	require_once get_stylesheet_directory() . '/inc/primary-menu-walker.php';
+}
+add_action( 'after_setup_theme', 'uanm_includes' );
+
 function uanm_setup() {
 	add_theme_support( 'post-thumbnails' ); // This theme uses Featured Images
 	add_theme_support( 'automatic-feed-links' );
@@ -42,7 +47,7 @@ function uanm_page_menu_args( $args ) {
 add_filter( 'wp_page_menu_args', 'uanm_page_menu_args' );
 
 function uanm_posted_on() {
-	printf( __( '<span class="sep">Posted on </span><a href="%1$s" rel="bookmark"><time class="entry-date" datetime="%2$s" pubdate>%3$s</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="%4$s" rel="author">%5$s</a></span></span>', 'uanm' ),
+	printf( __( '<div class="post-meta"><span class="sep">Posted on </span><a href="%1$s" rel="bookmark"><time class="entry-date" datetime="%2$s" pubdate>%3$s</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="%4$s" rel="author">%5$s</a></span></span></div>', 'uanm' ),
 		esc_url( get_permalink() ),
 		esc_attr( get_the_date( 'c' ) ),
 		esc_html( get_the_date() ),
