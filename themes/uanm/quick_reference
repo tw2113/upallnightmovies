@@ -1,0 +1,21 @@
+<?php
+/*
+	Just a quick reference file for tasks I commonly use but never remember how to do.
+*/
+
+//Get just the image source url of featured image.
+$imgsrc = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), "Full");
+echo $imgsrc[0];
+
+//If jQuery Cycle adds backgrounds to IECrappyVersion, add this
+$('#slideshow').cycle({
+    cleartype: false
+});
+
+/* Example theme options usage: */
+$options = get_option('wpst_theme_options');
+echo $option['twitter'];
+
+//hide slides at first with cycle
+#slideshow img { display: none }
+#slideshow img.first { display: block }
