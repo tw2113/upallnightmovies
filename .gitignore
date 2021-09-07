@@ -3,6 +3,7 @@
 /uploads/
 /vendor/
 index.php
+.DS_Store
 
 /themes/*
 !themes/uanm

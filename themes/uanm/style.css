@@ -7,17 +7,19 @@
  * Author URI: http://michaelbox.net
  */
 
-@import url("css/hardboiledmediaqueries.0.9.css");
+:root {
+	--uanm-red: #d40000;
+	--uanm-dark-purple: #383746;
+	--uanm-light-purple: #7d7895;
+}
+
+
 /** Put your custom @font-face font declarations in here ****************/
 /** Typography ****************/
 h1, h2, h3, h4, h5, h6 { font-weight:bold } /* This helps to identify headings at the initial build stage, so I thought it'd be useful to have it */
 .alert { background:red; color:white } /* 'alert' has a basic style, since it's useful to have it standing out for testing purposes.*/
 select, input, textarea, button { font:99% sans-serif; }
-/* These selection declarations have to be separate
-   No text-shadow: twitter.com/miketaylr/status/12228805301
-   Also: hot pink! */
-::-moz-selection { background: #FEA357; color:#fff; text-shadow: none; }
-::selection { background:#FEA357; color:#fff; text-shadow: none; }
+
 body {
 /* #444 looks better than black*/
     color: #444; font-size: 62.5%; /*allows for Em usage. 1em = 10px and so on*/
@@ -59,8 +61,9 @@ html { font-size: 62.5%; }
 body {
 	font-size: 16px;
 	font-size: 1.6rem;
-	background-color: #383746;
+	background-color: var(--uanm-dark-purple);
 	color: #fff;
+	font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
 } /* =16px */
 
 a {
@@ -83,13 +86,13 @@ a {
 }
 
 #colophon {
-	background-color: #d40000;
+	background-color: var(--uanm-red);
 	padding: 20px;
 }
 
 #branding {
-	background-color: #7d7895;
-	border-bottom: solid 5px #d40000;
+	background-color: var(--uanm-light-purple);
+	border-bottom: solid 5px var(--uanm-red);
 	display: block;
 	margin-bottom: 20px;
 }
@@ -102,11 +105,27 @@ a {
 	margin-right: 20px;
 }
 
-.content article {
-	background-color: #7d7895;
-	border-bottom: solid 5px #d40000;
+.sitelogo:hover {
+	animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(359deg); }
+}
+
+.content article.post {
+	background-color: var(--uanm-light-purple);
+	border-bottom: solid 5px var(--uanm-red);
 	margin-bottom: 20px;
 	padding: 20px;
+}
+
+article.post .sponsor {
+	border: solid var(--uanm-red) 1px;
+	background-color: #222;
+	padding: 10px;
+	margin: 50px 0;
 }
 
 #access {
@@ -114,7 +133,7 @@ a {
 }
 
 #menu-primary {
-	background-color: #d40000;
+	background-color: var(--uanm-red);
 	display: none;
 	margin: 0;
 	padding: 0;
@@ -132,10 +151,25 @@ a {
 
 header h2 {
 	font-size: 4.5rem;
+	margin: 0.83em 0 .50em;
 }
 
 .post-meta {
 	font-size: 1.4rem;
+	margin: 1em 0;
+}
+
+.frontpage-wrap {
+	display: flex;
+}
+.frontpage-wrap .frontpage-featured {
+	flex: 1;
+}
+.frontpage-wrap .frontpage-featured.poll {
+	flex: 1 5%;
+}
+.frontpage-wrap .e-content {
+	flex: 4;
 }
 .e-content p {
 	font-size: 1.8rem;
@@ -145,6 +179,22 @@ header h2 {
 
 .e-content figcaption {
 	font-size: 1.4rem;
+}
+
+.single-post-nav {
+	display: flex;
+	justify-content: space-between;
+	margin: 20px 0;
+}
+
+#comments,
+#comments-form {
+	background-color: var(--uanm-light-purple);
+	margin-bottom: 20px;
+	padding: 20px;
+}
+#comments h3 {
+	margin-top: 0;
 }
 
 .footer-widgets {

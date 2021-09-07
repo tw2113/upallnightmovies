@@ -47,34 +47,48 @@ function uanm_page_menu_args( $args ) {
 add_filter( 'wp_page_menu_args', 'uanm_page_menu_args' );
 
 function uanm_posted_on() {
-	printf( __( '<div class="post-meta"><span class="sep">Posted on </span><a href="%1$s" rel="bookmark"><time class="entry-date" datetime="%2$s" pubdate>%3$s</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="%4$s" rel="author">%5$s</a></span></span></div>', 'uanm' ),
+	printf( __( '<div class="post-meta"><a href="%1$s" rel="bookmark"><time class="entry-date" datetime="%2$s" pubdate>%3$s</time></a><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="%4$s" rel="author">%5$s</a></span></span> | %6$s</div>', 'uanm' ),
 		esc_url( get_permalink() ),
 		esc_attr( get_the_date( 'c' ) ),
 		esc_html( get_the_date() ),
 		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
-		get_the_author()
+		get_the_author(),
+		do_shortcode( '[rt_reading_time label="Reading Time: " postfix="minutes" postfix_singular="minute"]' )
 	);
 }
 
 function uanm_posted_in() {
 	// Retrieves tag list of current post, separated by commas.
 	$tag_list = get_the_tag_list( '', ', ' );
-	if ( $tag_list ) {
-		$posted_in = 'This entry was posted in %1$s and tagged %2$s. Bookmark the <a href="%3$s" title="Permalink to %4$s" rel="bookmark">permalink</a>.';
-	} elseif ( is_object_in_taxonomy( get_post_type(), 'category' ) ) {
-		$posted_in = 'This entry was posted in %1$s. Bookmark the <a href="%3$s" title="Permalink to %4$s" rel="bookmark">permalink</a>.';
-	} else {
-		$posted_in = 'Bookmark the <a href="%3$s" title="Permalink to %4$s" rel="bookmark">permalink</a>.';
+	$cat_list = get_the_category_list( ', ' );
+	$posted_in = [];
+	if ( $cat_list ) {
+		$posted_in[] = 'Categories: ' . $cat_list;
 	}
-	// Prints the string, replacing the placeholders.
-	printf(
-		$posted_in,
-		get_the_category_list( ', ' ),
-		$tag_list,
-		get_permalink(),
-		the_title_attribute( 'echo=0' )
-	);
+	if ( $tag_list ) {
+		$posted_in[] = 'Tags: ' . $tag_list;
+	}
+
+	$posted_in[] = 'Bookmark the <a href="' . esc_url( get_the_permalink() ) . '" rel="bookmark">permalink</a>.';
+
+	echo implode( ', ', $posted_in );
 }
+
+function uanm_remove_watched_tag( $terms, $post_id, $taxonomy ) {
+	if ( 'post_tag' !== $taxonomy ) {
+		return $terms;
+	}
+
+	if ( ! empty( $terms ) && is_array( $terms ) ) {
+		foreach ( $terms as $key => $term ) {
+			if ( in_array( $term->term_id, [ 26 ] ) ) {
+				unset( $terms[ $key ] );
+			}
+		}
+	}
+	return $terms;
+}
+add_filter( 'get_the_terms', 'uanm_remove_watched_tag', 10, 3 );
 
 function uanm_browser_body_class($classes) {
 	global $is_lynx, $is_gecko, $is_IE, $is_opera, $is_NS4, $is_safari, $is_chrome, $is_iphone;
@@ -204,4 +218,51 @@ function uanm_copyright_date() {
 	}
 
 	return '2021 - ' . date( 'Y' );
+}
+
+function uanm_custom_excerpt_length( $length ) {
+	return 150;
+}
+add_filter( 'excerpt_length', 'uanm_custom_excerpt_length', 999 );
+
+function uanm_excerpt_more( $more ) {
+	$permalink = esc_url( get_the_permalink( get_the_ID() ) );
+	return sprintf(
+		'<p><a href="%s">%s</a></p>',
+		$permalink,
+		'Keep reading...'
+	);
+}
+add_filter( 'excerpt_more', 'uanm_excerpt_more' );
+
+function uanm_poll_thumbnail() {
+	return '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <svg xmlns:dc="http://purl.org/dc/elements/1.1/"xmlns:cc="http://creativecommons.org/ns#"xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"xmlns:svg="http://www.w3.org/2000/svg"xmlns="http://www.w3.org/2000/svg"xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"version="1.1"width="273"height="295"viewBox="0 0 273 295"xml:space="preserve"id="svg82"sodipodi:docname="bar-chart-676.svg"inkscape:version="1.0.2 (e86c8708, 2021-01-15)"inkscape:export-filename="/Users/tw2113/polls.png"inkscape:export-xdpi="79.580002"inkscape:export-ydpi="79.580002"><metadata id="metadata86"><rdf:RDF><cc:Work rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><sodipodi:namedview pagecolor="#ffffff"bordercolor="#666666"borderopacity="1"objecttolerance="10"gridtolerance="10"guidetolerance="10"inkscape:pageopacity="0"inkscape:pageshadow="2"inkscape:window-width="1339"inkscape:window-height="836"id="namedview84"showgrid="false"inkscape:zoom="1.8257143"inkscape:cx="171.16588"inkscape:cy="137.7543"inkscape:window-x="78"inkscape:window-y="25"inkscape:window-maximized="0"inkscape:current-layer="svg82" /> <desc id="desc67">Created with Fabric.js 1.7.22</desc> <defs id="defs69"> </defs> <g id="icon"style="opacity:1;fill:none;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none"transform="matrix(3.89,0,0,3.89,-38.25788,-56.44363)"> <path d="m 58.646665,90 h -8.782 c -1.519,0 -2.75,-1.231 -2.75,-2.75 V 45.381 c 0,-1.519 1.231,-2.75 2.75,-2.75 h 8.782 c 1.519,0 2.75,1.231 2.75,2.75 V 87.25 c 0,1.519 -1.231,2.75 -2.75,2.75 z"style="opacity:1;fill:#d40000;fill-opacity:1;fill-rule:nonzero;stroke:#FFFFFF;stroke-width:0.514139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"stroke-linecap="round"id="path71" /> <path d="m 40.135332,90 h -8.782 c -1.519,0 -2.75,-1.231 -2.75,-2.75 V 31.449 c 0,-1.519 1.231,-2.75 2.75,-2.75 h 8.782 c 1.519,0 2.75,1.231 2.75,2.75 V 87.25 c 0,1.519 -1.232,2.75 -2.75,2.75 z"style="opacity:1;fill:#d40000;fill-opacity:1;fill-rule:nonzero;stroke:#FFFFFF;stroke-width:0.514139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"stroke-linecap="round"id="path73" /> <path d="m 21.624,90 h -8.782 c -1.519,0 -2.75,-1.231 -2.75,-2.75 V 59.313 c 0,-1.519 1.231,-2.75 2.75,-2.75 h 8.782 c 1.519,0 2.75,1.231 2.75,2.75 V 87.25 c 0,1.519 -1.232,2.75 -2.75,2.75 z"style="opacity:1;fill:#d40000;fill-opacity:1;fill-rule:nonzero;stroke:#FFFFFF;stroke-width:0.514139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"stroke-linecap="round"id="path75" /> <path d="m 77.157997,90 h -8.782 c -1.519,0 -2.75,-1.231 -2.75,-2.75 V 17.517 c 0,-1.519 1.231,-2.75 2.75,-2.75 h 8.782 c 1.519,0 2.75,1.231 2.75,2.75 V 87.25 c 0,1.519 -1.231,2.75 -2.75,2.75 z"style="opacity:1;fill:#d40000;fill-opacity:1;fill-rule:nonzero;stroke:#FFFFFF;stroke-width:0.514139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"stroke-linecap="round"id="path77" /> </g> </svg>';
+}
+
+function uanm_sponsored_spot() {
+
+	if ( ! is_single() ) {
+		return;
+	}
+
+	if ( ! has_term( 'show', 'sponsored_content', get_the_ID() ) ) {
+		return;
+	}
+
+	$bookmarks = get_bookmarks( [
+		'orderby'  => 'rand',
+		'limit'    => 1,
+		'category' => 12,
+	] );
+
+	$link = '<a href="%s" target="_blank" rel="noopener">%s</a>';
+	$link = sprintf(
+		$link,
+		esc_url( $bookmarks[0]->link_url ),
+		esc_html( $bookmarks[0]->link_name )
+	);
+
+	$sponsor = "<div class=\"sponsor\">This post was sponsored by {$link}. {$bookmarks[0]->link_description}</div>";
+
+	return $sponsor;
 }
