@@ -15,7 +15,7 @@
 			}
 			?>
 
-			<div class="frontpage-wrap">
+			<div class="front-archive-wrap">
 				<div class="<?php echo esc_attr( implode( ' ', $featured_cats ) ); ?>">
 					<?php
 						if ( has_post_thumbnail() ) {
