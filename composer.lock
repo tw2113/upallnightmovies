@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e475f2d89fcdfff03f2a7d96fd0ed3b8",
+    "content-hash": "44890b4f2aa06db0659cba4ade0a1020",
     "packages": [
         {
             "name": "composer/installers",
@@ -367,15 +367,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.6.4",
+            "version": "1.6.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.6.4"
+                "reference": "tags/1.6.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.5.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
