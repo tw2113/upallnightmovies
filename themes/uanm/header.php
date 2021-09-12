@@ -12,27 +12,42 @@
 <body <?php body_class(); ?>>
 	<div id="container">
 	<header id="branding" role="banner">
-		<div class="flexwrap">
-			<a class="sitelogo" href="<?php echo home_url( '/' ) ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
-				<img src="<?php echo get_stylesheet_directory_uri() . '/i/logoheader.png'; ?>" alt="<?php esc_attr_e( 'Up All Night Movies logo', 'uanm' ); ?>" />
-			</a>
-			<div class="titledesc">
-				<h1>
-					<a href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
-				</h1>
-				<p><?php bloginfo( 'description' ); ?></p>
+		<div class="top-wrap">
+			<div class="logo-title">
+				<a class="sitelogo" href="<?php echo home_url( '/' ) ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
+					<?php echo uanm_header_logo(); ?>
+				</a>
+				<div class="titledesc">
+					<h1>
+						<a href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+					</h1>
+					<p><?php bloginfo( 'description' ); ?></p>
+				</div>
+			</div>
+			<div class="header-searchform">
+				<?php echo get_search_form(); ?>
+				<nav id="social" aria-label="Social">
+					<?php
+					wp_nav_menu( [
+						'theme_location' => 'social',
+						'container'      => '',
+						'walker'         => new UANM_Primary_Menu_Walker()
+					] );
+					?>
+				</nav>
 			</div>
 		</div>
-		<div class="flexsocialsearch">
-			<nav id="access" role="navigation">
-				<?php
-				wp_nav_menu( [
-					'theme_location' => 'primary',
-					'container' => '',
-					'walker' => new UANM_Primary_Menu_Walker()
-				] );
-				?>
-			</nav>
-			<?php echo get_search_form(); ?>
+
+		<div hidden data-menu-button>
+			Menu
 		</div>
+		<nav id="access" role="navigation" aria-label="Main">
+			<?php
+			wp_nav_menu( [
+				'theme_location' => 'primary',
+				'container'      => '',
+				'walker'         => new UANM_Primary_Menu_Walker()
+			] );
+			?>
+		</nav>
 	</header>
