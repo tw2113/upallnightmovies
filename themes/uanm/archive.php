@@ -16,16 +16,20 @@
 				?>
 
 				<div class="front-archive-wrap">
-					<div class="<?php echo esc_attr( implode( ' ', $featured_cats ) ); ?>">
-						<?php
-						if ( has_post_thumbnail() ) {
-							the_post_thumbnail( 'medium' );
-						} else if ( has_category( 'poll' ) ) {
-							echo uanm_poll_thumbnail();
-						}
-						?>
-					</div>
 					<?php
+					if ( has_post_thumbnail() || has_category( 'poll' ) ) {
+						?>
+							<div class="<?php echo esc_attr( implode( ' ', $featured_cats ) ); ?>">
+								<?php
+								if ( has_post_thumbnail() ) {
+									the_post_thumbnail( 'medium' );
+								} else if ( has_category( 'poll' ) ) {
+									echo uanm_poll_thumbnail();
+								}
+								?>
+							</div>
+						<?php
+					}
 					if ( ! has_category( 'poll' ) ) {
 						echo apply_filters( 'the_excerpt', wpautop( get_the_excerpt() ) );
 					} else {

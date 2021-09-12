@@ -33,7 +33,7 @@ endif;
 	endif;
 	?>
 	<ol>
-	<?php wp_list_comments(); ?>
+	<?php wp_list_comments( [ 'callback' => 'uanm_comment' ] ); ?>
 	</ol>
 
 	<?php
@@ -58,11 +58,11 @@ endif;
 			[
 				'comment_notes_after' => '',
 				'fields' => [
-					'author' => '<p class="comment-form-author">' . '<label for="author">' . __( 'Name' ) . '</label> ' . ( $req ? '<span class="required">*</span>' : '' ) . '<br/><input id="author" name="author" type="text" placeholder="Your name please" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" required /></p>',
-					'email' => '<p class="comment-form-email"><label for="email">' . __( 'Email' ) . '</label> ' . ( $req ? '<span class="required">*</span>' : '' ) . '<br/><input id="email" name="email" type="email" placeholder="Your email please" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30" required /></p>',
-					'url' => '<p class="comment-form-url"><label for="url">' . __( 'Website' ) . '</label>' . '<br/><input id="url" name="url" type="url" placeholder="Do you have a website you\' like to include?" value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" /></p>',
+					'author' => '<p class="comment-form-author"><label for="author">' . __( 'Your name: ' ) . ( $req ? '<span class="required">*</span>' : '' ) . '</label><input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" required /></p>',
+					'email' => '<p class="comment-form-email"><label for="email">' . __( 'Your email: ' ) . ( $req ? '<span class="required">*</span>' : '' ) . '</label><input id="email" name="email" type="email" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30" required /></p>',
+					'url' => '<p class="comment-form-url"><label for="url">' . __( 'Your website: ' ) . '</label>' . '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" /></p>',
 				],
-				'comment_field' => '<p class="comment-form-comment"><label for="comment">' . _x( 'Comment', 'noun' ) . '</label><br/><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true" placeholder="What would you like to say?"></textarea></p>'
+				'comment_field' => '<p class="comment-form-comment"><label for="comment">' . _x( 'Your comment:', 'noun' ) . '</label><textarea id="comment" name="comment" aria-required="true"></textarea></p>'
 			]
 		);
 	?>

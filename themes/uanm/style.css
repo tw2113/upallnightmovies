@@ -16,7 +16,7 @@
 
 /** Put your custom @font-face font declarations in here ****************/
 /** Typography ****************/
-h1, h2, h3, h4, h5, h6 { font-weight:bold } /* This helps to identify headings at the initial build stage, so I thought it'd be useful to have it */
+h1, h2, h3, h4, h5, h6 { font-weight:bold; } /* This helps to identify headings at the initial build stage, so I thought it'd be useful to have it */
 .alert { background:red; color:white } /* 'alert' has a basic style, since it's useful to have it standing out for testing purposes.*/
 select, input, textarea, button { font:99% sans-serif; }
 
@@ -33,7 +33,6 @@ textarea { resize: vertical; }
 .aligncenter, div.aligncenter { display: block; margin: 5px auto 5px auto; }
 .alignright { float: right; margin: 5px 0 20px 20px; }
 .alignleft { float: left; margin: 5px 20px 20px 0; }
-.aligncenter { display: block; margin: 5px auto 5px auto; }
 a img.alignright { float: right; margin: 5px 0 20px 20px; }
 a img.alignnone { margin: 5px 20px 20px 0; }
 a img.alignleft { float: left; margin: 5px 20px 20px 0; }
@@ -79,10 +78,13 @@ a {
 }
 
 .is-type-video {
-	width: 50%;
+	height: auto;
+	width: 100%;
 }
 
 .ays-poll-main {
+	border: solid var(--uanm-red) 1px;
+	background-color: var(--uanm-dark-purple);
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -109,6 +111,8 @@ a {
 }
 .sitelogo {
 	margin-right: 20px;
+	height: 150px;
+	width: 150px;
 }
 
 .sitelogo:hover {
@@ -129,11 +133,18 @@ a {
 .content article.post,
 .content article.page,
 .content article.error404 {
-	background-color: var(--uanm-light-purple);
+	background: var(--uanm-light-purple);
+	/*background: linear-gradient(0deg, rgba(64, 61, 75, 1) 0%, rgba(102, 97, 121, 1) 22%, rgba(125, 120, 149, 1) 100%);*/
 	border-bottom: solid 5px var(--uanm-red);
 	margin-bottom: 20px;
 	padding: 20px;
 }
+
+/*article.post h1,
+.home article.post h2,
+.archive article.post h2 {
+	text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.7)
+}*/
 
 article.post .sponsor {
 	border: solid var(--uanm-red) 1px;
@@ -148,17 +159,18 @@ article.post .sponsor {
 
 #menu-primary {
 	background-color: var(--uanm-red);
-	display: none;
 	margin: 0;
 	padding: 0;
 }
 
 #menu-primary > li {
-	padding: 15px;
+	padding: 0;
 }
 
 #menu-primary a {
+	display: block;
 	font-weight: bold;
+	padding: 15px;
 	position: relative;
 	text-decoration: none;
 }
@@ -193,11 +205,17 @@ article.post .sponsor {
 	width: 25px;
 }
 
+#menu-primary .breaker {
+	flex-basis: 100%;
+	height: 0;
+	padding: 0;
+}
+
 #searchform {
 	align-items: center;
 	display: flex;
-	justify-content: end;
-	padding-right: 10px;
+	justify-content: center;
+	margin-bottom: 10px;
 }
 #searchsubmit,
 .primary-search {
@@ -230,6 +248,7 @@ header h2 {
 	display: flex;
 }
 .front-archive-wrap .frontpage-featured {
+	display: none;
 	flex: 1;
 }
 .front-archive-wrap .frontpage-featured.poll {
@@ -238,15 +257,24 @@ header h2 {
 .front-archive-wrap .e-content {
 	flex: 4;
 }
-.e-content p {
+
+.e-content img {
+	height: auto;
+}
+.e-content p,
+.comment-content p {
 	line-height: 3rem;
 	margin: 0 0 2em;
+}
+.comment-content p {
+	margin: 2rem 0;
 }
 .e-content p:last-of-type {
 	margin-bottom: 0;
 }
 .e-content p,
-.e-content li {
+.e-content li,
+.comment-content p {
 	font-size: 2rem;
 }
 
@@ -258,6 +286,11 @@ header h2 {
 	display: flex;
 	justify-content: space-between;
 	margin: 20px 0;
+	padding: 0 10px;
+}
+
+footer .single-post-nav {
+	padding: 0;
 }
 
 #comments,
@@ -270,8 +303,85 @@ header h2 {
 	margin-top: 0;
 }
 
+#comments li:not(:last-child) article.comment::after {
+	content: '';
+	border: solid var(--uanm-dark-purple) 3px;
+	width: 15%;
+	display: block;
+	height: 0;
+	margin: 20px 0;
+}
+
+#comments-form input[type="submit"] {
+	border-radius: 5px;
+	border: 0;
+	padding: 6px;
+}
+
+.comment-form label {
+	display: block;
+	margin-bottom: 10px;
+}
+.comment-form .comment-form-cookies-consent label {
+	display: inline-block;
+	width: 90%;
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="url"] {
+	width: 100%;
+}
+.comment-form input,
+.comment-form textarea {
+	border: 0;
+	border-radius: 5px;
+	height: 30px;
+	padding: 6px;
+}
+
+.comment-form input[type="submit"] {
+	width: 100%;
+}
+.comment-form textarea {
+	height: 150px;
+	width: 100%;
+}
+.comment-form input:focus-visible,
+.comment-form textarea:focus-visible{
+	outline: 3px solid var(--uanm-red);
+}
+
+.comment-meta {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.comment-meta-time {
+	display: inline-block;
+	width: 100%;
+}
+
+.separator {
+	margin: 0 5px;
+}
+.comment-author {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+.comment-author img {
+	margin-right: 15px;
+	border-radius: 50%;
+	border: 4px var(--uanm-dark-purple);
+	border-style: dashed solid;
+}
+
 .footer-widgets {
 	display: flex;
+	flex-flow: column;
 }
 
 .footer-widgets li {
@@ -285,7 +395,7 @@ header h2 {
 }
 
 .footer-widget {
-	width: 33%;
+	width: 100%;
 }
 
 .blogroll-block {
@@ -293,10 +403,62 @@ header h2 {
 	padding-left: 0;
 }
 
-@media only screen and (min-width: 700px) {
+@media only screen and (min-width: 768px) {
+
+	.front-archive-wrap .frontpage-featured {
+		display: block;
+	}
+
+	#searchform {
+		justify-content: end;
+		padding-right: 10px;
+	}
+
 	#menu-primary {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	#menu-primary > li {
+		padding: 15px;
+	}
+
+	#menu-primary a {
+		display: inline;
+	}
+
+	.front-archive-wrap .frontpage-featured,
+	.front-archive-wrap .frontpage-featured.poll {
+		flex: 2;
+	}
+
+	.comment-form input[type="text"],
+	.comment-form input[type="email"],
+	.comment-form input[type="url"] {
+		width: 30%;
+	}
+
+	.comment-meta {
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.comment-author,
+	.comment-meta-time {
+		width: auto;
+	}
+
+	.footer-widget {
+		width: 33%;
+	}
+
+	.is-type-video {
+		margin: 0 auto;
+		width: 50%;
+	}
+
+	.footer-widgets {
+		flex-flow: row;
 	}
 }
 
@@ -314,6 +476,17 @@ header h2 {
 	}
 }
 
+@media only screen and (min-width: 1024px) {
+	.front-archive-wrap .frontpage-featured,
+	.front-archive-wrap .frontpage-featured.poll {
+		flex: 1;
+		margin-right: 20px;
+	}
+
+	.comment-form input[type="submit"] {
+		width: auto;
+	}
+}
 @media only screen and (min-width: 1224px) {
 	#container {
 		width: 1224px;

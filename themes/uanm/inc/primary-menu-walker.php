@@ -17,11 +17,18 @@ class UANM_Primary_Menu_Walker extends Walker_Nav_Menu {
 		$title_orig  = $item->title;
 		$permalink   = $item->url;
 
+		$title = strtolower( $item->title );
+		$icons = $this->icons();
+
+		// Insert a blank right before twitter, which should be listed first for social.
+		if ( 'twitter' === $title ) {
+			$output .= '<li class="breaker"></li>';
+		}
+
 		$output .= '<li class="' . implode( " ", $item->classes ) . '">';
 		$output .= '<a href="' . $permalink . '">';
 
-		$title = strtolower( $item->title );
-		$icons = $this->icons();
+
 
 		if ( array_key_exists( $title, $icons ) ) {
 			$output .= $icons[ $title ];

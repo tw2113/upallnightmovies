@@ -265,3 +265,66 @@ function uanm_sponsored_spot() {
 
 	return $sponsor;
 }
+
+/** Template for comments and pingbacks. */
+function uanm_comment( $comment, $args, $depth ) {
+	$GLOBALS['comment'] = $comment;
+	switch ( $comment->comment_type ) :
+		case 'pingback' :
+		case 'trackback' : ?>
+			<li class="post pingback">
+			<p><?php _e( 'Pingback:', 'uanm' ); ?><?php comment_author_link(); ?><?php edit_comment_link( __( '(Edit)', 'uanm' ), ' ' ); ?></p>
+			<?php
+			break;
+		default : ?>
+		<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
+			<article id="comment-<?php comment_ID(); ?>" class="comment">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<?php
+						echo get_avatar( $comment, 68 );
+
+						printf(
+							'<span class="fn">%s</span>',
+							get_comment_author_link()
+						);
+
+						?>
+					</div>
+					<div class="comment-meta-time">
+						<?php
+						printf(
+							'<a href="%1$s"><time pubdate datetime="%2$s">%3$s</time></a>',
+							esc_url( get_comment_link( $comment->comment_ID ) ),
+							get_comment_time( 'c' ),
+							sprintf(
+								__( '%1$s at %2$s ', 'uanm' ),
+								get_comment_date(),
+								get_comment_time()
+							)
+						);
+						?>
+					</div>
+
+					<?php if ( $comment->comment_approved == '0' ) : ?>
+						<em class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'uanm' ); ?></em>
+						<br />
+					<?php endif; ?>
+
+				</footer>
+
+				<div class="comment-content"><?php comment_text(); ?></div>
+
+				<div class="reply">
+					<?php comment_reply_link( array_merge( $args, array(
+						'reply_text' => __( 'Reply &darr;', 'uanm' ),
+						'depth'      => $depth,
+						'max_depth'  => $args['max_depth']
+					) ) ); ?>
+				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+
+			<?php
+			break;
+	endswitch;
+}
