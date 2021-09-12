@@ -38,7 +38,7 @@ function uanm_load_scripts() {
 	wp_enqueue_style( 'style', get_bloginfo( 'stylesheet_url' ), 'normalize', null, 'all' );
 
 	if ( wp_is_mobile() ) {
-		wp_enqueue_script( 'mobile-menu', get_stylesheet_directory_uri() . '/js/mobile-menu.js', [], '1.0.0', true );
+		#wp_enqueue_script( 'mobile-menu', get_stylesheet_directory_uri() . '/js/mobile-menu.js', [], '1.0.0', true );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'uanm_load_scripts' );

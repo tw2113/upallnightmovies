@@ -470,7 +470,7 @@ footer .single-post-nav {
 	}
 
 	#menu-primary a {
-		display: inline;
+		display: inline-block;
 	}
 
 	.front-archive-wrap .frontpage-featured,
