@@ -36,6 +36,10 @@ add_action( 'comment_form_before', 'uanm_comment_enqueue' );
 function uanm_load_scripts() {
 	wp_enqueue_style( 'normalize', get_stylesheet_directory_uri() . '/css/normalize.css', null, 'all' );
 	wp_enqueue_style( 'style', get_bloginfo( 'stylesheet_url' ), 'normalize', null, 'all' );
+
+	if ( wp_is_mobile() ) {
+		wp_enqueue_script( 'mobile-menu', get_stylesheet_directory_uri() . '/js/mobile-menu.js', [], '1.0.0', true );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'uanm_load_scripts' );
 
@@ -336,7 +340,9 @@ function uanm_comment( $comment, $args, $depth ) {
 function uanm_body_classes( $classes ) {
 	if ( wp_is_mobile() ) {
 		$classes[] = 'is-mobile';
-	}
+	} else {
+	    $classes[] = 'no-mobile';
+    }
 	return $classes;
 }
 add_filter( 'body_class', 'uanm_body_classes' );
