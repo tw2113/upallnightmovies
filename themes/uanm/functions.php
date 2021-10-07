@@ -78,6 +78,9 @@ function uanm_posted_in() {
 }
 
 function uanm_remove_watched_tag( $terms, $post_id, $taxonomy ) {
+	if ( is_admin() ) {
+		return $terms;
+	}
 	if ( 'post_tag' !== $taxonomy ) {
 		return $terms;
 	}
