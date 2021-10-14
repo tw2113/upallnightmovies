@@ -434,6 +434,21 @@ footer .single-post-nav {
 	padding-left: 0;
 }
 
+.authorbio {
+	align-items: center;
+	border: solid var(--uanm-dark-purple) 5px;
+	border-left-width: 0;
+	border-right-width: 0;
+	display: flex;
+	margin: 0 auto;
+	padding: 10px 0;
+	width: 100%;
+}
+.avatarwrap img {
+	margin-right: 15px;
+	max-width: none;
+}
+
 @media only screen and (min-width: 600px) {
 	.top-wrap {
 		flex-flow: row;
@@ -508,6 +523,10 @@ footer .single-post-nav {
 
 	.footer-widgets {
 		flex-flow: row;
+	}
+
+	.authorbio {
+		width: 50%;
 	}
 }
 

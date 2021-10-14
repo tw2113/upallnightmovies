@@ -28,6 +28,11 @@
 					<?php previous_post_link( '%link', '' . _x( '&larr;', 'Previous post link', 'twentyten' ) . ' %title' ); ?>
 					<?php next_post_link( '%link', '%title ' . _x( '&rarr;', 'Next post link', 'twentyten' ) . '' ); ?>
 					</div>
+
+					<div class="authorbio">
+					    <div class="avatarwrap"><?php echo get_avatar( get_the_author_meta( 'ID' ), 64 ); ?></div>
+					    <div class="biowrap"><?php echo get_the_author_meta( 'user_description' ); ?></div>
+					</div>
 					</footer>
                 </article>
 
