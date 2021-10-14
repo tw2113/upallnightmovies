@@ -502,6 +502,9 @@ footer .single-post-nav {
 		margin: 0 auto;
 		width: 50%;
 	}
+	.wp-block-column .is-type-video {
+		width: 100%;
+	}
 
 	.footer-widgets {
 		flex-flow: row;
