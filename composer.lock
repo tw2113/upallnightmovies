@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "586162c386de9143867bd579af6f8657",
+    "content-hash": "206a671666d96c3e4dfa0ed3c901dfc3",
     "packages": [
         {
             "name": "composer/installers",
@@ -310,6 +310,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/ewww-image-optimizer/"
+        },
+        {
+            "name": "wpackagist-plugin/faq-block-for-gutenberg",
+            "version": "2.3",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/faq-block-for-gutenberg/",
+                "reference": "tags/2.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/faq-block-for-gutenberg.2.3.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0 || ~2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/faq-block-for-gutenberg/"
         },
         {
             "name": "wpackagist-plugin/indieweb",
