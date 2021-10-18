@@ -29,7 +29,8 @@
     "wpackagist-plugin/wpforms-lite": "1.7.0",
     "wpackagist-plugin/email-subscribers": "4.8.5",
     "wpackagist-plugin/better-yourls": "2.3.0",
-    "wpackagist-plugin/faq-block-for-gutenberg": "2.3"
+    "wpackagist-plugin/faq-block-for-gutenberg": "2.3",
+    "wpackagist-plugin/public-post-preview": "2.9.3"
   },
   "extra": {
     "installer-paths": {
