@@ -73,6 +73,9 @@ a {
 	color: #fff;
 }
 
+hr {
+	color: var(--uanm-dark-purple);
+}
 #container {
 	font-size: 1.6rem;
 	margin: 0 auto;
