@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d12129ef2e482489ab5634ab1cb493c",
+    "content-hash": "535d17eb0cc4e8c623272a6afd44eb94",
     "packages": [
         {
             "name": "composer/installers",
@@ -277,15 +277,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "4.8.5",
+            "version": "4.8.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/4.8.5"
+                "reference": "tags/4.8.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.4.8.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.4.8.6.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
@@ -367,15 +367,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.5.2",
+            "version": "3.5.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.5.2"
+                "reference": "tags/3.5.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.5.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.5.4.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
