@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "873b1118c1750ec32fa6eb06ea2cf276",
+    "content-hash": "c8e57fb80a17dcdb6ab3af77484f8389",
     "packages": [
         {
             "name": "composer/installers",
@@ -277,15 +277,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "4.8.6",
+            "version": "4.9.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/4.8.6"
+                "reference": "tags/4.9.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.4.8.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.4.9.0.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
@@ -367,15 +367,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.5.5",
+            "version": "3.5.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.5.5"
+                "reference": "tags/3.5.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.5.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.5.6.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
@@ -403,15 +403,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress",
-            "version": "3.6.1",
+            "version": "3.6.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress/",
-                "reference": "tags/3.6.1"
+                "reference": "tags/3.6.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress.3.6.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress.3.6.2.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
