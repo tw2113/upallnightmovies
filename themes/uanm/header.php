@@ -51,3 +51,12 @@
 			?>
 		</nav>
 	</header>
+	<?php
+	if ( has_action( 'uanm_notification' ) ) {
+	?>
+        <div class="notification">
+			<?php do_action( 'uanm_notification' ); ?>
+        </div>
+    <?php
+	}
+    ?>
