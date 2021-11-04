@@ -198,6 +198,7 @@ article.post .sponsor {
 }
 #menu-primary {
 	background-color: var(--uanm-red);
+	font-size: 2.0rem;
 	margin: 0;
 	padding: 0;
 	text-align: center;
@@ -420,6 +421,7 @@ footer .single-post-nav {
 .footer-widgets {
 	display: flex;
 	flex-flow: column;
+	font-size: 1.9rem;
 }
 
 .footer-widgets li {
@@ -454,6 +456,10 @@ footer .single-post-nav {
 .avatarwrap img {
 	margin-right: 15px;
 	max-width: none;
+}
+
+small {
+	font-size: 100%;
 }
 
 @media only screen and (min-width: 600px) {
@@ -517,7 +523,7 @@ footer .single-post-nav {
 	}
 
 	.footer-widget {
-		width: 33%;
+		width: 25%;
 	}
 
 	.is-type-video {
