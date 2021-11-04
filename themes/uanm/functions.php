@@ -359,3 +359,12 @@ function uanm_body_classes( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'uanm_body_classes' );
+
+function uanm_default_notification() {
+    printf(
+        '<p>Find our latest poll over at <a href="%s">%s</a>.',
+        esc_url( 'https://upallnightmovies.com/uanm-poll/' ),
+	    esc_url( 'https://upallnightmovies.com/uanm-poll/' )
+    );
+}
+#add_action( 'uanm_notification', 'uanm_default_notification' );
