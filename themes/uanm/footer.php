@@ -9,6 +9,9 @@
 		<div class="footer-widget footer-column-3">
 			<?php dynamic_sidebar( 'footer-column-3' ) ?>
 		</div>
+        <div class="footer-widget footer-column-4">
+			<?php dynamic_sidebar( 'footer-column-4' ) ?>
+        </div>
 	</div>
 	<p>
 		<small>&copy;<?php echo uanm_copyright_date(); ?>
