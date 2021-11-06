@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "82fae3c2d4411175da92239dfd7e4ee8",
+    "content-hash": "c238a5422cddeb6951b5b0bad02db159",
     "packages": [
         {
             "name": "composer/installers",
@@ -328,6 +328,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/faq-block-for-gutenberg/"
+        },
+        {
+            "name": "wpackagist-plugin/formidable",
+            "version": "5.0.12",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/formidable/",
+                "reference": "tags/5.0.12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/formidable.5.0.12.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0 || ~2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/formidable/"
         },
         {
             "name": "wpackagist-plugin/indieweb",
