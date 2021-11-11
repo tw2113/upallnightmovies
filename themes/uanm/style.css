@@ -164,26 +164,36 @@ article.post .sponsor {
 	margin: 50px 0;
 }
 
-#menu-social-menu {
+#menu-social-menu,
+#menu-social-menu-1 {
 	padding-left: 0;
 	display: flex;
+}
+#menu-social-menu {
 	justify-content: space-between;
 }
+#menu-social-menu-1 {
+	justify-content: space-around;
+}
 
-#menu-social-menu .menu-item {
+#menu-social-menu .menu-item,
+#menu-social-menu-1 .menu-item {
 	padding: 0 5px;
 }
 
-#menu-social-menu .menu-item:last-child {
+#menu-social-menu .menu-item:last-child,
+#menu-social-menu-1 .menu-item:last-child{
 	padding-right: 0;
 }
 
-#menu-social-menu .menu-item svg {
+#menu-social-menu .menu-item svg,
+#menu-social-menu-1 .menu-item svg {
 	width: 35px;
 	height: 35px;
 	fill: #fff;
 }
-#menu-social-menu .social-icon-text {
+#menu-social-menu .social-icon-text,
+#menu-social-menu-1 .social-icon-text{
 	position: absolute;
 	left: -9999px;
 }
