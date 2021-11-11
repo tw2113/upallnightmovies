@@ -360,6 +360,17 @@ function uanm_body_classes( $classes ) {
 }
 add_filter( 'body_class', 'uanm_body_classes' );
 
+function uanm_social_menu() {
+    return wp_nav_menu( [
+	    'theme_location'       => 'social',
+	    'container'            => 'nav',
+	    'echo'                 => false,
+	    'container_aria_label' => 'Social',
+	    'walker'               => new UANM_Primary_Menu_Walker(),
+    ] );
+}
+add_shortcode( 'uanm_social', 'uanm_social_menu' );
+
 function uanm_default_notification() {
     printf(
         '<p>Find our latest poll over at <a href="%s">%s</a>.',
