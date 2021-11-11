@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "649ec16c947db19a92dd95e5864d4fa5",
+    "content-hash": "164dc55e6bed2bc7b2bf25c064b45d63",
     "packages": [
         {
             "name": "composer/installers",
@@ -223,15 +223,15 @@
         },
         {
             "name": "wpackagist-plugin/codepress-admin-columns",
-            "version": "4.4.1",
+            "version": "4.4.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/codepress-admin-columns/",
-                "reference": "tags/4.4.1"
+                "reference": "tags/4.4.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/codepress-admin-columns.4.4.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/codepress-admin-columns.4.4.4.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
@@ -277,15 +277,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "4.9.1",
+            "version": "5.0.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/4.9.1"
+                "reference": "tags/5.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.4.9.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.0.0.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
@@ -367,15 +367,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.6.0",
+            "version": "3.6.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.6.0"
+                "reference": "tags/3.6.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.6.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.6.1.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
@@ -565,15 +565,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.0",
+            "version": "1.7.1.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.0"
+                "reference": "tags/1.7.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.1.1.zip"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
