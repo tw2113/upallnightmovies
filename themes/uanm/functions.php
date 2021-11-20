@@ -381,6 +381,6 @@ function uanm_default_notification() {
 #add_action( 'uanm_notification', 'uanm_default_notification' );
 
 function uanm_rss_campaign( $permalink ) {
-    return $permalink . '?mtm_campaign=rss';
+    return $permalink . '?mtm_campaign=traffic&mtm_source=rss';
 }
 add_filter( 'the_permalink_rss', 'uanm_rss_campaign', 10, 1 );
