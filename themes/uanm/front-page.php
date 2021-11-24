@@ -1,4 +1,14 @@
 <?php get_header(); ?>
+
+<?php
+	global $wp_query;
+	if ( $wp_query->max_num_pages > 1 ) :
+        echo '<div class="posts-nav">';
+		next_posts_link( '&larr; Older posts' );
+		previous_posts_link( 'Newer posts &rarr;' );
+		echo '</div>';
+	endif;
+?>
 <div class="content" role="main">
 	<?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 	<article role="article" <?php post_class(); ?>>
@@ -40,5 +50,14 @@
 			</div>
 		</article>
 		<?php endwhile; endif; ?>
+
+        <?php
+	        if (  $wp_query->max_num_pages > 1 ) :
+		        echo '<div class="posts-nav">';
+		        next_posts_link( '&larr; Older posts' );
+		        previous_posts_link( 'Newer posts &rarr;' );
+		        echo '</div>';
+	        endif;
+        ?>
 </div>
 <?php get_footer(); ?>

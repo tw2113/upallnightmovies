@@ -331,6 +331,7 @@ header h2 {
 	font-size: 1.4rem;
 }
 
+.posts-nav,
 .single-post-nav {
 	display: flex;
 	justify-content: space-between;
@@ -338,6 +339,7 @@ header h2 {
 	padding: 0 10px;
 }
 
+footer .posts-nav
 footer .single-post-nav {
 	padding: 0;
 }
