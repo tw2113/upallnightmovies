@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e9828b97de0f0f38ae5e50caffba353",
+    "content-hash": "2414c726df456398c127d1191cf3c036",
     "packages": [
         {
             "name": "composer/installers",
@@ -328,6 +328,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/faq-block-for-gutenberg/"
+        },
+        {
+            "name": "wpackagist-plugin/give",
+            "version": "2.17.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/give/",
+                "reference": "tags/2.17.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/give.2.17.1.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/give/"
         },
         {
             "name": "wpackagist-plugin/indieweb",

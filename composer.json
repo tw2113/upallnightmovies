@@ -30,7 +30,8 @@
     "wpackagist-plugin/email-subscribers": "5.0.2",
     "wpackagist-plugin/better-yourls": "2.3.0",
     "wpackagist-plugin/faq-block-for-gutenberg": "2.3",
-    "wpackagist-plugin/public-post-preview": "2.9.3"
+    "wpackagist-plugin/public-post-preview": "2.9.3",
+    "wpackagist-plugin/give": "2.17.1"
   },
   "extra": {
     "installer-paths": {
