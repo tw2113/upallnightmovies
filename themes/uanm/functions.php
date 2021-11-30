@@ -384,3 +384,21 @@ function uanm_rss_campaign( $permalink ) {
     return $permalink . '?mtm_campaign=traffic&mtm_source=rss';
 }
 add_filter( 'the_permalink_rss', 'uanm_rss_campaign', 10, 1 );
+
+function uanm_attachment_redirect() {
+    global $post;
+
+    if ( $post && is_attachment() ) {
+        if ( ! empty( $post->post_parent ) ) {
+            wp_safe_redirect( get_permalink( $post->post_parent ), 301 );
+            exit;
+        } else {
+            $url = wp_get_attachment_url( $post->ID );
+            if ( $url ) {
+                wp_safe_redirect( $url, 301 );
+                exit;
+            }
+        }
+    }
+}
+add_action( 'template_redirect', 'uanm_attachment_redirect', 0 );
