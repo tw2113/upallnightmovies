@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1491829fa34ca4c9ecffea74b4f9d6dd",
+    "content-hash": "44c4fa372b0e066440d4688e0c7e55da",
     "packages": [
         {
             "name": "composer/installers",
@@ -151,15 +151,15 @@
         },
         {
             "name": "wpackagist-plugin/autodescription",
-            "version": "4.2.0",
+            "version": "4.2.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/autodescription/",
-                "reference": "tags/4.2.0"
+                "reference": "tags/4.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/autodescription.4.2.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/autodescription.4.2.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
