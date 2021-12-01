@@ -13,6 +13,12 @@
 	--uanm-light-purple: #75708f;
 }
 
+:root {
+	--scheeles-green: #478800;
+	--scheeles-blue: #00478A;
+	--scheeles-purple: #8A0047;
+}
+
 
 /** Put your custom @font-face font declarations in here ****************/
 /** Typography ****************/
