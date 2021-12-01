@@ -1,5 +1,14 @@
 <?php get_header(); ?>
 	<div class="content" role="main">
+        <?php
+	        if ( is_post_type_archive() ) {
+		        ?>
+                <div class="archive-description">
+			        <?php echo get_the_post_type_description(); ?>
+                </div>
+		        <?php
+	        }
+        ?>
 		<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 			<article role="article" <?php post_class(); ?>>
 				<header>

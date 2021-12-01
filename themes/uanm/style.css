@@ -149,6 +149,7 @@ hr {
 	to { transform: rotate(359deg); }
 }
 
+.archive-description,
 .content article {
 	background: var(--uanm-light-purple);
 	margin-bottom: 20px;
