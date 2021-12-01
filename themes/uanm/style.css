@@ -149,9 +149,7 @@ hr {
 	to { transform: rotate(359deg); }
 }
 
-.content article.post,
-.content article.page,
-.content article.error404 {
+.content article {
 	background: var(--uanm-light-purple);
 	margin-bottom: 20px;
 	padding: 20px;
