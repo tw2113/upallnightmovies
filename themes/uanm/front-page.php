@@ -3,7 +3,7 @@
 <?php
 	global $wp_query;
 	if ( $wp_query->max_num_pages > 1 ) :
-        echo '<div class="posts-nav">';
+        echo '<div class="posts-nav header">';
 		next_posts_link( '&larr; Older posts' );
 		previous_posts_link( 'Newer posts &rarr;' );
 		echo '</div>';
@@ -53,7 +53,7 @@
 
         <?php
 	        if (  $wp_query->max_num_pages > 1 ) :
-		        echo '<div class="posts-nav">';
+		        echo '<div class="posts-nav footer">';
 		        next_posts_link( '&larr; Older posts' );
 		        previous_posts_link( 'Newer posts &rarr;' );
 		        echo '</div>';
