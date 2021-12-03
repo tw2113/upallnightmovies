@@ -11,7 +11,7 @@
 ?>
 <div class="content" role="main">
 	<?php if(have_posts()) : while(have_posts()) : the_post(); ?>
-	<article role="article" <?php post_class(); ?>>
+	<article role="article" <?php post_class( 'h-entry' ); ?>>
 			<header>
 			<h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
 			<?php uanm_posted_on(); ?>

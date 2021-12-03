@@ -8,7 +8,7 @@
 					<?php next_post_link( '%link', '%title ' . _x( '&rarr;', 'Next post link', 'twentyten' ) . '' ); ?>
 				</div>
 
-				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+				<article id="post-<?php the_ID(); ?>" <?php post_class( 'h-entry' ); ?>>
 				    <header>
 				    <h1><?php the_title(); ?></h1>
 				    <?php uanm_posted_on(); ?>
