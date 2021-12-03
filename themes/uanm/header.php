@@ -6,6 +6,8 @@
 <meta name="description" content="<?php bloginfo('description'); ?>" />
 
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
+<link rel="preconnect" href="https://trexthepirate.com/traffic/" rel="preconnect">
+<link rel="preconnect" href="https://i.ytimg.com" rel="preconnect">
 <?php wp_head(); ?>
 </head>
 
