@@ -51,7 +51,7 @@ function uanm_page_menu_args( $args ) {
 add_filter( 'wp_page_menu_args', 'uanm_page_menu_args' );
 
 function uanm_posted_on() {
-	printf( __( '<div class="post-meta">On: <time class="entry-date" datetime="%1$s" pubdate>%2$s</time><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="%3$s" rel="author">%4$s</a></span></span> | %5$s</div>', 'uanm' ),
+	printf( __( '<div class="post-meta">On: <time class="dt-published entry-date" datetime="%1$s" pubdate>%2$s</time><span class="by-author"> <span class="sep"> by </span> <span class="author vcard"><a class="url fn n" href="%3$s" rel="author">%4$s</a></span></span> | %5$s</div>', 'uanm' ),
 		esc_attr( get_the_date( 'c' ) ),
 		esc_html( get_the_date() ),
 		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
@@ -66,13 +66,13 @@ function uanm_posted_in() {
 	$cat_list = get_the_category_list( ', ' );
 	$posted_in = [];
 	if ( $cat_list ) {
-		$posted_in[] = 'Categories: ' . $cat_list;
+		$posted_in[] = 'Categories: <span class="p-category">' . $cat_list . '</span>';
 	}
 	if ( $tag_list ) {
 		$posted_in[] = 'Tags: ' . $tag_list;
 	}
 
-	$posted_in[] = 'Bookmark the <a href="' . esc_url( get_the_permalink() ) . '" rel="bookmark">permalink</a>.';
+	$posted_in[] = 'Bookmark the <a class="u-url" href="' . esc_url( get_the_permalink() ) . '" rel="bookmark">permalink</a>.';
 
 	echo implode( ', ', $posted_in );
 }
