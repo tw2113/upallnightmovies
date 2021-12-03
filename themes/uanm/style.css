@@ -19,6 +19,33 @@
 	--scheeles-purple: #8A0047;
 }
 
+.test-1 {
+	--green:#7abd80;
+	--blue:#7F7ABD;
+	--brown:#BD7F7A;
+}
+.test-2 {
+	--green:#37ad65;
+	--blue:#6537AE;
+	--brown:#AE6537;
+}
+.test-3 {
+	--green:#58b56f;
+	--blue:#7058B6;
+	--brown:#B67058;
+}
+.test-4 {
+	--green:#5CE556;
+	--blue:#575EE5;
+	--brown:#E5575E;
+}
+.test-5 {
+	--green:#39DF6F;
+	--blue:#713ADF;
+	--brown:#DF713A;
+}
+
+
 
 /** Put your custom @font-face font declarations in here ****************/
 /** Typography ****************/
