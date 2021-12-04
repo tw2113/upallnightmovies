@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c19dd44b5e3e0117b05d9695a7e1dd1",
+    "content-hash": "63517bbd54601c5ea6c9773bbb20566e",
     "packages": [
         {
             "name": "composer/installers",
@@ -385,15 +385,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.6.8",
+            "version": "3.6.9",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.6.8"
+                "reference": "tags/3.6.9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.6.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.6.9.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -436,6 +436,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/publishpress/"
+        },
+        {
+            "name": "wpackagist-plugin/publishpress-checklists",
+            "version": "2.5.3",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/publishpress-checklists/",
+                "reference": "tags/2.5.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/publishpress-checklists.2.5.3.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/publishpress-checklists/"
         },
         {
             "name": "wpackagist-plugin/query-monitor",

@@ -22,7 +22,7 @@
     "wpackagist-plugin/wp-piwik": "1.0.26",
     "wpackagist-plugin/blogroll-block": "1.2.0",
     "wpackagist-plugin/publishpress": "3.6.3",
-    "wpackagist-plugin/poll-maker": "3.6.8",
+    "wpackagist-plugin/poll-maker": "3.6.9",
     "wpackagist-plugin/top-ten-lists": "1.1.0",
     "wpackagist-plugin/codepress-admin-columns": "4.4.4",
     "wpackagist-plugin/user-switching": "1.5.8",
@@ -31,7 +31,8 @@
     "wpackagist-plugin/better-yourls": "2.3.0",
     "wpackagist-plugin/faq-block-for-gutenberg": "2.3",
     "wpackagist-plugin/public-post-preview": "2.9.3",
-    "wpackagist-plugin/give": "2.17.1"
+    "wpackagist-plugin/give": "2.17.1",
+    "wpackagist-plugin/publishpress-checklists": "2.5.3"
   },
   "extra": {
     "installer-paths": {
