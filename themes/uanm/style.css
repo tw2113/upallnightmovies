@@ -486,7 +486,12 @@ footer .single-post-nav {
 	list-style: none;
 	padding-left: 0;
 }
-
+.encourage-comments {
+	border: solid var(--uanm-dark-purple) 5px;
+	border-left-width: 0;
+	border-right-width: 0;
+	margin-bottom: 20px;
+}
 .authorbio {
 	align-items: center;
 	border: solid var(--uanm-dark-purple) 5px;

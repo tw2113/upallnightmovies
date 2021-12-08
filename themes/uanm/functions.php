@@ -77,6 +77,28 @@ function uanm_posted_in() {
 	echo implode( ', ', $posted_in );
 }
 
+function uanm_encourage_comments() {
+    ob_start();
+    ?>
+    <div class="encourage-comments">
+    <h2>Did you like this content?</h2>
+    <?php
+    if ( comments_open() ) {
+        ?>
+        <p>Give us an earful in the <a href="#respond">comments section</a> below.</p>
+        <?php
+    } else {
+        ?>
+            <p>Let us know what you think over on our <a href="https://twitter.com/uanmovies" target="_blank" rel="me noopener">UANM Twitter account</a>.</p>
+        <?php
+    }
+    ?>
+    </div>
+    <?php
+
+    echo ob_get_clean();
+}
+
 function uanm_remove_watched_tag( $terms, $post_id, $taxonomy ) {
 	if ( is_admin() ) {
 		return $terms;

@@ -18,6 +18,8 @@
 				    <footer>
 				    <?php wp_link_pages( array( 'before' => '' . 'Pages:', 'after' => '' ) ); ?>
 
+					<?php uanm_encourage_comments(); ?>
+
 					<?php uanm_posted_in(); ?>
 
 					<?php edit_post_link( 'Edit', '', '' ); ?>
