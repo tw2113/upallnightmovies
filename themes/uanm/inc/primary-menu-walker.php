@@ -17,12 +17,15 @@ class UANM_Primary_Menu_Walker extends Walker_Nav_Menu {
 		$type        = $item->type;
 		$title_orig  = $item->title;
 		$permalink   = $item->url;
+		$xfn         = $item->xfn;
 
 		$title = strtolower( $item->title );
 		$icons = $this->icons();
 
 		$output .= '<li class="' . implode( " ", $item->classes ) . '">';
-		$output .= '<a href="' . $permalink . '">';
+		$output .= '<a href="' . $permalink . '"';
+		$output .= ( $xfn ) ? ' rel="' . $xfn . '"' : '';
+		$output .= '>';
 
 		if ( array_key_exists( $title, $icons ) ) {
 			$output .= $icons[ $title ];
