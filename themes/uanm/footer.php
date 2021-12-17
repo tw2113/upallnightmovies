@@ -13,6 +13,10 @@
 			<?php dynamic_sidebar( 'footer-column-4' ) ?>
         </div>
 	</div>
+
+    <div class="movie-roll">
+		<?php dynamic_sidebar( 'movie-roll' ) ?>
+    </div>
 	<p>
 		<small>&copy;<?php echo uanm_copyright_date(); ?>
 			<a href="<?php echo home_url( '/' ) ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>

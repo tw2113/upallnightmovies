@@ -467,6 +467,20 @@ footer .single-post-nav {
 	flex-flow: column;
 	font-size: 1.9rem;
 }
+.movie-roll {
+	font-size: 1.9rem;
+}
+.movie-roll .wp-block-rss {
+	display: flex;
+	flex-wrap: wrap;
+	padding-left: 0;
+}
+.movie-roll .wp-block-rss__item {
+	flex: auto;
+	list-style: none;
+	text-align: center;
+	width: 33%;
+}
 
 .footer-widgets li {
 	line-height: 3.0rem;
