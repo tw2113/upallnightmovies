@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd24d165e78fbcce95c5aebe203be2ce",
+    "content-hash": "3e1cff0dcf9befcc34d7cf28cfb5210c",
     "packages": [
         {
             "name": "composer/installers",
@@ -277,15 +277,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.0.4",
+            "version": "5.0.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.0.4"
+                "reference": "tags/5.0.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.0.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.0.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -385,15 +385,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.6.9",
+            "version": "3.7.3",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.6.9"
+                "reference": "tags/3.7.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.6.9.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.7.3.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -529,15 +529,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.6.7",
+            "version": "1.6.10",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.6.7"
+                "reference": "tags/1.6.10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.6.10.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
