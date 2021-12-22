@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e1cff0dcf9befcc34d7cf28cfb5210c",
+    "content-hash": "a3ac2b90da4ac330d7c3856519520cbf",
     "packages": [
         {
             "name": "composer/installers",
@@ -385,15 +385,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.7.3",
+            "version": "3.7.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.7.3"
+                "reference": "tags/3.7.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.7.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.7.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -565,15 +565,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-to-twitter",
-            "version": "3.5.3",
+            "version": "3.5.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-to-twitter/",
-                "reference": "tags/3.5.3"
+                "reference": "tags/3.5.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-to-twitter.3.5.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-to-twitter.3.5.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
