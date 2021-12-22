@@ -339,6 +339,10 @@ header h2 {
 	height: auto;
 }
 
+.e-content h2 {
+	text-decoration: underline solid #383746 4px;
+	text-underline-offset: 4px;
+}
 .e-content img {
 	height: auto;
 }
