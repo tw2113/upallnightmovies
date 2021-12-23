@@ -234,6 +234,7 @@ article.post .sponsor {
 	background-color: var(--uanm-red);
 	border: 0;
 	color: #fff;
+	font-size: 2rem;
 	font-weight: bold;
 	padding: 15px;
 	width: 100%;
