@@ -40,9 +40,7 @@
 			</div>
 		</div>
 
-		<div hidden data-menu-button>
-			Menu
-		</div>
+        <button aria-expanded="false" aria-controls="menu" class="mobile-nav-toggle">Menu</button>
 		<nav id="access" role="navigation" aria-label="Main">
 			<?php
 			wp_nav_menu( [

@@ -1,23 +1,17 @@
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
-        const body = document.querySelector('body');
-        const fakeButton = document.querySelector('[data-menu-button]');
-        const menu = document.querySelector('#access');
+        let toggle = document.querySelector('.mobile-nav-toggle');
+        let menu = document.querySelector('#access');
+        let isMobile = ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/));
 
-        const toggleMenuButton = document.createElement('button');
-        toggleMenuButton.textContent = fakeButton.textContent;
-        toggleMenuButton.setAttribute('aria-expanded', false);
-        toggleMenuButton.setAttribute('aria-controls', 'menu');
-        toggleMenuButton.classList.add('mobile-nav-toggle');
-
-        fakeButton.parentNode.replaceChild(toggleMenuButton, fakeButton);
-
-        toggleMenuButton.addEventListener('click', function () {
+        toggle.addEventListener('click', function () {
             let expanded = this.getAttribute('aria-expanded') === 'true' || false;
             this.setAttribute('aria-expanded', !expanded);
             menu.hidden = !menu.hidden;
         });
 
-        menu.hidden = true;
+        if ( isMobile ) {
+            menu.hidden = true;
+        }
     }, false);
 })();
