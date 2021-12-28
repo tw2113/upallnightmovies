@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a3ac2b90da4ac330d7c3856519520cbf",
+    "content-hash": "cc65b019f0e6369508d3254c95361dbd",
     "packages": [
         {
             "name": "composer/installers",
@@ -385,15 +385,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.7.5",
+            "version": "3.7.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.7.5"
+                "reference": "tags/3.7.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.7.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.7.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -457,15 +457,15 @@
         },
         {
             "name": "wpackagist-plugin/query-monitor",
-            "version": "3.7.1",
+            "version": "3.8.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/query-monitor/",
-                "reference": "tags/3.7.1"
+                "reference": "tags/3.8.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.7.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.8.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
