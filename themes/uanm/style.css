@@ -376,6 +376,10 @@ header h2 {
 	padding: 0 10px;
 }
 
+.cclicense img {
+	vertical-align: text-top;
+}
+
 footer .posts-nav
 footer .single-post-nav {
 	padding: 0;
