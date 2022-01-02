@@ -193,7 +193,7 @@ article.post .sponsor {
 	border: solid var(--uanm-red) 1px;
 	background-color: #222;
 	padding: 10px;
-	margin: 50px 0;
+	margin: 50px 0 25px;
 }
 
 #menu-social-menu,
@@ -259,13 +259,15 @@ article.post .sponsor {
 	text-decoration: none;
 }
 
-.footer-widgets a {
+.footer-widgets a,
+.wp-block-rss__item-title a {
 	position: relative;
 	text-decoration: none;
 }
 
 #menu-primary a::before,
-.footer-widgets a::before {
+.footer-widgets a::before,
+.wp-block-rss__item-title a::before {
 	content: "";
 	position: absolute;
 	display: block;
@@ -279,7 +281,8 @@ article.post .sponsor {
 }
 
 #menu-primary a:hover::before,
-.footer-widgets a:hover::before {
+.footer-widgets a:hover::before,
+.wp-block-rss__item-title a:hover::before {
 	transform: scaleX(1);
 }
 
@@ -340,8 +343,13 @@ header h2 {
 	height: auto;
 }
 
-.e-content h2 {
+.e-content h2,
+.e-content h3 {
 	text-decoration: underline solid #383746 4px;
+	text-underline-offset: 4px;
+}
+h3.widget-title {
+	text-decoration: underline;
 	text-underline-offset: 4px;
 }
 .e-content img {
@@ -521,7 +529,7 @@ footer .single-post-nav {
 	border-left-width: 0;
 	border-right-width: 0;
 	display: flex;
-	margin: 0 auto;
+	margin: 0 auto 25px;
 	padding: 10px 0;
 	width: 100%;
 }
@@ -617,6 +625,7 @@ small {
 
 	.authorbio {
 		width: 50%;
+		margin-bottom: 50px;
 	}
 }
 
