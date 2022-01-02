@@ -85,7 +85,7 @@ function uanm_encourage_comments() {
     <?php
     if ( comments_open() ) {
         ?>
-        <p>Give us an earful in the <a href="#respond">comments section</a> below.</p>
+        <p>Give us an earful below.</p>
         <?php
     } else {
         ?>

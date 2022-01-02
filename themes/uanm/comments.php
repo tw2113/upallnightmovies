@@ -53,6 +53,8 @@ endif;
 	?>
 	</div>
 	<div id="comments-form">
+
+		<?php uanm_encourage_comments(); ?>
 		<?php
 		comment_form(
 			[
