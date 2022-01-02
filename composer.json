@@ -7,7 +7,7 @@
   }],
   "require": {
     "wpackagist-plugin/disable-emojis": "1.7.3",
-    "wpackagist-plugin/query-monitor": "3.8.0",
+    "wpackagist-plugin/query-monitor": "3.8.1",
     "wpackagist-plugin/zero-spam": "5.2.8",
     "wpackagist-plugin/wp-to-twitter": "3.5.4",
     "wpackagist-plugin/semantic-linkbacks": "3.11.0",
