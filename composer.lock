@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "747e825e8d37e1e0808c6c415872fb44",
+    "content-hash": "d4f3e41af61d24d10a6086fe74177f5a",
     "packages": [
         {
             "name": "composer/installers",
@@ -259,15 +259,15 @@
         },
         {
             "name": "wpackagist-plugin/disable-emojis",
-            "version": "1.7.3",
+            "version": "1.7.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/disable-emojis/",
-                "reference": "tags/1.7.3"
+                "reference": "tags/1.7.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/disable-emojis.1.7.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/disable-emojis.1.7.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
