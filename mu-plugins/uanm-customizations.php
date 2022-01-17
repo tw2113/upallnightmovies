@@ -22,3 +22,12 @@ function atom_links() {
 	);
 }
 add_action( 'wp_head', __NAMESPACE__ . '\atom_links' );
+
+function mtm_wp_to_twitter( $args ) {
+    $new_args = [
+	    'mtm_campaign' => $args['utm_campaign'],
+	    'mtm_source'   => $args['utm_source'],
+    ];
+    return $new_args;
+}
+add_filter( 'wpt_analytics_arguments', __NAMESPACE__ . '\mtm_wp_to_twitter' );
