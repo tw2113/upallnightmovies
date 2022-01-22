@@ -547,6 +547,10 @@ small {
 	width: 100%;
 }
 
+.netflix-logo {
+	background-color: rgb(0,0,0);
+}
+
 @media only screen and (min-width: 600px) {
 	.top-wrap {
 		flex-flow: row;
