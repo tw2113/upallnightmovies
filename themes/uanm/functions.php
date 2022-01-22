@@ -434,3 +434,34 @@ function uanm_attachment_redirect() {
     }
 }
 add_action( 'template_redirect', 'uanm_attachment_redirect', 0 );
+
+function uanm_get_poll_by_id( $poll_id ) {
+	global $wpdb;
+	$args_id    = absint( intval( $poll_id ) );
+	$poll_table = esc_sql( $wpdb->prefix . "ayspoll_polls" );
+	$sql        = "SELECT * FROM ".$poll_table." WHERE id=%d";
+
+	$wpdb->get_row(
+		$wpdb->prepare( $sql, $args_id),
+		'ARRAY_A'
+	);
+}
+
+function uanm_is_poll_expired( $poll_id ) {
+    $is_expired = true;
+
+    $poll = uanm_get_poll_by_id( $poll_id );
+
+    if ( ! empty( $poll['styles'] ) ) {
+	    $poll_settings = json_decode( $poll['styles'] );
+
+	    $expiration_date = strtotime( "{$poll_settings['deactiveInterval']} {$poll_settings['deactiveIntervalSec']}" );
+        $timestamp = time();
+
+        if ( $timestamp < $expiration_date ) {
+            $is_expired = false;
+        }
+    }
+
+    return $is_expired;
+}
