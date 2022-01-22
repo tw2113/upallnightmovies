@@ -12,6 +12,16 @@ function uanm_patterns() {
 		]
 	);
 
+	register_block_pattern(
+		'uanm/extras',
+		[
+			'title'       => __( 'UANM Extras', 'uanm' ),
+			'description' => _x( 'Streaming and Extra links', 'Block pattern description', 'uanm' ),
+			'categories'  => [ 'uanm' ],
+			'content'     => "<!-- wp:heading -->\n<h2>Extras</h2>\n<!-- /wp:heading -->\n\n<!-- wp:heading {\"level\":3} -->\n<h3>Trailer</h3>\n<!-- /wp:heading -->\n\n<!-- wp:embed {\"providerNameSlug\":\"youtube\",\"responsive\":true} /-->\n\n<!-- wp:heading {\"level\":3} -->\n<h3>Streaming information</h3>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>TubiTV: <a href=\"#\" target=\"_blank\" rel=\"noreferrer noopener\">URL Here</a></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Shudder: <a href=\"#\" target=\"_blank\" rel=\"noreferrer noopener\">URL Here</a></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Amazon: <a href=\"#\" target=\"_blank\" rel=\"noreferrer noopener\">URL Here</a></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Netflix: <a href=\"#\" target=\"_blank\" rel=\"noreferrer noopener\">URL Here</a></p>\n<!-- /wp:paragraph -->",
+		]
+	);
+
 	register_block_pattern_category(
 		'uanm',
 		[ 'label' => _x( 'UANM', 'Block pattern category' ) ],
