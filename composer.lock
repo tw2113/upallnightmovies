@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fd971a62ced9e14e2e682dd35ad9877",
+    "content-hash": "9f375550eec4b9f504530ab25c037128",
     "packages": [
         {
             "name": "composer/installers",
@@ -202,6 +202,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/blogroll-block/"
+        },
+        {
+            "name": "wpackagist-plugin/breadcrumb-navxt",
+            "version": "7.0.2",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/breadcrumb-navxt/",
+                "reference": "tags/7.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/breadcrumb-navxt.7.0.2.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/breadcrumb-navxt/"
         },
         {
             "name": "wpackagist-plugin/cmb2",

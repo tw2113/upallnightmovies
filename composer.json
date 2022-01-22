@@ -32,7 +32,8 @@
     "wpackagist-plugin/faq-block-for-gutenberg": "2.3",
     "wpackagist-plugin/public-post-preview": "2.9.3",
     "wpackagist-plugin/give": "2.18.0",
-    "wpackagist-plugin/publishpress-checklists": "2.5.3"
+    "wpackagist-plugin/publishpress-checklists": "2.5.3",
+    "wpackagist-plugin/breadcrumb-navxt": "7.0.2"
   },
   "extra": {
     "installer-paths": {
