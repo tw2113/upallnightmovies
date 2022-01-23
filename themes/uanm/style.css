@@ -357,8 +357,16 @@ h3.widget-title {
 }
 .e-content p,
 .comment-content p {
-	line-height: 3rem;
-	margin: 0 0 2em;
+	line-height: 2.8rem;
+	margin: 0 0 1.5em;
+}
+
+.e-content blockquote {
+	border-left: solid var(--uanm-dark-purple) 4px;
+	padding-left: 10px;
+}
+.e-content blockquote.wp-block-quote p {
+	margin-bottom: 1.5rem;
 }
 .comment-content p {
 	margin: 2rem 0;
@@ -373,7 +381,7 @@ h3.widget-title {
 }
 
 .e-content figcaption {
-	font-size: 1.4rem;
+	font-size: 1.6rem;
 }
 
 .posts-nav,
@@ -629,6 +637,7 @@ small {
 
 	.authorbio {
 		width: 50%;
+		margin-top: 25px;
 		margin-bottom: 50px;
 	}
 }
