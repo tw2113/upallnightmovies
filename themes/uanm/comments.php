@@ -9,49 +9,52 @@ endif;
 
 <?php // You can start editing here -- including this comment! ?>
 
-<?php if ( have_comments() ) : ?>
+<?php
+if ( have_comments() ) : ?>
 	<div id="comments">
-	<h3 id="comments-title">
-	<?php
-	$count = number_format_i18n( get_comments_number() );
-	printf(
-		_n(
-			'One thought on %1$s',
-			'%1$s thoughts on %2$s',
-			$count,
-			'uanm'
-		),
-		$count,
-		get_the_title()
-	); ?>
-	</h3>
+	    <h3 id="comments-title">
+        <?php
+        $count = number_format_i18n( get_comments_number() );
+        printf(
+            _n(
+                'One thought on %1$s',
+                '%1$s thoughts on %2$s',
+                $count,
+                'uanm'
+            ),
+            $count,
+            get_the_title()
+        ); ?>
+        </h3>
 
-	<?php
-	if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) :
-		previous_comments_link( '&larr; Older Comments' );
-		next_comments_link( 'Newer Comments &rarr;' );
-	endif;
-	?>
-	<ol>
-	<?php wp_list_comments( [ 'callback' => 'uanm_comment' ] ); ?>
-	</ol>
+        <?php
+        if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) :
+            previous_comments_link( '&larr; Older Comments' );
+            next_comments_link( 'Newer Comments &rarr;' );
+        endif;
+        ?>
+        <ol>
+        <?php wp_list_comments( [ 'callback' => 'uanm_comment' ] ); ?>
+        </ol>
 
-	<?php
-	if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) :
-		previous_comments_link( '&larr; Older Comments' );
-		next_comments_link( 'Newer Comments &rarr;' );
-	endif;
-
-	else :
+        <?php
+        if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) :
+            previous_comments_link( '&larr; Older Comments' );
+            next_comments_link( 'Newer Comments &rarr;' );
+        endif;
+        ?>
+    </div>
+<?php
+else :
 		if ( ! comments_open() ) :
 		?>
 		<p>Comments are closed.</p>
 
 		<?php
 		endif; // end ! comments_open()
-	endif; // end have_comments()
-	?>
-	</div>
+endif; // end have_comments()
+?>
+
 	<div id="comments-form">
 
 		<?php uanm_encourage_comments(); ?>
