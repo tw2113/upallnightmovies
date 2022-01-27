@@ -1,7 +1,7 @@
 <?php get_header(); ?>
 <div class="content" role="main">
 
-<?php if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
+        <?php if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
 
 				<div class="single-post-nav header">
 					<?php previous_post_link( '%link', '' . _x( '&larr;', 'Previous post link', 'uanm' ) . ' %title' ); ?>
@@ -39,7 +39,7 @@
                 </div>
 
 				<?php comments_template( '', true ); ?>
-<?php endwhile; // end of the loop. ?>
+        <?php endwhile; // end of the loop. ?>
 
 </div>
 <?php get_footer(); ?>

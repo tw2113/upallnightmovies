@@ -13,7 +13,7 @@
 
 <body <?php body_class(); ?>>
 	<div id="container">
-	<header id="branding" role="banner">
+	<header id="branding">
 		<div class="top-wrap">
 			<div class="logo-title">
 				<a class="sitelogo" href="<?php echo home_url( '/' ) ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
