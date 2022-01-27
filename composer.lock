@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c3ac7a9903e73eeef724b6a1744053c",
+    "content-hash": "e66d7ef7acb5372bbe84eb67546a6b6b",
     "packages": [
         {
             "name": "composer/installers",
@@ -403,15 +403,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.8.1",
+            "version": "3.8.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.8.1"
+                "reference": "tags/3.8.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
