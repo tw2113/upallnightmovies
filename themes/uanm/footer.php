@@ -24,27 +24,7 @@
         <br/>
         Posts are <a class="cclicense" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 		<br/>
-
-		<?php
-		$quote = new WP_Query(
-			[
-				'post_type' => 'quotes',
-				'posts_per_page' => 1,
-				'orderby' => 'RAND',
-			]
-		);
-
-		#var_dump($quote);
-
-		if ( $quote->posts[0] ) {
-			echo str_replace(
-				['<p>','</p>'],
-				['<small>','</small>'],
-				$quote->posts[0]->post_content
-			);
-			wp_reset_postdata();
-		}
-		?>
+        <small id="quotecontainer"></small>
 	</p>
 </footer>
 </div><!--End Container-->

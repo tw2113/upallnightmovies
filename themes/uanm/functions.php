@@ -38,6 +38,31 @@ function uanm_load_scripts() {
 	wp_enqueue_style( 'style', get_bloginfo( 'stylesheet_url' ), 'normalize', null, 'all' );
 
 	wp_enqueue_script( 'mobile-menu', get_stylesheet_directory_uri() . '/js/mobile-menu.js', [], '1.0.0' );
+
+	wp_enqueue_script( 'quotes', get_stylesheet_directory_uri() . '/js/quotes.js', [], '1.0.0', true );
+
+	$quote = new WP_Query(
+		[
+			'post_type'      => 'quotes',
+			'posts_per_page' => -1,
+		]
+	);
+    $finalquotes = [];
+    foreach( $quote->posts as $thequote ) {
+	    $finalquotes[] = str_replace(
+	        [ '<p>', '</p>' ],
+	        [ '', '' ],
+		    wp_strip_all_tags( apply_filters( 'the_content', $thequote->post_content ), true )
+        );
+    }
+	wp_reset_postdata();
+
+	wp_add_inline_script(
+        'quotes',
+        'const quotes = ' . json_encode( $finalquotes ),
+        'before'
+    );
+
 }
 add_action( 'wp_enqueue_scripts', 'uanm_load_scripts' );
 
