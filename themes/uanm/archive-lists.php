@@ -22,18 +22,13 @@
 			<article role="article" <?php post_class( 'h-entry' ); ?>>
 				<header>
 					<h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
-					<?php uanm_posted_on(); ?>
 				</header>
 
-				<?php
-				$featured_cats = [ 'frontpage-featured' ];
-				?>
-
-				<div class="front-archive-wrap">
+				<div class="list-archive-wrap">
 					<?php
 					if ( has_post_thumbnail() ) {
 						?>
-							<div class="<?php echo esc_attr( implode( ' ', $featured_cats ) ); ?>">
+							<div class="<?php echo esc_attr( implode( ' ', [ 'list-featured' ] ) ); ?>">
 								<?php
 								if ( has_post_thumbnail() ) {
 									the_post_thumbnail( 'medium' );
@@ -42,8 +37,6 @@
 							</div>
 						<?php
 					}
-
-                    echo apply_filters( 'the_excerpt', wpautop( get_the_excerpt() ) )
 					?>
 				</div>
 			</article>
