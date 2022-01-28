@@ -640,6 +640,25 @@ small {
 		margin-top: 25px;
 		margin-bottom: 50px;
 	}
+
+	#list-grid {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 15px;
+	}
+	#list-grid .content article {
+		margin-bottom: 0;
+	}
+	#list-grid article {
+		width: 32%;
+		flex: 1 1 auto;
+	}
+
+	#list-grid .post-first {
+		width: 100%;
+		flex: inherit;
+	}
 }
 
 @media only screen and (min-width: 900px) {
