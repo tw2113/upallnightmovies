@@ -559,6 +559,10 @@ small {
 	background-color: rgb(0,0,0);
 }
 
+.post-type-archive-lists .lists {
+	text-align: center;
+}
+
 @media only screen and (min-width: 600px) {
 	.top-wrap {
 		flex-flow: row;
@@ -653,11 +657,9 @@ small {
 	#list-grid article {
 		width: 32%;
 		flex: 1 1 auto;
-	}
-
-	#list-grid .post-first {
-		width: 100%;
-		flex: inherit;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 	}
 }
 
