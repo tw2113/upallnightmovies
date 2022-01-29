@@ -42,4 +42,4 @@ function scheeles_admin_color_scheme() {
 		array( '#00478a', '#fff', '#8a0047' , '#478800')
 	);
 }
-add_action('admin_init', 'scheeles_admin_color_scheme');
+add_action('admin_init', __NAMESPACE__ . '\scheeles_admin_color_scheme');
