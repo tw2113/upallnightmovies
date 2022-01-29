@@ -74,13 +74,31 @@ function uanm_page_menu_args( $args ) {
 add_filter( 'wp_page_menu_args', 'uanm_page_menu_args' );
 
 function uanm_posted_on() {
-	printf( __( '<div class="post-meta">When: <time class="dt-published entry-date" datetime="%1$s" pubdate>%2$s</time><span class="by-author"> <span class="sep"> | Who: </span> <span class="author vcard"><a class="url fn n" href="%3$s" rel="author">%4$s</a></span></span> | %5$s</div>', 'uanm' ),
+    $title = strip_tags( get_the_title() );
+    $title = str_replace( '#', 'number ', $title );
+	printf( __( '<div class="post-meta">When: <time class="dt-published entry-date" datetime="%1$s" pubdate>%2$s</time><span class="by-author"> <span class="sep"> | Who: </span> <span class="author vcard"><a class="url fn n" href="%3$s" rel="author">%4$s</a></span></span> | %5$s | %6$s</div>', 'uanm' ),
 		esc_attr( get_the_date( 'c' ) ),
 		esc_html( get_the_date() ),
 		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
 		get_the_author(),
-		do_shortcode( '[rt_reading_time label="How long: " postfix="minutes" postfix_singular="minute"]' )
+		do_shortcode( '[rt_reading_time label="How long: " postfix="minutes" postfix_singular="minute"]' ),
+		sprintf(
+			'<a href="%s" target="_blank" rel="noopener">Click to tweet this post</a>',
+			sprintf(
+				'https://twitter.com/intent/tweet?text=%s via @uanmovies %s',
+				$title,
+				add_query_arg(
+					[
+						'mtm_campaign' => 'traffic',
+						'mtm_source'   => 'twitter'
+					],
+					get_the_permalink()
+				)
+			)
+		)
 	);
+
+
 }
 
 function uanm_posted_in() {
