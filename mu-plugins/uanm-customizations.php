@@ -37,7 +37,7 @@ function scheeles_admin_color_scheme() {
 
 	//Scheeles
 	wp_admin_css_color( 'scheeles', __( 'Scheeles' ),
-		$theme_dir . '/scheeles.css',
+		$theme_dir . '/css/scheeles.css',
 		array( '#00478a', '#fff', '#8a0047' , '#478800')
 	);
 }
