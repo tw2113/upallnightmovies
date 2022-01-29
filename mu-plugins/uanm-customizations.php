@@ -33,11 +33,10 @@ function mtm_wp_to_twitter( $args ) {
 add_filter( 'wpt_analytics_arguments', __NAMESPACE__ . '\mtm_wp_to_twitter' );
 
 function scheeles_admin_color_scheme() {
-	//Get the theme directory
 	$theme_dir = get_stylesheet_directory_uri();
 
 	//Scheeles
-	wp_admin_css_color( 'scheeles', __( 'Scheeles ' ),
+	wp_admin_css_color( 'scheeles', __( 'Scheeles' ),
 		$theme_dir . '/scheeles.css',
 		array( '#00478a', '#fff', '#8a0047' , '#478800')
 	);
