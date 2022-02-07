@@ -565,18 +565,28 @@ small {
 	text-align: center;
 }
 
-.watched-flex {
+.watched-flex,
+.polls-trailers,
+.home .movies {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: space-between;
 }
-.watched-flex article {
+.watched-flex article,
+.polls-trailers article {
 	width: 33%;
 }
-.watched-flex article img {
+.home .movies article {
+	width: 20%;
+}
+.watched-flex article img,
+.polls-trailers article img,
+.home .movies img {
 	height: auto;
 	max-width: 100%;
 	width: 100%;
 }
+
 @media only screen and (min-width: 600px) {
 	.top-wrap {
 		flex-flow: row;
@@ -691,6 +701,10 @@ small {
 	.front-archive-wrap .frontpage-featured.poll {
 		flex: 1;
 		margin-right: 20px;
+	}
+
+	.home .polls-trailers article {
+		text-align: center;
 	}
 
 	.comment-form input[type="submit"] {
