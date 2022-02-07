@@ -1,5 +1,6 @@
 <?php get_header(); ?>
 	<div class="content" role="main">
+        <div class="watched-flex">
         <?php
 	        if ( is_post_type_archive() ) {
 		        ?>
@@ -19,42 +20,11 @@
         ?>
 		<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 			<article role="article" <?php post_class( 'h-entry' ); ?>>
-				<header>
-					<h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
-					<?php uanm_posted_on(); ?>
-				</header>
-
+                <a href="<?php the_permalink(); ?>">
 				<?php
-				$has_poll      = has_category( 'poll' );
-				$featured_cats = [ 'frontpage-featured' ];
-				if ( $has_poll ) {
-					$featured_cats[] = 'poll';
-				}
+                    the_post_thumbnail( 'large' );
 				?>
-
-				<div class="front-archive-wrap">
-					<?php
-					if ( has_post_thumbnail() || has_category( 'poll' ) ) {
-						?>
-							<div class="<?php echo esc_attr( implode( ' ', $featured_cats ) ); ?>">
-								<?php
-								if ( has_post_thumbnail() ) {
-									the_post_thumbnail( 'medium' );
-								} else if ( has_category( 'poll' ) ) {
-									echo uanm_poll_thumbnail();
-								}
-								?>
-							</div>
-						<?php
-					}
-					if ( ! has_category( 'poll' ) ) {
-						echo apply_filters( 'the_excerpt', wpautop( get_the_excerpt() ) );
-					} else {
-						the_content();
-					}
-					?>
-
-				</div>
+                </a>
 			</article>
 		<?php endwhile; endif; ?>
 		<?php
@@ -65,5 +35,6 @@
 				echo '</div>';
 			endif;
 		?>
+        </div>
 	</div>
 <?php get_footer(); ?>

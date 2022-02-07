@@ -565,6 +565,18 @@ small {
 	text-align: center;
 }
 
+.watched-flex {
+	display: flex;
+	flex-wrap: wrap;
+}
+.watched-flex article {
+	width: 33%;
+}
+.watched-flex article img {
+	height: auto;
+	max-width: 100%;
+	width: 100%;
+}
 @media only screen and (min-width: 600px) {
 	.top-wrap {
 		flex-flow: row;
