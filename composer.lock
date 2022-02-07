@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "942738466296692f1ef69f41a0c4ef20",
+    "content-hash": "b8d12ddbd1fb644e4ccd9b7e40bc79e1",
     "packages": [
         {
             "name": "composer/installers",
@@ -403,15 +403,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.8.2",
+            "version": "3.8.3",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.8.2"
+                "reference": "tags/3.8.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.3.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -619,15 +619,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.2",
+            "version": "1.7.2.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.2"
+                "reference": "tags/1.7.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.2.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
