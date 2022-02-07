@@ -4,7 +4,8 @@
 	global $wp_query;
 ?>
 <div class="content" role="main">
-    <h2>Movies</h2>
+    <h2>The Movies</h2>
+    <p>Check out what we have covered already:</p>
     <div class="movies">
 	<?php if ( have_posts() ) : while( have_posts() ) : the_post(); ?>
 	    <article role="article" <?php post_class( 'h-entry' ); ?>>
@@ -26,6 +27,7 @@
 	?>
 
         <h2>Polls and Trailers</h2>
+        <p>Help choose what we cover in the future:</p>
         <div class="polls-trailers">
             <?php
                 $args = [
@@ -33,7 +35,7 @@
                         21,
                         40,
                     ],
-                    'posts_per_page' => 3
+                    'posts_per_page' => 2
                 ];
                 $polls_trailers = new WP_Query( $args );
 
