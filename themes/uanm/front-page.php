@@ -62,8 +62,38 @@
 
             </article>
             <?php
-                endwhile; wp_reset_postdata();
+            endwhile; wp_reset_postdata();
             ?>
         </div>
+
+    <h2 id="interviews">Interviews</h2>
+    <p>People we have talked to:</p>
+    <div class="interviews">
+		<?php
+			$args = [
+				'category__in' => [
+					31
+				],
+				'posts_per_page' => 1
+			];
+			$interviews = new WP_Query( $args );
+
+			while( $interviews->have_posts() ) : $interviews->the_post();
+				?>
+                <article role="article" <?php post_class( 'h-entry' ); ?>>
+                    <header>
+                        <h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
+                    </header>
+                    <div class="front-archive-wrap">
+                        <div class="<?php echo esc_attr( implode( ' ', [ 'frontpage-featured' ] ) ); ?>">
+                            <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
+                        </div>
+                    </div>
+
+                </article>
+			<?php
+			endwhile; wp_reset_postdata();
+		?>
+    </div>
 </div>
 <?php get_footer(); ?>
