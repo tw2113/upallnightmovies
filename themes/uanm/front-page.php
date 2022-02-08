@@ -5,7 +5,7 @@
 ?>
 <div class="content" role="main">
     <h2 id="movies">The Movies</h2>
-    <p>Check out what we have covered already:</p>
+    <p>Check out what we have covered recently:</p>
     <div class="movies">
 	<?php if ( have_posts() ) : while( have_posts() ) : the_post(); ?>
 	    <article role="article" <?php post_class( 'h-entry' ); ?>>
@@ -17,15 +17,7 @@
 		</article>
 		<?php endwhile; endif; ?>
     </div>
-	<?php
-		if (  $wp_query->max_num_pages > 1 ) :
-			echo '<div class="posts-nav footer">';
-			previous_posts_link( '&larr; Recent movies' );
-			next_posts_link( 'Past movies &rarr;' );
-			echo '</div>';
-		endif;
-	?>
-
+    <a href="<?php echo get_tag_link( 26 ); ?>">See all covered movies</a>
         <h2 id="polltrailers">Polls and Trailers</h2>
         <p>Help choose what we cover in the future:</p>
         <div class="polls-trailers">
