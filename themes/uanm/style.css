@@ -705,6 +705,11 @@ small {
 	.home .movies article {
 		width: 20%;
 	}
+
+	.page-id-6 ol {
+		columns: 2;
+		column-gap: 40px;
+	}
 }
 
 @media only screen and (min-width: 900px) {
