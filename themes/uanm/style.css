@@ -301,7 +301,8 @@ article.post .sponsor {
 	margin: 20px 0;
 }
 #searchsubmit,
-.primary-search {
+.primary-search,
+.es_subscription_form_submit {
 	border-radius: 5px;
 	border: 0;
 	padding: 6px;
@@ -565,7 +566,7 @@ small {
 }
 
 .watched-flex,
-.polls-trailers,
+.polls-trailers-interviews,
 .home .movies {
 	display: flex;
 	flex-wrap: wrap;
@@ -575,25 +576,29 @@ small {
 	width: 33%;
 }
 .home .movies article,
-.polls-trailers article {
+.polls-trailers-interviews article {
 	width: 100%;
 }
 .watched-flex article img,
-.polls-trailers article img,
+.polls-trailers-interviews article.polls img,
 .home .movies img {
 	height: auto;
 	max-width: 100%;
 	width: 100%;
 }
 
-.polls-trailers article {
+.polls-trailers-interviews article {
 	text-align: center;
 }
 
 .home h2 {
 	text-align: center;
 }
-
+.moremovieslink {
+	display: flex;
+	justify-content: end;
+	padding: 0 15px;
+}
 @media only screen and (min-width: 600px) {
 	.top-wrap {
 		flex-flow: row;
@@ -602,7 +607,12 @@ small {
 	#menu-social-menu {
 		justify-content: flex-end;
 	}
-	.polls-trailers article {
+
+	article.polls {
+		width: 25%;
+	}
+
+	article.interview {
 		width: 50%;
 	}
 }
@@ -728,7 +738,7 @@ small {
 		margin-right: 20px;
 	}
 
-	.home .polls-trailers article {
+	.home .polls-trailers-interviews article {
 		text-align: center;
 	}
 

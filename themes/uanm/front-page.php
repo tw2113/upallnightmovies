@@ -17,10 +17,12 @@
 		</article>
 		<?php endwhile; endif; ?>
     </div>
+	<div class="moremovieslink">
     <a href="<?php echo get_tag_link( 26 ); ?>">See all covered movies</a>
-        <h2 id="polltrailers">Polls and Trailers</h2>
-        <p>Help choose what we cover in the future:</p>
-        <div class="polls-trailers">
+	</div>
+        <h2 id="polltrailersinterviews">Polls, Trailers &amp; Interviews</h2>
+        <p>Help choose what we cover in the future and read our discussions:</p>
+        <div class="polls-trailers-interviews">
             <?php
                 $args = [
                     'category__in' => [
@@ -33,7 +35,7 @@
 
             while( $polls_trailers->have_posts() ) : $polls_trailers->the_post();
             ?>
-            <article role="article" <?php post_class( 'h-entry' ); ?>>
+            <article role="article" <?php post_class( [ 'h-entry', 'polls' ] ); ?>>
                 <header>
                    <h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
                 </header>
@@ -55,37 +57,33 @@
             </article>
             <?php
             endwhile; wp_reset_postdata();
-            ?>
+
+	        $args       = [
+		        'category__in'   => [
+			        31
+		        ],
+		        'posts_per_page' => 1
+	        ];
+	        $interviews = new WP_Query( $args );
+
+	        while ( $interviews->have_posts() ) : $interviews->the_post();
+		        ?>
+				<article role="article" <?php post_class( [ 'h-entry', 'interview' ] ); ?>>
+					<header>
+						<?php $title = str_replace( ':', ":<br/>", get_the_title() ); ?>
+						<h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php echo $title; ?></a></h2>
+					</header>
+					<div class="front-archive-wrap">
+						<div class="<?php echo esc_attr( implode( ' ', [ 'frontpage-featured' ] ) ); ?>">
+							<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
+						</div>
+					</div>
+
+				</article>
+	        <?php
+	        endwhile;
+	        wp_reset_postdata();
+	        ?>
         </div>
-
-    <h2 id="interviews">Interviews</h2>
-    <p>People we have talked to:</p>
-    <div class="interviews">
-		<?php
-			$args = [
-				'category__in' => [
-					31
-				],
-				'posts_per_page' => 1
-			];
-			$interviews = new WP_Query( $args );
-
-			while( $interviews->have_posts() ) : $interviews->the_post();
-				?>
-                <article role="article" <?php post_class( 'h-entry' ); ?>>
-                    <header>
-                        <h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
-                    </header>
-                    <div class="front-archive-wrap">
-                        <div class="<?php echo esc_attr( implode( ' ', [ 'frontpage-featured' ] ) ); ?>">
-                            <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
-                        </div>
-                    </div>
-
-                </article>
-			<?php
-			endwhile; wp_reset_postdata();
-		?>
-    </div>
 </div>
 <?php get_footer(); ?>
