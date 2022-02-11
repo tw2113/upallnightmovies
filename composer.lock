@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0afae7437566d72dea9daca5711ddfa6",
+    "content-hash": "336f622c3aae34d8e851e24011322655",
     "packages": [
         {
             "name": "composer/installers",
@@ -313,15 +313,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "6.4.0",
+            "version": "6.4.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/6.4.0"
+                "reference": "tags/6.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.4.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.4.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -403,15 +403,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.8.4",
+            "version": "3.8.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.8.4"
+                "reference": "tags/3.8.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
