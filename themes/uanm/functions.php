@@ -84,17 +84,20 @@ function uanm_posted_on() {
 		do_shortcode( '[rt_reading_time label="How long: " postfix="minutes" postfix_singular="minute"]' ),
 		sprintf(
 			'<a href="%s" target="_blank" rel="noopener">Click to tweet this post</a>',
-			sprintf(
-				'https://twitter.com/intent/tweet?text=%s via @uanmovies %s',
-				$title,
-				add_query_arg(
-					[
-						'mtm_campaign' => 'traffic',
-						'mtm_source'   => 'twitter'
-					],
-					get_the_permalink()
-				)
-			)
+            add_query_arg(
+                [
+                    'text' => $title,
+                    'url'  => add_query_arg(
+	                    [
+		                    'mtm_campaign' => 'traffic',
+		                    'mtm_source'   => 'twitter'
+	                    ],
+                        get_the_permalink()
+                    ),
+                    'via' => 'uanmovies'
+                ],
+                'https://twitter.com/intent/tweet'
+            )
 		)
 	);
 
