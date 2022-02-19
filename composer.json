@@ -8,7 +8,7 @@
   "require": {
     "wpackagist-plugin/disable-emojis": "1.7.4",
     "wpackagist-plugin/query-monitor": "3.8.2",
-    "wpackagist-plugin/zero-spam": "5.2.11",
+    "wpackagist-plugin/zero-spam": "5.2.12",
     "wpackagist-plugin/wp-to-twitter": "3.5.5",
     "wpackagist-plugin/semantic-linkbacks": "3.11.0",
     "wpackagist-plugin/wp-uf2": "1.1.0",
@@ -22,7 +22,7 @@
     "wpackagist-plugin/wp-piwik": "1.0.27",
     "wpackagist-plugin/blogroll-block": "1.2.0",
     "wpackagist-plugin/publishpress": "3.7.0",
-    "wpackagist-plugin/poll-maker": "3.8.5",
+    "wpackagist-plugin/poll-maker": "3.8.7",
     "wpackagist-plugin/top-ten-lists": "1.1.0",
     "wpackagist-plugin/codepress-admin-columns": "4.4.5",
     "wpackagist-plugin/user-switching": "1.5.8",

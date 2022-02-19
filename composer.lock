@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f5dd5de2648cebd8956d5dfaa4da371",
+    "content-hash": "45ead9007c16dd41896af41985300ab0",
     "packages": [
         {
             "name": "composer/installers",
@@ -403,15 +403,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.8.5",
+            "version": "3.8.7",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.8.5"
+                "reference": "tags/3.8.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.7.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -637,15 +637,15 @@
         },
         {
             "name": "wpackagist-plugin/zero-spam",
-            "version": "5.2.11",
+            "version": "5.2.12",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/zero-spam/",
-                "reference": "tags/5.2.11"
+                "reference": "tags/5.2.12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.2.11.zip"
+                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.2.12.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
