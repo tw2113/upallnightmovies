@@ -27,6 +27,7 @@
                 $args = [
                     'category__in' => [
                         21,
+                        28,
                         40,
                     ],
                     'posts_per_page' => 2
