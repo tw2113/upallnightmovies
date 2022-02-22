@@ -20,7 +20,7 @@
 	<div class="moremovieslink">
     <a href="<?php echo get_tag_link( 26 ); ?>">See all covered movies</a>
 	</div>
-        <h2 id="polltrailersinterviews">Polls, Trailers &amp; Interviews</h2>
+        <h2 id="polltrailersinterviews">Polls, Trailers, Announcements &amp; Interviews</h2>
         <p>Help choose what we cover in the future and read our discussions:</p>
         <div class="polls-trailers-interviews">
             <?php
