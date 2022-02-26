@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45ead9007c16dd41896af41985300ab0",
+    "content-hash": "d39beb26ac71f33db1530583503f2a21",
     "packages": [
         {
             "name": "composer/installers",
@@ -223,7 +223,7 @@
         },
         {
             "name": "wpackagist-plugin/cmb2",
-            "version": "2.10.0",
+            "version": "2.10.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/cmb2/",
@@ -231,7 +231,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/cmb2.zip?timestamp=1644946201"
+                "url": "https://downloads.wordpress.org/plugin/cmb2.zip?timestamp=1645540116"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -295,15 +295,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.3.3",
+            "version": "5.3.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.3.3"
+                "reference": "tags/5.3.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -349,15 +349,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.18.1",
+            "version": "2.19.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.18.1"
+                "reference": "tags/2.19.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.18.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.19.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -403,15 +403,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.8.7",
+            "version": "3.8.9",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.8.7"
+                "reference": "tags/3.8.9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.8.9.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -637,15 +637,15 @@
         },
         {
             "name": "wpackagist-plugin/zero-spam",
-            "version": "5.2.12",
+            "version": "5.2.13",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/zero-spam/",
-                "reference": "tags/5.2.12"
+                "reference": "tags/5.2.13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.2.12.zip"
+                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.2.13.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
