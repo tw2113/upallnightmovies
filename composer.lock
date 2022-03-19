@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe55a0c2b3ae1bc1ecc96d40afdb2e40",
+    "content-hash": "3cf203d378677d04f1aadc3f6bbc037f",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v2.0.1",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "a241e78aaeb09781f5f5b92ac01ffd13ab43e5e8"
+                "reference": "75e5ef05436c90ac565a48176cc7465991908352"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/a241e78aaeb09781f5f5b92ac01ffd13ab43e5e8",
-                "reference": "a241e78aaeb09781f5f5b92ac01ffd13ab43e5e8",
+                "url": "https://api.github.com/repos/composer/installers/zipball/75e5ef05436c90ac565a48176cc7465991908352",
+                "reference": "75e5ef05436c90ac565a48176cc7465991908352",
                 "shasum": ""
             },
             "require": {
@@ -37,7 +37,8 @@
                 "class": "Composer\\Installers\\Plugin",
                 "branch-alias": {
                     "dev-main": "2.x-dev"
-                }
+                },
+                "plugin-modifies-install-path": true
             },
             "autoload": {
                 "psr-4": {
@@ -131,7 +132,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/installers/issues",
-                "source": "https://github.com/composer/installers/tree/v2.0.1"
+                "source": "https://github.com/composer/installers/tree/v2.1.0"
             },
             "funding": [
                 {
@@ -147,7 +148,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-13T08:21:20+00:00"
+            "time": "2022-03-18T12:27:54+00:00"
         },
         {
             "name": "wpackagist-plugin/autodescription",
@@ -259,15 +260,15 @@
         },
         {
             "name": "wpackagist-plugin/custom-post-type-ui",
-            "version": "1.10.2",
+            "version": "1.11.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/custom-post-type-ui/",
-                "reference": "tags/1.10.2"
+                "reference": "trunk"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.10.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.zip?timestamp=1647615885"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -295,15 +296,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.3.6",
+            "version": "5.3.7",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.3.6"
+                "reference": "tags/5.3.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.7.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -403,15 +404,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.9.0",
+            "version": "3.9.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.9.0"
+                "reference": "tags/3.9.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.9.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.9.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -619,15 +620,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.2.1",
+            "version": "1.7.3",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.2.1"
+                "reference": "tags/1.7.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.2.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.3.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -637,15 +638,15 @@
         },
         {
             "name": "wpackagist-plugin/zero-spam",
-            "version": "5.2.15",
+            "version": "5.3.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/zero-spam/",
-                "reference": "tags/5.2.15"
+                "reference": "tags/5.3.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.2.15.zip"
+                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.3.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
