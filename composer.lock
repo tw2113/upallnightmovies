@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cf203d378677d04f1aadc3f6bbc037f",
+    "content-hash": "844721fcb707b8473acb637e3ecc2f21",
     "packages": [
         {
             "name": "composer/installers",
@@ -494,15 +494,15 @@
         },
         {
             "name": "wpackagist-plugin/semantic-linkbacks",
-            "version": "3.11.0",
+            "version": "3.11.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/semantic-linkbacks/",
-                "reference": "tags/3.11.0"
+                "reference": "tags/3.11.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/semantic-linkbacks.3.11.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/semantic-linkbacks.3.11.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
