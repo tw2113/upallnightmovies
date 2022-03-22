@@ -11,7 +11,8 @@
 	    <article role="article" <?php post_class( 'h-entry' ); ?>>
 			<div class="front-archive-wrap">
 				<div class="<?php echo esc_attr( implode( ' ', [ 'frontpage-featured' ] ) ); ?>">
-                    <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
+                    <?php $title = strip_tags( get_the_title() ); ?>
+                    <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium', [ 'alt' => "Film poster for {$title}" ] ); ?></a>
                 </div>
 			</div>
 		</article>
