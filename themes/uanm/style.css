@@ -590,6 +590,11 @@ small {
 .polls-trailers-interviews article {
 	text-align: center;
 }
+.polls-trailers-interviews header h3 {
+	font-size: 3rem;
+	margin-top: 0;
+	text-align: left;
+}
 
 .home h2 {
 	text-align: center;
@@ -622,6 +627,7 @@ small {
 	.home h2 {
 		text-align: left;
 	}
+
 	.front-archive-wrap .frontpage-featured {
 		display: block;
 	}

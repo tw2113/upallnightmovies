@@ -39,7 +39,7 @@
             ?>
             <article role="article" <?php post_class( [ 'h-entry', 'polls' ] ); ?>>
                 <header>
-                   <h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h2>
+                   <h3><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h3>
                 </header>
 
                 <?php
@@ -72,8 +72,7 @@
 		        ?>
 				<article role="article" <?php post_class( [ 'h-entry', 'interview' ] ); ?>>
 					<header>
-						<?php $title = str_replace( ':', ":<br/>", get_the_title() ); ?>
-						<h2><a href="<?php the_permalink(); ?>" rel="bookmark"><?php echo $title; ?></a></h2>
+						<h3><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h3>
 					</header>
 					<div class="front-archive-wrap">
 						<div class="<?php echo esc_attr( implode( ' ', [ 'frontpage-featured' ] ) ); ?>">
