@@ -8,7 +8,17 @@ function uanm_patterns() {
 			'title'       => __( 'IMDb & Poll', 'uanm' ),
 			'description' => _x( 'Your Description.', 'Block pattern description', 'uanm' ),
 			'categories'  => [ 'uanm' ],
-			'content'     => "<!-- wp:group -->\n<div class=\"wp-block-group\"><!-- wp:columns -->\n<div class=\"wp-block-columns\"><!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading -->\n<h2>IMDb Links</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul><li><a rel=\"noreferrer noopener\" href=\"https://www.imdb.com/title/tt2784512/\" data-type=\"URL\" data-id=\"https://www.imdb.com/title/tt2784512/\" target=\"_blank\">Zombeavers</a></li><li><a rel=\"noreferrer noopener\" href=\"https://www.imdb.com/title/tt0090094/\" data-type=\"URL\" data-id=\"https://www.imdb.com/title/tt0090094/\" target=\"_blank\">The Stuff</a></li><li><a href=\"https://www.imdb.com/title/tt0096142/\" data-type=\"URL\" data-id=\"https://www.imdb.com/title/tt0096142/\" target=\"_blank\" rel=\"noreferrer noopener\">Sorority Babes in the Slimeball Bowl-O-Rama</a></li><li><a rel=\"noreferrer noopener\" href=\"https://www.imdb.com/title/tt1807020/\" data-type=\"URL\" data-id=\"https://www.imdb.com/title/tt1807020/\" target=\"_blank\">Steampunk Samurai Biker Chicks</a></li></ul>\n<!-- /wp:list --></div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading -->\n<h2>Poll</h2>\n<!-- /wp:heading -->\n\n<!-- wp:poll-maker/poll {\"metaFieldValue\":7,\"shortcode\":\"[ays_poll id=7]\"} -->\n[ays_poll id=\"7\"]\n<!-- /wp:poll-maker/poll --></div>\n<!-- /wp:column --></div>\n<!-- /wp:columns --></div>\n<!-- /wp:group -->",
+			'content'     => "<!-- wp:group -->\n<div class=\"wp-block-group\"><!-- wp:columns -->\n<div class=\"wp-block-columns\"><!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading -->\n<h2 class=\"has-text-align-center\">IMDb Links</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul><li>Movie 1</li><li>Movie 2</li><li>Movie 3</li><li>Movie 4</li></ul>\n<!-- /wp:list --></div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading -->\n<h2 class=\"has-text-align-center\">Poll</h2>\n<!-- /wp:heading -->\n\n<!-- wp:poll-maker/poll {\"metaFieldValue\":4,\"shortcode\":\"[ays_poll id=4]\"} -->\n[ays_poll id=\"4\"]\n<!-- /wp:poll-maker/poll --></div>\n<!-- /wp:column --></div>\n<!-- /wp:columns --></div>\n<!-- /wp:group -->",
+		]
+	);
+
+	register_block_pattern(
+		'uanm/movie-descriptions',
+		[
+			'title'       => __( 'UANM Movie Descriptions', 'uanm' ),
+			'description' => _x( 'Movie descriptions', 'Block pattern description', 'uanm' ),
+			'categories'  => [ 'uanm' ],
+			'content'     => "<!-- wp:group --> <div class=\"wp-block-group\"><!-- wp:heading --> <h2 id=\"movie-descriptions\">Movie Descriptions</h2> <!-- /wp:heading --> <!-- wp:paragraph --> <p>All descriptions care of IMDb.com</p> <!-- /wp:paragraph --> <!-- wp:heading {\"level\":3} --> <h3>Title 1</h3> <!-- /wp:heading --> <!-- wp:paragraph --> <p>Description 1</p> <!-- /wp:paragraph --> <!-- wp:heading {\"level\":3} --> <h3>Title 2</h3> <!-- /wp:heading --> <!-- wp:paragraph --> <p>Description 2</p> <!-- /wp:paragraph --> <!-- wp:heading {\"level\":3} --> <h3>Title 3</h3> <!-- /wp:heading --> <!-- wp:paragraph --> <p>Description 3</p> <!-- /wp:paragraph --> <!-- wp:heading {\"level\":3} --> <h3>Title 4</h3> <!-- /wp:heading --> <!-- wp:paragraph --> <p>Description 4</p> <!-- /wp:paragraph --></div> <!-- /wp:group -->",
 		]
 	);
 
