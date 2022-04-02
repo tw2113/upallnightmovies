@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ceb206c2d1a849f9598f0958fec4ef07",
+    "content-hash": "566e718612dd04ad94de5bc4d869e126",
     "packages": [
         {
             "name": "composer/installers",
@@ -296,15 +296,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.3.8",
+            "version": "5.3.9",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.3.8"
+                "reference": "tags/5.3.9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.9.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -350,15 +350,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.19.5",
+            "version": "2.19.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.19.5"
+                "reference": "tags/2.19.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.19.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.19.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -404,15 +404,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "3.9.4",
+            "version": "3.9.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/3.9.4"
+                "reference": "tags/3.9.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.9.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.3.9.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
