@@ -7,4 +7,5 @@ index.php
 .DS_Store
 
 /themes/*
-!themes/uanm
+/themes/uanm/node_modules/
+!themes/uanm/

@@ -35,7 +35,7 @@ add_action( 'comment_form_before', 'uanm_comment_enqueue' );
 
 function uanm_load_scripts() {
 	wp_enqueue_style( 'normalize', get_stylesheet_directory_uri() . '/css/normalize.css', null, 'all' );
-	wp_enqueue_style( 'style', get_bloginfo( 'stylesheet_url' ), 'normalize', null, 'all' );
+	wp_enqueue_style( 'style', get_stylesheet_directory_uri() . '/css/style.css', 'normalize', null, 'all' );
 
 	wp_enqueue_script( 'mobile-menu', get_stylesheet_directory_uri() . '/js/mobile-menu.js', [], '1.0.0' );
 

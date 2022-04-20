@@ -1,0 +1,14 @@
+{
+  "name": "UpAllNightMovies",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "compile-styles": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 css/style.scss css/style.css",
+    "css-minify": "cleancss --format breaksWith=lf --source-map --source-map-inline-sources --output css/style.min.css css/style.css",
+    "styles": "npm run compile-styles && npm run css-minify"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.0",
+    "node-sass": "^7.0.1"
+  }
+}
