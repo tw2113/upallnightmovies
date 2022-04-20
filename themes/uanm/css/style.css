@@ -223,6 +223,12 @@ hr {
   width: 100%;
 }
 
+@media only screen and (min-width: 1224px) {
+  #container {
+    width: 1224px;
+  }
+}
+
 .is-type-video {
   height: auto;
   width: 100%;
@@ -318,14 +324,6 @@ article.post .sponsor {
   display: flex;
 }
 
-#menu-social-menu {
-  justify-content: space-between;
-}
-
-#menu-social-menu-1 {
-  justify-content: space-around;
-}
-
 #menu-social-menu .menu-item,
 #menu-social-menu-1 .menu-item {
   padding: 0 5px;
@@ -347,6 +345,14 @@ article.post .sponsor {
 #menu-social-menu-1 .social-icon-text {
   position: absolute;
   left: -9999px;
+}
+
+#menu-social-menu {
+  justify-content: space-between;
+}
+
+#menu-social-menu-1 {
+  justify-content: space-around;
 }
 
 .mobile-nav-toggle {
@@ -462,6 +468,14 @@ header h2 {
 
 .front-archive-wrap .e-content {
   flex: 4;
+}
+
+@media only screen and (min-width: 1024px) {
+  .front-archive-wrap .frontpage-featured,
+  .front-archive-wrap .frontpage-featured.poll {
+    flex: 1;
+    margin-right: 20px;
+  }
 }
 
 .frontpage-featured img {
@@ -778,6 +792,9 @@ small {
   .home h2 {
     text-align: left;
   }
+  .home .movies article {
+    width: 20%;
+  }
   .front-archive-wrap .frontpage-featured {
     display: block;
   }
@@ -850,12 +867,6 @@ small {
     flex-direction: column;
     justify-content: space-between;
   }
-  .home .movies article {
-    width: 50%;
-  }
-  .home .movies article {
-    width: 20%;
-  }
   .page-id-6 ol {
     columns: 2;
     column-gap: 40px;
@@ -872,22 +883,11 @@ small {
 }
 
 @media only screen and (min-width: 1024px) {
-  .front-archive-wrap .frontpage-featured,
-  .front-archive-wrap .frontpage-featured.poll {
-    flex: 1;
-    margin-right: 20px;
-  }
   .home .polls-trailers-interviews article {
     text-align: center;
   }
   .comment-form input[type="submit"] {
     width: auto;
-  }
-}
-
-@media only screen and (min-width: 1224px) {
-  #container {
-    width: 1224px;
   }
 }
 

@@ -105,6 +105,10 @@ hr {
 	font-size: 1.6rem;
 	margin: 0 auto;
 	width: 100%;
+
+	@media only screen and (min-width: 1224px) {
+		width: 1224px;
+	}
 }
 
 .is-type-video {
@@ -193,34 +197,28 @@ article.post .sponsor {
 #menu-social-menu-1 {
 	padding-left: 0;
 	display: flex;
+
+	.menu-item {
+		padding: 0 5px;
+		&:last-child {
+			padding-right: 0;
+		}
+		svg {
+			width: 35px;
+			height: 35px;
+			fill: #fff;
+		}
+	}
+	.social-icon-text{
+		position: absolute;
+		left: -9999px;
+	}
 }
 #menu-social-menu {
 	justify-content: space-between;
 }
 #menu-social-menu-1 {
 	justify-content: space-around;
-}
-
-#menu-social-menu .menu-item,
-#menu-social-menu-1 .menu-item {
-	padding: 0 5px;
-}
-
-#menu-social-menu .menu-item:last-child,
-#menu-social-menu-1 .menu-item:last-child{
-	padding-right: 0;
-}
-
-#menu-social-menu .menu-item svg,
-#menu-social-menu-1 .menu-item svg {
-	width: 35px;
-	height: 35px;
-	fill: #fff;
-}
-#menu-social-menu .social-icon-text,
-#menu-social-menu-1 .social-icon-text{
-	position: absolute;
-	left: -9999px;
 }
 
 .mobile-nav-toggle {
@@ -258,10 +256,12 @@ article.post .sponsor {
 	}
 }
 
-.footer-widgets a,
-.wp-block-rss__item-title a {
-	position: relative;
-	text-decoration: none;
+.footer-widgets,
+.wp-block-rss__item-title {
+	a {
+		position: relative;
+		text-decoration: none;
+	}
 }
 
 #menu-primary a::before,
@@ -307,10 +307,12 @@ article.post .sponsor {
 	}
 }
 
-header h2 {
-	font-size: 4.5rem;
-	margin: 0 0 .50em;
-	word-wrap: break-word;
+header {
+	h2 {
+		font-size: 4.5rem;
+		margin: 0 0 .50em;
+		word-wrap: break-word;
+	}
 }
 
 .post-meta {
@@ -326,17 +328,28 @@ header h2 {
 		flex: 1;
 	}
 
-	.frontpage-featured.poll {
-		flex: 1;
+	.frontpage-featured {
+		&.poll {
+			flex: 1;
+		}
 	}
 
 	.e-content {
 		flex: 4;
 	}
+	@media only screen and (min-width: 1024px) {
+		.frontpage-featured,
+		.frontpage-featured.poll {
+			flex: 1;
+			margin-right: 20px;
+		}
+	}
 }
 
-.frontpage-featured img {
-	height: auto;
+.frontpage-featured {
+	img {
+		height: auto;
+	}
 }
 
 .e-content {
@@ -581,8 +594,10 @@ small {
 	background-color: rgb(0,0,0);
 }
 
-.post-type-archive-lists .lists {
-	text-align: center;
+.post-type-archive-lists {
+	.lists {
+		text-align: center;
+	}
 }
 
 .watched-flex,
@@ -592,19 +607,25 @@ small {
 	flex-wrap: wrap;
 	justify-content: space-between;
 }
-.watched-flex article {
-	width: 33%;
+.watched-flex {
+	article {
+		width: 33%;
+	}
 }
-.home .movies article,
-.polls-trailers-interviews article {
-	width: 100%;
+.home .movies,
+.polls-trailers-interviews {
+	article {
+		width: 100%;
+	}
 }
-.watched-flex article img,
-.polls-trailers-interviews article.polls img,
-.home .movies img {
-	height: auto;
-	max-width: 100%;
-	width: 100%;
+.watched-flex article,
+.polls-trailers-interviews article.polls,
+.home .movies {
+	img {
+		height: auto;
+		max-width: 100%;
+		width: 100%;
+	}
 }
 
 .polls-trailers-interviews {
@@ -639,19 +660,26 @@ small {
 		justify-content: flex-end;
 	}
 
-	article.polls {
-		width: 25%;
-	}
-
-	article.interview {
-		width: 50%;
+	article {
+		&.polls {
+			width: 25%;
+		}
+		&.interview {
+			width: 50%;
+		}
 	}
 }
 
 @media only screen and (min-width: 768px) {
 
-	.home h2 {
-		text-align: left;
+	.home {
+		h2 {
+			text-align: left;
+		}
+
+		.movies article {
+			width: 20%;
+		}
 	}
 
 	.front-archive-wrap .frontpage-featured {
@@ -671,25 +699,29 @@ small {
 		display: flex;
 		justify-content: space-between;
 		text-align: left;
+
+		& > li {
+			padding: 15px;
+		}
+
+		a {
+			display: inline-block;
+		}
 	}
 
-	#menu-primary > li {
-		padding: 15px;
+	.front-archive-wrap {
+		.frontpage-featured,
+		.frontpage-featured.poll {
+			flex: 2;
+		}
 	}
 
-	#menu-primary a {
-		display: inline-block;
-	}
-
-	.front-archive-wrap .frontpage-featured,
-	.front-archive-wrap .frontpage-featured.poll {
-		flex: 2;
-	}
-
-	.comment-form input[type="text"],
-	.comment-form input[type="email"],
-	.comment-form input[type="url"] {
-		width: 30%;
+	.comment-form {
+		input[type="text"],
+		input[type="email"],
+		input[type="url"] {
+			width: 30%;
+		}
 	}
 
 	.comment-meta {
@@ -730,22 +762,17 @@ small {
 		justify-content: space-between;
 		gap: 15px;
 	}
-	#list-grid .content article {
-		margin-bottom: 0;
-	}
-	#list-grid article {
-		width: 32%;
-		flex: 1 1 auto;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-	}
-	.home .movies article {
-		width: 50%;
-	}
-
-	.home .movies article {
-		width: 20%;
+	#list-grid {
+		.content article {
+			margin-bottom: 0;
+		}
+		article {
+			width: 32%;
+			flex: 1 1 auto;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
 	}
 
 	.page-id-6 ol {
@@ -764,11 +791,6 @@ small {
 }
 
 @media only screen and (min-width: 1024px) {
-	.front-archive-wrap .frontpage-featured,
-	.front-archive-wrap .frontpage-featured.poll {
-		flex: 1;
-		margin-right: 20px;
-	}
 
 	.home .polls-trailers-interviews article {
 		text-align: center;
@@ -778,8 +800,4 @@ small {
 		width: auto;
 	}
 }
-@media only screen and (min-width: 1224px) {
-	#container {
-		width: 1224px;
-	}
-}
+
