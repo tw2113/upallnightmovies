@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "922e1529f73e1e6deae423b50e2ced4b",
+    "content-hash": "271242ed989d2ab75a29fff3f3c79bad",
     "packages": [
         {
             "name": "composer/installers",
@@ -512,15 +512,15 @@
         },
         {
             "name": "wpackagist-plugin/top-ten-lists",
-            "version": "1.1.1",
+            "version": "1.1.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/top-ten-lists/",
-                "reference": "tags/1.1.1"
+                "reference": "tags/1.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/top-ten-lists.1.1.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/top-ten-lists.1.1.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
