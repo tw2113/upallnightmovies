@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "271242ed989d2ab75a29fff3f3c79bad",
+    "content-hash": "61da7cdcc3ce2ac3eb8c5b6627b57a52",
     "packages": [
         {
             "name": "composer/installers",
@@ -296,15 +296,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.3.12",
+            "version": "5.3.13",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.3.12"
+                "reference": "tags/5.3.13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.12.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.13.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -314,15 +314,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "6.5.0",
+            "version": "6.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/6.5.0"
+                "reference": "tags/6.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.5.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.5.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -404,15 +404,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.0.0",
+            "version": "4.0.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.0.0"
+                "reference": "tags/4.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -458,15 +458,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress-checklists",
-            "version": "2.7.1",
+            "version": "2.7.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress-checklists/",
-                "reference": "tags/2.7.1"
+                "reference": "tags/2.7.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress-checklists.2.7.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress-checklists.2.7.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -620,15 +620,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.3",
+            "version": "1.7.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.3"
+                "reference": "tags/1.7.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
