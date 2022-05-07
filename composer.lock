@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be6737cc558468c8bd406f7e42d6c035",
+    "content-hash": "c0083310b8b0cc7ecd9882d1108fa26e",
     "packages": [
         {
             "name": "composer/installers",
@@ -152,15 +152,15 @@
         },
         {
             "name": "wpackagist-plugin/autodescription",
-            "version": "4.2.3",
+            "version": "4.2.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/autodescription/",
-                "reference": "tags/4.2.3"
+                "reference": "tags/4.2.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/autodescription.4.2.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/autodescription.4.2.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -404,15 +404,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.0.2",
+            "version": "4.0.3",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.0.2"
+                "reference": "tags/4.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.3.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -548,15 +548,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.8.0"
+                "reference": "tags/1.8.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.8.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.8.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -620,15 +620,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.4",
+            "version": "1.7.4.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.4"
+                "reference": "tags/1.7.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.4.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
