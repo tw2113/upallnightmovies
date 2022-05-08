@@ -5,7 +5,7 @@ function uanm_patterns() {
 	register_block_pattern(
 		'uanm/imdbpoll',
 		[
-			'title'       => __( 'IMDb & Poll', 'uanm' ),
+			'title'       => __( 'UANM IMDb & Poll', 'uanm' ),
 			'description' => _x( 'Your Description.', 'Block pattern description', 'uanm' ),
 			'categories'  => [ 'uanm' ],
 			'content'     => "<!-- wp:group -->\n<div class=\"wp-block-group\"><!-- wp:columns -->\n<div class=\"wp-block-columns\"><!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading -->\n<h2 class=\"has-text-align-center\">IMDb Links</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul><li>Movie 1</li><li>Movie 2</li><li>Movie 3</li><li>Movie 4</li></ul>\n<!-- /wp:list --></div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\"><!-- wp:heading -->\n<h2 class=\"has-text-align-center\">Poll</h2>\n<!-- /wp:heading -->\n\n<!-- wp:poll-maker/poll {\"metaFieldValue\":4,\"shortcode\":\"[ays_poll id=4]\"} -->\n[ays_poll id=\"4\"]\n<!-- /wp:poll-maker/poll --></div>\n<!-- /wp:column --></div>\n<!-- /wp:columns --></div>\n<!-- /wp:group -->",
