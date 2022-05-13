@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c0083310b8b0cc7ecd9882d1108fa26e",
+    "content-hash": "1a75d4e6f7c2a0b6b7fc9ebc4e2f4279",
     "packages": [
         {
             "name": "composer/installers",
@@ -151,6 +151,24 @@
             "time": "2022-04-13T09:13:00+00:00"
         },
         {
+            "name": "wpackagist-plugin/antispam-bee",
+            "version": "2.11.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/antispam-bee/",
+                "reference": "tags/2.11.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/antispam-bee.2.11.0.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/antispam-bee/"
+        },
+        {
             "name": "wpackagist-plugin/autodescription",
             "version": "4.2.4",
             "source": {
@@ -260,15 +278,15 @@
         },
         {
             "name": "wpackagist-plugin/custom-post-type-ui",
-            "version": "1.11.2",
+            "version": "1.12.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/custom-post-type-ui/",
-                "reference": "tags/1.11.2"
+                "reference": "tags/1.12.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.11.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.12.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -296,15 +314,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.3.13",
+            "version": "5.3.14",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.3.13"
+                "reference": "tags/5.3.14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.13.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.14.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -350,15 +368,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.19.8",
+            "version": "2.20.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.19.8"
+                "reference": "tags/2.20.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.19.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.20.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -404,15 +422,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.0.3",
+            "version": "4.0.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.0.3"
+                "reference": "tags/4.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -584,15 +602,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-to-twitter",
-            "version": "3.5.5",
+            "version": "3.5.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-to-twitter/",
-                "reference": "tags/3.5.5"
+                "reference": "tags/3.5.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-to-twitter.3.5.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-to-twitter.3.5.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -635,24 +653,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/wpforms-lite/"
-        },
-        {
-            "name": "wpackagist-plugin/zero-spam",
-            "version": "5.3.8",
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/zero-spam/",
-                "reference": "tags/5.3.8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/zero-spam.5.3.8.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/zero-spam/"
         }
     ],
     "packages-dev": [],
