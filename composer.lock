@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a75d4e6f7c2a0b6b7fc9ebc4e2f4279",
+    "content-hash": "7c0aee6f155fd8e4941ed63c137082ad",
     "packages": [
         {
             "name": "composer/installers",
@@ -278,15 +278,15 @@
         },
         {
             "name": "wpackagist-plugin/custom-post-type-ui",
-            "version": "1.12.0",
+            "version": "1.12.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/custom-post-type-ui/",
-                "reference": "tags/1.12.0"
+                "reference": "tags/1.12.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.12.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.12.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -422,15 +422,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.0.4",
+            "version": "4.0.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.0.4"
+                "reference": "tags/4.0.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
