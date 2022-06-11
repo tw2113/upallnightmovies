@@ -1,11 +1,11 @@
 === The SEO Framework - Extension Manager ===
 Contributors: Cybr
 Tags: seo, extensions, local, keyword, articles, monitor, modules, schema, honeypot, amp, title, the seo framework
-Requires at least: 5.4
+Requires at least: 5.5
 Tested up to: 5.9
 Requires PHP: 5.6.5
 Requires TSF: 4.1.4
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -41,13 +41,38 @@ Please refer to [the installation instructions on our website](https://kb.theseo
 
 == Changelog ==
 
+= 2.5.3 =
+
+**Release date:**
+
+* May 2nd, 2022
+
+**Feature highlights:**
+
+* Improved overall performance of the plugin by refactoring various parts using our latest coding standards.
+
+**API Updates:**
+
+* Jan 31st, 2022: Duplicated domain activations no longer count toward the activation limit.
+* Jan 31st, 2022: Duplicated instance activations now automatically switch sites -- this helps ease migrating from staging to production, and vice versa.
+
+**Updated extensions:**
+
+* [Articles at version 2.2.0](https://theseoframework.com/extensions/articles/#changelog)
+
+**Detailed log**
+
+View the [detailed v2.5.2 changelog](https://tsf.fyi/p/3890).
+
 = 2.5.2 =
 
-* **Release date:**
+**Release date:**
 
 * November 9th, 2021
 
-**This update addresses a regression brought in 2.5.1 where upper-case file paths were no longer recognized.**
+**Feature highlights:**
+
+* This update addresses a regression brought in v2.5.1 where upper-case file paths were no longer recognized for.
 
 **Detailed log:**
 
@@ -59,7 +84,7 @@ View the [detailed v2.5.2 changelog](https://tsf.fyi/p/3782).
 
 * November 8th, 2021
 
-**Feature highlights**
+**Feature highlights:**
 
 * Extension Manager is now fully prepared for the imminent release of TSF v4.2.0.
 * The 2001 error is now less likely to get invoked.
@@ -108,6 +133,10 @@ View the [detailed v2.5.0 changelog](https://theseoframework.com/?p=3686).
 * **The full changelog can be found [here](http://theseoframework.com/?cat=19).**
 
 == Upgrade Notice ==
+
+= 2.5.3 =
+
+This plugin now requires WordPress v5.5 or higher.
 
 = 2.5.0 =
 

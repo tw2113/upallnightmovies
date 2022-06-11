@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2019-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -50,7 +50,7 @@ final class AJAX extends Secure_Abstract {
 	/**
 	 * @var null|AJAX The class instance.
 	 */
-	private static $instance = null;
+	private static $instance;
 
 	/**
 	 * @var null|object TSF class object.
@@ -312,7 +312,7 @@ final class AJAX extends Secure_Abstract {
 
 						if ( 'OK' !== $data['status'] ) {
 							switch ( $data['status'] ) :
-								// @link https://developers.google.com/maps/documentation/geocoding/intro#reverse-response
+								// @link https://developers.google.com/maps/documentation/geocoding/overview#reverse-response
 								case 'ZERO_RESULTS':
 									$send['results'] = static::$instance->get_ajax_notice( false, 17004 );
 									break;

@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -89,7 +89,7 @@ if ( false === \tsf_extension_manager()->_init_early_extension_autoloader( TSFEM
  */
 function monitor_init() {
 
-	static $loaded = null;
+	static $loaded;
 
 	// Don't init the class twice.
 	if ( isset( $loaded ) )

@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2020-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2020-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -288,7 +288,7 @@ final class ListEdit {
 			}
 
 			// Memoize 'sanitized' bulk data, since that won't change over the loop.
-			static $data_bulk = null;
+			static $data_bulk;
 			if ( ! isset( $data_bulk ) ) {
 				$data_bulk = \wp_unslash( $_REQUEST[ static::META_PREFIX_BULK ] );
 			}

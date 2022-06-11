@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -88,8 +88,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1635798852',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -100,9 +100,9 @@ trait Extensions_Properties {
 				'area'         => 'blogging, news',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1636205662',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'last_updated' => '1651198376',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -114,8 +114,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1612160183',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -127,8 +127,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1576470514',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -140,8 +140,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1633798024',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -153,8 +153,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1565627638',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -166,8 +166,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1633797930',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -179,8 +179,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1515109560',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -192,8 +192,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1541601833',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -205,8 +205,8 @@ trait Extensions_Properties {
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
 				'last_updated' => '1572496812',
-				'requires'     => '5.4',
-				'tested'       => '5.9',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
 				'requires_tsf' => '4.1.4',
 				'tested_tsf'   => '4.2',
 			],
@@ -226,9 +226,9 @@ trait Extensions_Properties {
 	 */
 	private static function get_external_extensions_checksum() {
 		return [
-			'sha256' => '12a96e2301fbd5de1efbe6e95a2a1b40264fc43a14bde7f6aed610767415563a',
-			'sha1'   => 'efa5894da33d06857f6205e99fdad681a5a74bf2',
-			'md5'    => '7cd5c60a91074aec357d80066479a1d6',
+			'sha256' => '5b80680cd8b82eb998370ea50b5aa5afdbe2c4a45d1386a1cec399f462741dc9',
+			'sha1'   => '00968dd9ff0d9791e083c2766a5d17af1dd0ad0a',
+			'md5'    => '3ddc34319cd368d11459cbc5cb34029e',
 		];
 	}
 
@@ -432,7 +432,7 @@ trait Extensions_Actions {
 	 */
 	private static function get_extensions_checksum() {
 
-		static $checksum = null;
+		static $checksum;
 
 		if ( isset( $checksum ) )
 			return $checksum;
@@ -461,7 +461,7 @@ trait Extensions_Actions {
 	 */
 	private static function get_extension_checksum() {
 
-		static $checksum = null;
+		static $checksum;
 
 		if ( isset( $checksum ) )
 			return $checksum;
@@ -982,7 +982,7 @@ trait Extensions_Actions {
 	private static function set_error_reporting( $val = null ) {
 		// phpcs:disable, WordPress.PHP.DevelopmentFunctions, WordPress.PHP.DiscouragedPHPFunctions -- Required catchables.
 
-		static $_prev_error_reporting = null;
+		static $_prev_error_reporting;
 
 		if ( null === $val ) {
 			// Reset error reporting, if set.

@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -683,7 +683,9 @@ final class LoadAdmin extends AdminPages {
 	 * @return bool True if set, false otherwise.
 	 */
 	protected function ajax_is_tsf_extension_manager_page( $set = false ) {
+
 		static $cache = false;
+
 		return $set ? $cache = true : $cache;
 	}
 

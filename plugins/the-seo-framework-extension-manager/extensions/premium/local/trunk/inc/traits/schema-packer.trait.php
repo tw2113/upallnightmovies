@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -98,7 +98,7 @@ trait Schema_Packer {
 	 */
 	private function correct_precision( $reset = false ) {
 
-		static $prev = null;
+		static $prev;
 
 		// phpcs:disable, WordPress.PHP.IniSet.Risky -- cPanel needs to fix this...
 		// @TODO make case for feature change.

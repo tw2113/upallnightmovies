@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -429,6 +429,7 @@ final class Layout extends Secure_Abstract {
 				$expires_in = sprintf( \__( 'About %d months', 'the-seo-framework-extension-manager' ), round( $difference / MONTH_IN_SECONDS ) );
 			}
 
+			// phpcs:ignore, WordPress.DateTime.RestrictedFunctions.date_date -- Date is fetched from another server.
 			$end_date      = date( 'Y-m-d', $date_until );
 			$end_date_i18n = static::get_rectified_date_i18n( 'F j, Y, g:i A (\G\M\TP)', $date_until );
 

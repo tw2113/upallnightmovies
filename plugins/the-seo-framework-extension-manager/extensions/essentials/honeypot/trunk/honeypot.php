@@ -8,7 +8,7 @@ namespace TSF_Extension_Manager\Extension\Honeypot;
 /**
  * Extension Name: Honeypot
  * Extension URI: https://theseoframework.com/extensions/honeypot/
- * Extension Description: The Honeypot extension catches comment spammers with a 99.99% catch-rate through five lightweight yet powerful methods.
+ * Extension Description: The Honeypot extension catches comment spammers with a 99.99% catch-rate using five lightweight yet powerful methods that won't leak data from your site.
  * Extension Version: 2.0.0
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
@@ -22,7 +22,7 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
 
 /**
  * Honeypot extension for The SEO Framework
- * Copyright (C) 2017-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -54,7 +54,7 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  */
 function honeypot_init() {
 
-	static $loaded = null;
+	static $loaded;
 
 	// Don't init the class twice.
 	if ( isset( $loaded ) )
@@ -562,7 +562,7 @@ JS;
 	 */
 	private function get_id( array $commentdata = [] ) {
 
-		static $id = null;
+		static $id;
 
 		return $id ?: $id = (int) ( isset( $commentdata['comment_post_ID'] ) ? $commentdata['comment_post_ID'] : \get_the_ID() );
 	}

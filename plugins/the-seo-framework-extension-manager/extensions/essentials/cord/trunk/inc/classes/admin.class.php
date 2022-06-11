@@ -12,7 +12,7 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
 
 /**
  * Cord extension for The SEO Framework
- * Copyright (C) 2019-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -102,7 +102,7 @@ final class Admin extends Core {
 						],
 						'_md'      => true,
 						'_fields'  => [
-							'tracking_id' => [
+							'tracking_id'               => [
 								'_default' => null,
 								'_edit'    => true,
 								'_ret'     => 's',
@@ -140,7 +140,7 @@ final class Admin extends Core {
 								],
 								'_md'      => true,
 							],
-							'ip_anonymization' => [
+							'ip_anonymization'          => [
 								'_default' => null,
 								'_edit'    => true,
 								'_ret'     => 's',
@@ -162,7 +162,7 @@ final class Admin extends Core {
 							],
 						],
 					],
-					'facebook_pixel' => [
+					'facebook_pixel'   => [
 						'_default' => null,
 						'_edit'    => true,
 						'_ret'     => '',

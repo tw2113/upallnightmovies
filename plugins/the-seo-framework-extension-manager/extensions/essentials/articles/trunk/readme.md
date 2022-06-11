@@ -141,14 +141,22 @@ Some settings are hidden when your website represents a person, instead of an or
 
 ### Where can I find the Google News sitemap?
 
-When enabled, you can find your news sitemap at `/sitemap-news.xml`. For example: `https://example.com/sitemap-news.xml`.
+When enabled, you can find your news sitemap at `/sitemap-news.xml`. For example: `https://example.com/sitemap-news.xml`. If that endpoint doesn't work, try `https://example.com/news-sitemap.xml`.
 Please note that your site must be verified with Google News before you can benefit from the sitemap. You can get started at the [Google News Publishing Center](https://publishercenter.google.com/publications).
 
 This feature extends The SEO Framework's sitemap; therefore, **The SEO Framework's optimized sitemap must be enabled.**
 
 ### Where do I submit a Google News sitemap?
 
-You can submit your Google News sitemap via Google Search Console. For more information, see Google's publisher documentation on [Google News Sitemaps](https://support.google.com/news/publisher-center/answer/74288).
+You can submit your Google News sitemap via Google Search Console. For more information, see Google's publisher documentation on [Google News Sitemaps](https://developers.google.com/search/docs/advanced/sitemaps/news-sitemap).
+
+### The Google News sitemap is empty!
+
+The Google News sitemap will only be populated with Articles assigned the "News Article" Article Type. You can adjust the Article Type on a per-post basis for supported post types under "Structure."
+
+[Google News sitemaps documentation](https://developers.google.com/search/docs/advanced/sitemaps/news-sitemap) states that articles older than two days should be removed. Articles extension uses a grace period of 2.5 days.
+
+If you have not published a News Article in the past two and a half days, the sitemap will be empty.
 
 ### Does Bing support the Google News sitemap?
 
@@ -167,8 +175,9 @@ add_filter( 'the_seo_framework_articles_data', function( $data ) {
 
 	// Overwrite the author input.
 	$data['author'] = [
-		'@type' => 'Organization',
-		'name'  => 'The SEO Framework',
+		'@type' => 'Person',
+		'name'  => 'J. Doe',
+		'url'   => 'https://facebook.com/profile.php?id=2147483647',
 	];
 
 	// Remove the description input.
@@ -177,7 +186,7 @@ add_filter( 'the_seo_framework_articles_data', function( $data ) {
 	/**
 	 * Setup paywalled content.
 	 * Please contact your subscription/paywall plugin provider if you find issues.
-	 * See: https://developers.google.com/search/docs/data-types/paywalled-content
+	 * See: https://developers.google.com/search/docs/advanced/structured-data/paywalled-content
 	 */
 	$data['isAccessibleForFree'] = 'False';
 	$data['hasPart']             = [
@@ -244,6 +253,18 @@ add_filter( 'the_seo_framework_sitemap_articles_news_sitemap_query_args', functi
 ```
 
 ## Changelog
+
+### 2.2.0
+
+[tsfep-release time="May 2nd, 2022"]
+
+* **Added:**
+	* The Article markup author object now has a URL provided, as suggested by Google. This URL points to the author archive page of the website.
+	* A compatible endpoint for the Google News sitemap supporting misconfigured NGINX profiles has been added (`/news-sitemap.xml`).
+		* Namecheap, EasyWP, SpinupWP, etc. blindly implemented the broken NGINX script from Yoast SEO; this change makes Articles compatible with witless hosting providers.
+* **Improved:**
+	* A News Sitemap URL has been added to the Extensions Settings page.
+		* This is only visible after the sitemap has been enabled and the settings page refreshed.
 
 ### 2.1.1
 
@@ -376,13 +397,13 @@ add_filter( 'the_seo_framework_sitemap_articles_news_sitemap_query_args', functi
 
 [tsfep-release time="August 22nd, 2017"]
 
-* **Changed:** Google states that [some output is ignored](https://developers.google.com/search/docs/data-types/article), but that doesn't mean the data is overlooked. So:
+* **Changed:** Google states that [some output is ignored](https://developers.google.com/search/docs/advanced/structured-data/article), but that doesn't mean the data is overlooked. So:
 	* Published date is now also outputted on non-AMP.
 	* Modified date is now also outputted on non-AMP.
 	* Post Author is now also outputted on non-AMP.
 	* Publisher (Organization name) is now also outputted on non-AMP.
 	* Description is now also outputted on non-AMP.
-	* **Note:** The data may still be marked invalid by the [Structured Data Testing Tool](https://search.google.com/structured-data/testing-tool), although far less likely.
+	* **Note:** The data may still be marked invalid by the [Structured Data Testing Tool](https://developers.google.com/search/docs/advanced/structured-data), although far less likely.
 		* The data will always be checked for validity on both AMP and non-AMP while adhering to Google's guidelines.
 		* The data should never be marked invalid on the AMP version.
 * **Improved:** The description is now taken from the cache, rather than being regenerated.

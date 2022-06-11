@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2021 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -46,7 +46,7 @@ final class Fields {
 	 *
 	 * @TODO clean up the documentation. This was setup prior to creating the generator class.
 	 * @since 1.0.0
-	 * @link https://developers.google.com/search/docs/data-types/local-businesses
+	 * @link https://developers.google.com/search/docs/advanced/structured-data/local-business
 	 *
 	 * @return array : {
 	 *    string Option name => array Option attributes : {
@@ -116,7 +116,7 @@ final class Fields {
 	 *
 	 * @TODO clean up documentation return value. It was set-up prior to the generation class.
 	 * @since 1.0.0
-	 * @link https://developers.google.com/search/docs/data-types/local-businesses
+	 * @link https://developers.google.com/search/docs/advanced/structured-data/local-business
 	 *
 	 * @return array : {
 	 *    string Option name => array Option attributes : {
