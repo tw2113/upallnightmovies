@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50a73f7ac0bd09dc4e0ac708f129c1ff",
+    "content-hash": "faa374f3c91ff6beac59f94ecbd3ac9f",
     "packages": [
         {
             "name": "composer/installers",
@@ -170,15 +170,15 @@
         },
         {
             "name": "wpackagist-plugin/autodescription",
-            "version": "4.2.4",
+            "version": "4.2.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/autodescription/",
-                "reference": "tags/4.2.4"
+                "reference": "tags/4.2.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/autodescription.4.2.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/autodescription.4.2.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -314,15 +314,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.3.15",
+            "version": "5.3.17",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.3.15"
+                "reference": "tags/5.3.17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.15.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.3.17.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -332,15 +332,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "6.5.2",
+            "version": "6.6.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/6.5.2"
+                "reference": "tags/6.6.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.5.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.6.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -368,15 +368,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.20.1",
+            "version": "2.20.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.20.1"
+                "reference": "tags/2.20.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.20.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.20.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -422,15 +422,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.0.9",
+            "version": "4.1.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.0.9"
+                "reference": "tags/4.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.0.9.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.1.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -458,15 +458,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress",
-            "version": "3.7.1",
+            "version": "3.8.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress/",
-                "reference": "tags/3.7.1"
+                "reference": "tags/3.8.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress.3.7.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress.3.8.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
