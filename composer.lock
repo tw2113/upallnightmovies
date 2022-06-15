@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "faa374f3c91ff6beac59f94ecbd3ac9f",
+    "content-hash": "5963ec852849f3682cd26a24afb9cbbd",
     "packages": [
         {
             "name": "composer/installers",
@@ -511,6 +511,24 @@
             "homepage": "https://wordpress.org/plugins/query-monitor/"
         },
         {
+            "name": "wpackagist-plugin/reading-time-wp",
+            "version": "2.0.10",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/reading-time-wp/",
+                "reference": "tags/2.0.10"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/reading-time-wp.2.0.10.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/reading-time-wp/"
+        },
+        {
             "name": "wpackagist-plugin/semantic-linkbacks",
             "version": "3.11.1",
             "source": {
@@ -635,6 +653,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/wp-uf2/"
+        },
+        {
+            "name": "wpackagist-plugin/wp-user-avatars",
+            "version": "1.4.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wp-user-avatars/",
+                "reference": "trunk"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wp-user-avatars.zip?timestamp=1622568336"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/wp-user-avatars/"
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
