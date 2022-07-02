@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "173f6204a23ba9d338a0753dc71d6748",
+    "content-hash": "078d92cd716a5d3c9d71c1515d41cf63",
     "packages": [
         {
             "name": "composer/installers",
@@ -314,15 +314,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.4.0",
+            "version": "5.4.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.4.0"
+                "reference": "tags/5.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -368,15 +368,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.21.1",
+            "version": "2.21.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.21.1"
+                "reference": "tags/2.21.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.21.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.21.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -656,15 +656,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.4.2",
+            "version": "1.7.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.4.2"
+                "reference": "tags/1.7.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.4.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.5.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
