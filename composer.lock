@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f65957d61a6de87ac133a276e0bbf5be",
+    "content-hash": "e0e976366b25f89b97c81ecda56b10c7",
     "packages": [
         {
             "name": "composer/installers",
@@ -314,15 +314,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.4.3",
+            "version": "5.4.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.4.3"
+                "reference": "tags/5.4.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -332,15 +332,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "6.6.0",
+            "version": "6.7.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/6.6.0"
+                "reference": "tags/6.7.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.6.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.6.7.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -422,15 +422,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.1.7.1",
+            "version": "4.2.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.1.7.1"
+                "reference": "tags/4.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.1.7.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.2.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -548,15 +548,15 @@
         },
         {
             "name": "wpackagist-plugin/user-switching",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.6.0"
+                "reference": "tags/1.7.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.6.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.7.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -566,15 +566,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.8.6",
+            "version": "1.8.7",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.8.6"
+                "reference": "tags/1.8.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.8.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.8.7.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -656,15 +656,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.7.5.3",
+            "version": "1.7.5.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.7.5.3"
+                "reference": "tags/1.7.5.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.5.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.7.5.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
