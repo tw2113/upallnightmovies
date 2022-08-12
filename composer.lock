@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0e976366b25f89b97c81ecda56b10c7",
+    "content-hash": "0d0f1b7ade98c69ad6b70c9d94253115",
     "packages": [
         {
             "name": "composer/installers",
@@ -314,15 +314,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.4.6",
+            "version": "5.4.7",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.4.6"
+                "reference": "tags/5.4.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.7.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -566,15 +566,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.8.7",
+            "version": "1.9.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.8.7"
+                "reference": "tags/1.9.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.8.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.9.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
