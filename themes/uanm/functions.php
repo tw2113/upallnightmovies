@@ -511,29 +511,3 @@ function uanm_is_poll_expired( $poll_id ) {
 
     return $is_expired;
 }
-
-function uanm_remove_poll_trailers_frontpage( $query ) {
-    if ( is_admin() || ! $query->is_main_query() ) {
-        return;
-    }
-
-    if ( ! $query->is_front_page() ) {
-        return;
-    }
-
-    $query->set( 'category__in', [ 25 ] );
-}
-add_action( 'pre_get_posts', 'uanm_remove_poll_trailers_frontpage' );
-
-function uanm_frontpage_five_ppp( $query ) {
-    if ( is_admin() || ! $query->is_main_query() ) {
-        return;
-    }
-
-    if ( ! $query->is_front_page() ) {
-        return;
-    }
-
-    $query->set( 'posts_per_page', 5 );
-}
-add_action( 'pre_get_posts', 'uanm_frontpage_five_ppp' );

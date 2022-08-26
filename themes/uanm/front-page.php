@@ -1,13 +1,19 @@
 <?php get_header(); ?>
 
 <?php
-	global $wp_query;
+    $main_query = new WP_Query( [
+        'post_type'      => 'post',
+        'post_status'    => 'publish',
+        'category__in'   => [ 25 ],
+        'posts_per_page' => 5,
+    ] );
 ?>
+
 <div class="content" role="main">
     <h2 id="movies">The Movies</h2>
     <p>Check out what we have covered recently:</p>
     <div class="movies">
-	<?php if ( have_posts() ) : while( have_posts() ) : the_post(); ?>
+	<?php if ( $main_query->have_posts() ) : while( $main_query->have_posts() ) : $main_query->the_post(); ?>
 	    <article role="article" <?php post_class( 'h-entry' ); ?>>
 			<div class="front-archive-wrap">
 				<div class="<?php echo esc_attr( implode( ' ', [ 'frontpage-featured' ] ) ); ?>">
