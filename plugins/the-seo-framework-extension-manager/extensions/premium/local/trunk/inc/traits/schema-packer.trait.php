@@ -50,10 +50,8 @@ trait Schema_Packer {
 		if ( isset( $cache ) )
 			return $cache;
 
-		$precision = \function_exists( 'ini_get' ) ? ini_get( 'serialize_precision' ) : null;
-
-		//= -1 means it's optimized correctly. 7 to 14 would also do, actually.
-		if ( isset( $precision ) && -1 !== (int) $precision )
+		// -1 means it's optimized correctly. 7 to 14 would also do, actually.
+		if ( -1 !== (int) ini_get( 'serialize_precision' ) )
 			return $cache = true;
 
 		return $cache = false;
@@ -67,26 +65,8 @@ trait Schema_Packer {
 	 * @return bool
 	 */
 	private function can_change_precision() {
-
 		static $cache;
-
-		if ( isset( $cache ) )
-			return $cache;
-
-		if ( ! \function_exists( 'ini_get_all' ) )
-			return $cache = false;
-
-		$ini_all = ini_get_all();
-
-		if ( empty( $ini_all['serialize_precision']['access'] ) )
-			return $cache = false;
-
-		$access = &$ini_all['serialize_precision']['access'];
-
-		if ( INI_USER & $access || INI_ALL & $access )
-			return $cache = true;
-
-		return $cache = false;
+		return $cache ?? ( $cache = \wp_is_ini_value_changeable( 'serialize_precision' ) );
 	}
 
 	/**
@@ -163,7 +143,7 @@ trait Schema_Packer {
 	 * @param bool  $pretty Whether to output prettified JSON
 	 * @return string|null The JSON data. Null on failure.
 	 */
-	protected function pack_data( array $data, $pretty = false ) {
+	protected function pack_data( $data, $pretty = false ) {
 
 		$schema = $this->get_schema();
 
@@ -174,12 +154,12 @@ trait Schema_Packer {
 
 		$packer = new \TSF_Extension_Manager\SchemaPacker( $data, $schema );
 
-		$count = isset( $data['department']['count'] ) ? $data['department']['count'] : 0;
+		$count = $data['department']['count'] ?? 0;
 
 		if ( $count ) {
 			$_collection = &$packer->_collector();
 
-			//= Get root/main department first.
+			// Get root/main department first.
 			$packer->_iterate_base();
 			$_collection = $packer->_pack();
 
@@ -188,7 +168,7 @@ trait Schema_Packer {
 				$_collection = (object) [];
 
 			if ( $count > 1 ) {
-				//= Get sub departments.
+				// Get sub departments.
 				$_collection->department = [];
 				for ( $i = 2; $i <= $count; $i++ ) {
 					$packer->_iterate_base();
@@ -247,7 +227,7 @@ trait Schema_Packer {
 
 		$packer = new \TSF_Extension_Manager\SchemaPacker( $data, $schema );
 
-		$count    = isset( $data['department']['count'] ) ? $data['department']['count'] : 0;
+		$count    = $data['department']['count'] ?? 0;
 		$main_url = isset( $data['department'][1]['url'] ) ? $this->remove_scheme( $data['department'][1]['url'] ) : 1;
 
 		$json_options = JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION;
@@ -255,7 +235,7 @@ trait Schema_Packer {
 		if ( $count ) {
 			$_collection = &$packer->_collector();
 
-			//= Get root/main department first.
+			// Get root/main department first.
 			$packer->_iterate_base();
 			$_collection = $packer->_pack();
 
@@ -272,7 +252,7 @@ trait Schema_Packer {
 			}
 
 			if ( $count > 1 ) {
-				//= Get sub departments.
+				// Get sub departments.
 				$_collection->department = [];
 				for ( $i = 2; $i <= $count; $i++ ) {
 					$packer->_iterate_base();

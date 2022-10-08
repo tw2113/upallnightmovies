@@ -35,19 +35,13 @@ namespace TSF_Extension_Manager;
 trait Error {
 
 	/**
-	 * The Error hook where all scripts should be loaded.
-	 *
 	 * @since 1.0.0
-	 *
 	 * @var string The Error loader hook.
 	 */
 	private $error_hook = '';
 
 	/**
-	 * The POST request status code option name.
-	 *
 	 * @since 1.0.0
-	 *
 	 * @var string The POST request status code option name.
 	 */
 	protected $error_notice_option;
@@ -59,9 +53,9 @@ trait Error {
 	 */
 	final protected function init_errors() {
 
-		$this->error_notice_option or \the_seo_framework()->_doing_it_wrong( __METHOD__, 'You need to specify property <code>error_notice_option</code>' );
+		$this->error_notice_option or \tsf()->_doing_it_wrong( __METHOD__, 'You need to specify property <code>error_notice_option</code>' );
 
-		//? Can this be applied in-post too, when $this->error_notice_option is known? Otherwise, supply parameter?
+		// Can this be applied in-post too, when $this->error_notice_option is known? Otherwise, supply parameter?
 		\add_action( 'tsfem_notices', [ $this, '_do_error_notices' ] );
 	}
 
@@ -81,12 +75,12 @@ trait Error {
 
 		$notices = $this->get_error_notices( $options );
 
-		if ( empty( $notices ) ) {
+		if ( ! $notices ) {
 			$this->unset_error_notice_option();
 			return;
 		}
 
-		$tsf = \the_seo_framework();
+		$tsf = \tsf();
 
 		// Already escaped.
 		foreach ( $notices as $notice )
@@ -117,15 +111,15 @@ trait Error {
 
 		$notices = ( $clear_old ? null : \get_option( $this->error_notice_option ) ) ?: [];
 
-		if ( empty( $notices ) ) {
+		if ( ! $notices ) {
 			$notices = [ $notice ];
 		} else {
-			//! This checks if the notice is already stored.
+			// This checks if the notice is already stored.
 			//# This prevents adding timestamps preemptively in the future.
-			//? We could form a timestamp collection per notice, separately.
+			// We could form a timestamp collection per notice, separately.
 			//# But, that would cause performance issues.
 			if ( \in_array( $notice, $notices, true ) ) {
-				//= We already have the notice stored in cache.
+				// We already have the notice stored in cache.
 				return;
 			} else {
 				array_push( $notices, $notice );
@@ -167,13 +161,12 @@ trait Error {
 		if ( empty( $key ) )
 			return '';
 
-		$notice          = $this->get_error_notice_by_key( $key, true );
-		$additional_info = \is_array( $option ) && ! empty( $option[ $key ] ) ? $option[ $key ] : '';
+		$notice = $this->get_error_notice_by_key( $key, true );
 
 		$args = [
 			'type'            => $notice['type'],
 			'message'         => $notice['message'],
-			'additional_info' => $additional_info,
+			'additional_info' => ( $option[ $key ] ?? null ) ?: '',
 		];
 
 		return $this->format_error_notice( $key, $args );
@@ -187,13 +180,12 @@ trait Error {
 	 * @param array $options The error notice keys.
 	 * @return array $notices
 	 */
-	final protected function get_error_notices( array $options = [] ) {
+	final protected function get_error_notices( $options = [] ) {
 
 		$notices = [];
 
-		foreach ( $options as $option ) {
+		foreach ( $options as $option )
 			$notices[] = $this->get_error_notice( $option );
-		}
 
 		return $notices;
 	}
@@ -211,7 +203,7 @@ trait Error {
 	 * }
 	 * @return array|string The escaped notice. Empty string when no array key is set.
 	 */
-	final public function format_error_notice( $code, array $args ) {
+	final public function format_error_notice( $code, $args ) {
 
 		$defaults = [
 			'type'            => 'updated',
@@ -274,7 +266,7 @@ trait Error {
 
 		switch ( $key ) :
 			case -1:
-				//? Placeholder error. See TSF_Extension_Manager\_wp_ajax_get_dismissible_notice()
+				// Placeholder error. See TSF_Extension_Manager\_wp_ajax_get_dismissible_notice()
 				$message = 'Undefined error. Check other messages.';
 				$type    = 'error';
 				break;
@@ -294,6 +286,7 @@ trait Error {
 			case 701:
 			case 708:
 			case 1010702:
+			case 1060106:
 				$message = \esc_html__( 'Invalid API request type.', 'the-seo-framework-extension-manager' );
 				$type    = 'error';
 				break;
@@ -560,6 +553,11 @@ trait Error {
 				$type    = 'warning';
 				break;
 
+			case 1060201:
+				$message = \esc_html__( "Importer does't exist.", 'the-seo-framework-extension-manager' );
+				$type    = 'error';
+				break;
+
 			case 1010607:
 				$message = \esc_html__( 'Data has just been updated.', 'the-seo-framework-extension-manager' );
 				$type    = 'warning';
@@ -577,32 +575,18 @@ trait Error {
 				break;
 
 			case 1010804:
-				$message = \esc_html__( 'Monitor has updated your site settings, but your site is now out of sync. You should fetch data.', 'the-seo-framework-extension-manager' );
+				$message = \esc_html__( 'Updated site settings, but your site is now out of sync. You should fetch data.', 'the-seo-framework-extension-manager' );
 				$type    = 'warning';
 				break;
 
 			case 1010805:
-				$message = \esc_html__( 'Monitor has updated your site settings.', 'the-seo-framework-extension-manager' );
+				$message = \esc_html__( 'Updated site settings.', 'the-seo-framework-extension-manager' );
 				$type    = 'updated';
-				break;
-
-			case 1060301:
-				$message = \esc_html__( "The SEO settings couldn't be converted to file.", 'the-seo-framework-extension-manager' );
-				$type    = 'error';
-				break;
-
-			case 1060302:
-				$message = \esc_html__( 'An unknown source outputted data before sending the file. Therefore, Transporter is unable to complete your request.', 'the-seo-framework-extension-manager' );
-				$type    = 'error';
-				break;
-
-			case 1060401:
-				$message = \esc_html__( 'Download will start shortly.', 'the-seo-framework-extension-manager' );
-				$type    = 'info';
 				break;
 
 			case 17100:
 			case 18101:
+			case 1060200:
 			case 1070100:
 			case 1090100:
 				$message = \esc_html__( 'Invalid data was sent to the server.', 'the-seo-framework-extension-manager' );
@@ -631,10 +615,35 @@ trait Error {
 				$type    = 'updated';
 				break;
 
+			case 1060202:
+				$message = \esc_html__( 'Transporting in session, please wait...', 'the-seo-framework-extension-manager' );
+				$type    = 'updated';
+				break;
+
 			case 1070102:
 			case 1090102:
 				$message = \esc_html__( 'Changes are saved.', 'the-seo-framework-extension-manager' );
 				$type    = 'updated';
+				break;
+
+			case 1060203:
+				$message = \esc_html__( 'Timeout', 'the-seo-framework-extension-manager' );
+				$type    = 'error';
+				break;
+
+			case 1060204:
+				$message = \esc_html__( 'Crash', 'the-seo-framework-extension-manager' );
+				$type    = 'error';
+				break;
+
+			case 1060205:
+				$message = \esc_html__( 'Done!', 'the-seo-framework-extension-manager' );
+				$type    = 'updated';
+				break;
+
+			case 1060206:
+				$message = \esc_html__( 'Memory exhaustion', 'the-seo-framework-extension-manager' );
+				$type    = 'error';
 				break;
 
 			case 1011700:
@@ -746,8 +755,6 @@ trait Error {
 			case 1010505:
 			case 1010604:
 			case 1010605:
-			case 1060101:
-			case 1060402:
 				$message = \esc_html__( 'An unknown error occurred. Contact the plugin author if this error keeps coming back.', 'the-seo-framework-extension-manager' );
 				$type    = 'error';
 				break;

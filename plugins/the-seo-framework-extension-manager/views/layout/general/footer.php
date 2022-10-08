@@ -6,7 +6,7 @@
 // phpcs:disable, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- includes.
 // phpcs:disable, WordPress.WP.GlobalVariablesOverride -- This isn't the global scope.
 
-defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or die;
+defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and tsfem()->_verify_instance( $_instance, $bits[1] ) or die;
 
 // phpcs:disable, PHPCompatibility.Classes.NewLateStaticBinding.OutsideClassScope, VariableAnalysis.CodeAnalysis.VariableAnalysis.StaticOutsideClass -- We're stil in scope.
 
@@ -52,10 +52,10 @@ $mottos    = array_merge( $mottos, $more_mottos );
 $motto_key = mt_rand( 0, count( $mottos ) - 1 );
 
 ?>
-<p class="tsfem-footer-title" dir=ltr>
+<p class=tsfem-footer-title dir=ltr>
 	The SEO Framework &ndash; Extension Manager
 </p>
-<p class="tsfem-footer-motto" dir=ltr>
-	<?php echo esc_html( "{$mottos[ $motto_key ]} Initiative" ); ?>
+<p class=tsfem-footer-motto dir=ltr>
+	<?= esc_html( "{$mottos[ $motto_key ]} Initiative" ) ?>
 </p>
 <?php

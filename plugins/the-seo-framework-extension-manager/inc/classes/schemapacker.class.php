@@ -39,42 +39,31 @@ namespace TSF_Extension_Manager;
 final class SchemaPacker {
 
 	/**
-	 * Holds the bits
-	 *
 	 * @since 1.3.0
 	 * @see $max_it
-	 *
-	 * @var int $bits
+	 * @var int Maximum bits assignable ((64|32)/levels-requested).
 	 */
 	private $bits;
 
 	/**
-	 * Holds the maximum iterations of bits.
-	 *
 	 * @since 1.3.0
 	 * @see $bits
-	 *
-	 * @var int $max_it
+	 * @var int Max iteration of bits for current OS (64/32 bits).
 	 */
 	private $max_it;
 
 	/**
-	 * Maintains the reiteration level.
-	 *
 	 * This corresponds to FormGenerator, but, it doesn't keep perfect track of
 	 * all data.
 	 * It's only maintained when iterating, as we access the `'$nth'` schema key.
 	 *
 	 * @since 1.3.0
 	 * @see $it
-	 *
-	 * @var int $level
+	 * @var int The current reiteration level.
 	 */
 	private $level = 0;
 
 	/**
-	 * Maintains the iteration within the iteration level.
-	 *
 	 * This corresponds to FormGenerator, but, it doesn't keep perfect track of
 	 * all data.
 	 * It's only maintained when iterating, as we access the `'$nth'` schema key.
@@ -83,39 +72,35 @@ final class SchemaPacker {
 	 *
 	 * @since 1.3.0
 	 * @see $level
-	 *
-	 * @var int $it
+	 * @var int The current iteration of level.
 	 */
 	private $it = 0;
 
 	/**
-	 * Maintains data for $schema.
-	 *
 	 * @since 1.3.0
 	 * @see $schema
-	 *
-	 * @var array  $data
+	 * @var array All data packable via $schema.
 	 */
 	private $data;
 
 	/**
-	 * Maintains corresponding schema of $data.
-	 *
 	 * @since 1.3.0
 	 * @see $data
-	 *
-	 * @var object $schema
+	 * @var object Schema.org setup for $data.
 	 */
 	private $schema;
 
 	/**
-	 * Maintains output.
-	 *
 	 * @since 1.3.0
-	 *
-	 * @var object $output
+	 * @var object Schema.org output.
 	 */
 	private $output;
+
+	/**
+	 * @since 1.3.0
+	 * @var array $registered_conditions The registered conditions to handle.
+	 */
+	private $registered_conditions;
 
 	/**
 	 * Constructor. Sets up class main variables.
@@ -127,7 +112,7 @@ final class SchemaPacker {
 	 * }
 	 * @return bool true On setup. False otherwise.
 	 */
-	public function __construct( array $data, \stdClass $schema ) {
+	public function __construct( $data, \stdClass $schema ) {
 
 		if ( ! isset( $schema->_OPTIONS, $schema->_MAIN ) )
 			return false;
@@ -135,7 +120,7 @@ final class SchemaPacker {
 		$this->data =& $data;
 		$o          = $schema->_OPTIONS;
 
-		$architecture = $o->architecture ?: ( \tsf_extension_manager()->is_64() ? 64 : 32 );
+		$architecture = $o->architecture ?: ( \tsfem()->is_64() ? 64 : 32 );
 		$levels       = $o->levels ?: 5;
 		$this->bits   = floor( $architecture / $levels );
 		$this->max_it = 2 ** $this->bits;
@@ -313,7 +298,7 @@ final class SchemaPacker {
 	 * @param \stdClass $schema The schema data to pack.
 	 * @return object The packed data.
 	 */
-	private function pack( \stdClass $schema ) {
+	private function pack( $schema ) {
 
 		$_ = [];
 
@@ -347,7 +332,7 @@ final class SchemaPacker {
 	 * @param \stdClass $schema The schema data to generate from.
 	 * @yield array { string $key => mixed $value }
 	 */
-	private function generate_data( \stdClass $schema ) {
+	private function generate_data( $schema ) {
 
 		foreach ( $schema as $k => $s ) {
 			yield $k => $this->get_value( $k, $s );
@@ -363,7 +348,7 @@ final class SchemaPacker {
 	 * @param \stdClass $schema The schema data to get the value from.
 	 * @return mixed The key's value.
 	 */
-	private function get_value( $key, \stdClass $schema ) {
+	private function get_value( $key, $schema ) {
 
 		switch ( $schema->_data->_type ) {
 			case 'single':
@@ -383,7 +368,7 @@ final class SchemaPacker {
 			$value = $this->escape( $value, $schema->_handlers->_escape );
 
 		if ( isset( $schema->_handlers->_condition ) ) {
-			$this->condition[ $key ] = [];
+			$this->registered_conditions[ $key ] = [];
 
 			$value = $this->condition( $key, $value, $schema->_handlers->_condition );
 		}
@@ -402,7 +387,7 @@ final class SchemaPacker {
 	 * @param \stdClass $schema The schema data to iterate.
 	 * @return mixed The packed iteration data, if successful.
 	 */
-	private function make_iteration( \stdClass $schema ) {
+	private function make_iteration( $schema ) {
 
 		$count = $this->access_data( $schema->_data->_access );
 
@@ -421,10 +406,7 @@ final class SchemaPacker {
 
 		$this->delevel();
 
-		if ( empty( $data ) )
-			return null;
-
-		return $data;
+		return $data ?: null;
 	}
 
 	/**
@@ -435,7 +417,7 @@ final class SchemaPacker {
 	 * @param \stdClass $schema The schema data to generate data from.
 	 * @return mixed The expected data.
 	 */
-	private function make_data( \stdClass $schema ) {
+	private function make_data( $schema ) {
 
 		switch ( $schema->_data->_from ) {
 			case 'default':
@@ -470,10 +452,10 @@ final class SchemaPacker {
 	 * @param \stdClass $schema The schema data to pack and concatenate.
 	 * @return mixed The concatenated data.
 	 */
-	private function concat( \stdClass $schema ) {
+	private function concat( $schema ) {
 
 		$value = '';
-		//= Not invoking a generator. Data does not yield, but return.
+		// Not invoking a generator. Data does not yield, but return.
 		foreach ( ( $this->pack( $schema ) ) as $k => $v ) {
 			$value .= $v;
 		}
@@ -490,7 +472,7 @@ final class SchemaPacker {
 	 * @param array $keys The $this->data access keys.
 	 * @return mixed The data from $this->data's $keys' level.
 	 */
-	private function access_data( array $keys ) {
+	private function access_data( $keys ) {
 
 		$v     = $this->data;
 		$level = 0;
@@ -559,21 +541,20 @@ final class SchemaPacker {
 	 */
 	private function get_condition( $key ) {
 
-		if ( empty( $this->condition[ $key ] ) ) {
-			unset( $this->condition[ $key ] );
+		if ( empty( $this->registered_conditions[ $key ] ) ) {
+			unset( $this->registered_conditions[ $key ] );
 			return -1;
 		}
 
-		$c = $this->condition[ $key ];
-		unset( $this->condition[ $key ] );
-
 		$kill_this = $kill_sub = $kill_pack = 0;
-
-		foreach ( $c as $v ) {
+		// Write to variables. TODO use array_flip/fill or eqv, which are safer?
+		// $this->registered_conditions[ $key ] = [ 'kill_pack', 'kill_sub', 'kill_this' ];
+		foreach ( $this->registered_conditions[ $key ] as $v )
 			${$v} = 1;
-		}
 
-		//= Returns in order of impact.
+		unset( $this->registered_conditions[ $key ] );
+
+		// Returns in order of impact.
 		if ( $kill_pack )
 			return 'kill_pack';
 
@@ -583,7 +564,7 @@ final class SchemaPacker {
 		if ( $kill_this )
 			return 'kill_this';
 
-		//= This should never happen.
+		// This should never happen.
 		return 0;
 	}
 
@@ -603,9 +584,9 @@ final class SchemaPacker {
 	private function condition( $key, $value, $what ) {
 
 		if ( \is_array( $what ) && \count( $what ) > 1 ) {
-			foreach ( $what as $w ) {
+			foreach ( $what as $w )
 				$value = $this->condition( $key, $value, $w );
-			}
+
 			return $value;
 		}
 
@@ -647,8 +628,9 @@ final class SchemaPacker {
 				$action = $v > $c->_value;
 				break;
 
+			case '!':
 			case 'empty':
-				$action = empty( $v );
+				$action = ! $v;
 				break;
 
 			case 'count':
@@ -697,7 +679,7 @@ final class SchemaPacker {
 			case 'kill_this':
 			case 'kill_sub':
 			case 'kill_pack':
-				$this->condition[ $key ][] = $c->_do;
+				$this->registered_conditions[ $key ][] = $c->_do;
 				return null;
 
 			case 'set':

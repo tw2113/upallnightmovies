@@ -50,7 +50,7 @@ final class HTML {
 	 * @param string $content The content to wrap.
 	 * @param array  $classes The classes for the tooltip to have.
 	 */
-	public static function wrap_inline_tooltip( $content, array $classes = [] ) {
+	public static function wrap_inline_tooltip( $content, $classes = [] ) {
 		$classes[] = 'tsf-tooltip-wrap';
 		return vsprintf(
 			'<span class="%s">%s</span>',
@@ -92,7 +92,7 @@ final class HTML {
 	 * @param string $title_html The definite tooltip, may contain HTML. Optional.
 	 * @param array  $classes    The additional tooltip classes.
 	 */
-	public static function make_inline_tooltip( $content, $title, $title_html = '', array $classes = [] ) {
+	public static function make_inline_tooltip( $content, $title, $title_html = '', $classes = [] ) {
 
 		$title      = \esc_attr( \wp_strip_all_tags( $title ) );
 		$title_html = $title_html ? sprintf( 'data-desc="%s"', \esc_attr( \esc_html( $title_html ) ) ) : '';
@@ -128,7 +128,7 @@ final class HTML {
 	 * @param string $selected The currently selected value.
 	 * @return string The formatted options list.
 	 */
-	public static function make_dropdown_option_list( array $options, $selected = '' ) {
+	public static function make_dropdown_option_list( $options, $selected = '' ) {
 
 		$out = '';
 
@@ -157,7 +157,7 @@ final class HTML {
 	 * @param int   $selected The currently selected value.
 	 * @return string The formatted options list.
 	 */
-	public static function make_sequential_dropdown_option_list( array $options, $selected = 0 ) {
+	public static function make_sequential_dropdown_option_list( $options, $selected = 0 ) {
 
 		$_options = [];
 
@@ -169,49 +169,5 @@ final class HTML {
 		}
 
 		return static::make_dropdown_option_list( $_options, $selected ?: 0 );
-	}
-
-	/**
-	 * Makes either simple or JSON-encoded data-* attributes for HTML elements.
-	 *
-	 * Converts CamelCase to dash-case when needed.
-	 * Data value may be anything, and is JSON encoded. Use jQuery.data() to extract.
-	 *
-	 * @since 1.5.0
-	 *
-	 * @param array $data : {
-	 *    string $k => mixed $v
-	 * }
-	 * @return string The HTML data attributes, with added space to the start.
-	 */
-	public static function make_data_attributes( array $data ) {
-
-		$ret = [];
-
-		foreach ( $data as $k => $v ) {
-			if ( ! is_scalar( $v ) ) {
-				$ret[] = sprintf(
-					'data-%s="%s"',
-					strtolower( preg_replace(
-						'/([A-Z])/',
-						'-$1',
-						preg_replace( '/[^a-z0-9_\-]/i', '', $k )
-					) ), // dash case.
-					htmlspecialchars( json_encode( $v, JSON_UNESCAPED_SLASHES ), ENT_COMPAT, 'UTF-8' )
-				);
-			} else {
-				$ret[] = sprintf(
-					'data-%s="%s"',
-					strtolower( preg_replace(
-						'/([A-Z])/',
-						'-$1',
-						preg_replace( '/[^a-z0-9_\-]/i', '', $k )
-					) ), // dash case.
-					\esc_attr( $v )
-				);
-			}
-		}
-
-		return ' ' . implode( ' ', $ret );
 	}
 }

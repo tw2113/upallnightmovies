@@ -87,7 +87,7 @@ class AccountActivation extends Panes {
 	 */
 	protected function set_remote_activation_listener_response( $value = [] ) {
 
-		if ( empty( $value ) || \is_wp_error( $value ) )
+		if ( ! $value || \is_wp_error( $value ) )
 			return false;
 
 		$store = &$this->get_remote_activation_listener_response();
@@ -326,42 +326,42 @@ class AccountActivation extends Panes {
 
 		switch ( $status ) :
 			case 0:
-				//= Already free.
+				// Already free.
 				break;
 
 			case 1:
-				//= Used to be premium. Bummer.
+				// Used to be premium. Bummer.
 				$this->set_error_notice( [ 901 => '' ] );
 				$this->update_option( '_activation_level', 'Free' );
 				break;
 
 			case 2:
-				//= Set 3 day timeout. Administrator has already been notified to fix this ASAP.
+				// Set 3 day timeout. Administrator has already been notified to fix this ASAP.
 				$this->do_deactivation( true, true );
 				// @TODO notify of timeout?
 				$this->set_error_notice( [ 902 => '' ] );
 				break;
 
 			case 3:
-				//= Everything's OK. User gets notified via the CP pane on certain actions and may not access private data.
+				// Everything's OK. User gets notified via the CP pane on certain actions and may not access private data.
 				break;
 
 			case 4:
-				//= Everything's superb.
+				// Everything's superb.
 				( $this->get_option( '_activation_level' ) !== 'Essentials' )
 					and $this->update_option( '_activation_level', 'Essentials' )
 						and $this->set_error_notice( [ 904 => '' ] );
 				break;
 
 			case 5:
-				//= Everything's Premium.
+				// Everything's Premium.
 				( $this->get_option( '_activation_level' ) !== 'Premium' )
 					and $this->update_option( '_activation_level', 'Premium' )
 						and $this->set_error_notice( [ 905 => '' ] );
 				break;
 
 			case 6:
-				//= Everything's Enterprise.
+				// Everything's Enterprise.
 				( $this->get_option( '_activation_level' ) !== 'Enterprise' )
 					and $this->update_option( '_activation_level', 'Enterprise' )
 						and $this->set_error_notice( [ 906 => '' ] );
@@ -399,18 +399,19 @@ class AccountActivation extends Panes {
 			++$status;
 			if ( 'active' !== $response['status_check'] ) break;
 			++$status;
-			if ( $this->get_activation_instance() !== $this->coalesce_var( $response['_instance'], -1 ) ) break;
+			if ( $this->get_activation_instance() !== $response['_instance'] ?? -1 ) break;
 			++$status;
-			if ( $this->get_activation_site_domain() !== $this->coalesce_var( $response['activation_domain'], -1 ) ) break;
+			if ( $this->get_activation_site_domain() !== $response['activation_domain'] ?? -1 ) break;
 			++$status;
 
-			$this->coalesce_var( $response['_activation_level'], '' );
+			if ( ! isset( $response['_activation_level'] ) ) break;
 
-			if ( 'Premium' === $response['_activation_level'] ) {
-				$status += 1;
-			} elseif ( 'Enterprise' === $response['_activation_level'] ) {
-				$status += 2;
-			}
+			if ( \in_array( $response['_activation_level'], [ 'Premium', 'Enterprise' ], true ) )
+				++$status;
+
+			// Another one for Enterprise.
+			if ( 'Enterprise' === $response['_activation_level'] )
+				++$status;
 			break;
 		}
 
@@ -455,7 +456,13 @@ class AccountActivation extends Panes {
 		if ( isset( $response ) )
 			return $response;
 
-		$status = $this->get_option( '_remote_subscription_status', [ 'timestamp' => 0, 'status' => [] ] );
+		$status = $this->get_option(
+			'_remote_subscription_status',
+			[
+				'timestamp' => 0,
+				'status'    => [],
+			]
+		);
 
 		if ( isset( $status['status']['status_check'] ) && 'active' !== $status['status']['status_check'] ) {
 			// Updates at most every 1 minute.
@@ -486,7 +493,7 @@ class AccountActivation extends Panes {
 		$response = $this->handle_request( 'status', $args );
 		$success  = false;
 
-		if ( ! empty( $response ) )
+		if ( $response )
 			$success = $this->update_option(
 				'_remote_subscription_status',
 				[

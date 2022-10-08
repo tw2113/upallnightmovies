@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
@@ -61,12 +60,7 @@ final class Front extends Core {
 			// Initialize output in The SEO Framework's front-end AMP meta object.
 			\add_action( 'the_seo_framework_amp_pro', [ $this, '_local_hook_amp_output' ] );
 		} else {
-			if ( version_compare( THE_SEO_FRAMEWORK_VERSION, '4.2', '<' ) ) {
-				// Initialize output in The SEO Framework's front-end meta object.
-				\add_filter( 'the_seo_framework_after_output', [ $this, '_local_hook_output' ] );
-			} else {
-				\add_action( 'the_seo_framework_after_meta_output', [ $this, '_output_local_json' ] );
-			}
+			\add_action( 'the_seo_framework_after_meta_output', [ $this, '_output_local_json' ] );
 		}
 	}
 
@@ -95,25 +89,6 @@ final class Front extends Core {
 	}
 
 	/**
-	 * Hooks into 'the_seo_framework_after_output' filter.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @param array $functions The hooked functions.
-	 * @return array The hooked functions.
-	 */
-	public function _local_hook_output( $functions = [] ) {
-
-		$functions[] = [
-			'callback' => [ $this, '_get_local_json_output' ],
-			'args'     => [],
-		];
-
-		return $functions;
-	}
-
-	/**
 	 * Determines if the current page is AMP supported.
 	 *
 	 * @since 1.0.0
@@ -122,13 +97,10 @@ final class Front extends Core {
 	 * @return bool True if AMP is enabled.
 	 */
 	protected function is_amp() {
-
-		static $cache;
-
-		if ( isset( $cache ) )
-			return $cache;
-
-		return $cache = \defined( 'AMP_QUERY_VAR' ) && \get_query_var( AMP_QUERY_VAR, false ) !== false;
+		static $memo;
+		return $memo ?? (
+			$memo = \defined( 'AMP_QUERY_VAR' ) && \get_query_var( AMP_QUERY_VAR, false ) !== false
+		);
 	}
 
 	/**
@@ -210,7 +182,7 @@ final class Front extends Core {
 			$url = \get_permalink();
 		} elseif ( \is_category() || \is_tag() || \is_tax() ) {
 			$term     = \get_queried_object();
-			$taxonomy = isset( $term->taxonomy ) ? $term->taxonomy : null;
+			$taxonomy = $term->taxonomy ?? null;
 
 			if ( ! $taxonomy )
 				return '';
@@ -221,12 +193,12 @@ final class Front extends Core {
 		if ( empty( $url ) )
 			return '';
 
-		//= Get data by URL.
+		// Get data by URL.
 		$json = $this->get_processed_packed_data_from_url( $url );
 
 		// Empty JSON is only 2 characters long.
 		if ( $json && \strlen( $json ) > 2 )
-			return '<script type="application/ld+json">' . $json . '</script>' . PHP_EOL;
+			return sprintf( '<script type="application/ld+json">%s</script>', $json ) . PHP_EOL;
 
 		return '';
 	}

@@ -87,37 +87,37 @@ final class InpostGUI {
 	/**
 	 * @since 1.5.0
 	 * @see static::_verify_nonce()
-	 * @var string $save_access_state The state the save is in.
+	 * @var string The state the save is in.
 	 */
 	public static $save_access_state = 0;
 
 	/**
 	 * @since 1.5.0
-	 * @var string $include_secret The inclusion secret generated on tab load.
+	 * @var string The inclusion secret generated on tab load.
 	 */
 	private static $include_secret;
 
 	/**
 	 * @since 1.5.0
-	 * @var array $tabs The registered tabs.
+	 * @var array The registered tabs.
 	 */
 	private static $tabs = [];
 
 	/**
 	 * @since 1.5.0
-	 * @var array $active_tab_keys The activate tab keys of static::$tabs
+	 * @var array The activate tab keys of static::$tabs
 	 */
 	private static $active_tab_keys = [];
 
 	/**
 	 * @since 1.5.0
-	 * @var array $views The registered view files for the tabs.
+	 * @var array The registered view files for the tabs.
 	 */
 	private static $views = [];
 
 	/**
 	 * @since 1.5.0
-	 * @var array $templates The registered templates.
+	 * @var array The registered templates.
 	 */
 	private static $templates = [];
 
@@ -135,21 +135,21 @@ final class InpostGUI {
 	 * Constructor. Loads all appropriate actions asynchronously.
 	 *
 	 * @TODO consider running "post type supported" calls, instead of relying on failsafes in TSF.
-	 * @see \the_seo_framework()->_init_admin_scripts(); this requires TSF 4.0+ dependency, however.
+	 * @see \tsf()->_init_admin_scripts(); this requires TSF 4.0+ dependency, however.
 	 */
 	private function construct() {
 
 		$this->register_tabs();
 
-		//= Scripts.
+		// Scripts.
 		\add_action( 'load-post.php', [ $this, '_prepare_admin_scripts' ] );
 		\add_action( 'load-post-new.php', [ $this, '_prepare_admin_scripts' ] );
 
-		//= Saving.
+		// Saving.
 		\add_action( 'the_seo_framework_pre_page_inpost_box', [ $this, '_output_nonce' ], 9 );
 		\add_action( 'save_post', [ static::class, '_verify_nonce' ], 1, 2 );
 
-		//= Output.
+		// Output.
 		\add_filter( 'the_seo_framework_inpost_settings_tabs', [ $this, '_load_tabs' ], 10, 2 );
 	}
 
@@ -232,6 +232,8 @@ final class InpostGUI {
 	 * @param string $scripts Static class name: The_SEO_Framework\Builders\Scripts
 	 */
 	public function _register_default_scripts( $scripts ) {
+		$tsfem = \tsfem();
+
 		// phpcs:disable, WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned -- it's alligned well enough.
 		$scripts::register( [
 			[
@@ -247,8 +249,8 @@ final class InpostGUI {
 					'data' => [
 						'post_ID'     => (int) $GLOBALS['post']->ID,
 						'nonce'       => \current_user_can( 'edit_post', $GLOBALS['post']->ID ) ? \wp_create_nonce( static::JS_NONCE_ACTION ) : false,
-						'isPremium'   => \tsf_extension_manager()->is_premium_user(),
-						'isConnected' => \tsf_extension_manager()->is_connected_user(),
+						'isPremium'   => $tsfem->is_premium_user(),
+						'isConnected' => $tsfem->is_connected_user(),
 						'locale'      => \get_locale(),
 						'userLocale'  => \function_exists( '\\get_user_locale' ) ? \get_user_locale() : \get_locale(),
 						'debug'       => (bool) WP_DEBUG,
@@ -264,7 +266,7 @@ final class InpostGUI {
 					],
 				],
 				'tmpl' => [
-					'file' => \tsf_extension_manager()->get_template_location( 'inpostnotice' ),
+					'file' => $tsfem->get_template_location( 'inpostnotice' ),
 				],
 			],
 			[
@@ -278,6 +280,18 @@ final class InpostGUI {
 			],
 		] );
 		// phpcs:enable, WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned -- it's alligned well enough.
+
+		$scripts::register( [
+			[
+				'id'       => 'tsfem-worker',
+				'type'     => 'js',
+				'deps'     => [],
+				'autoload' => false,
+				'name'     => 'tsfem-worker',
+				'base'     => TSF_EXTENSION_MANAGER_DIR_URL . 'lib/js/',
+				'ver'      => TSF_EXTENSION_MANAGER_VERSION,
+			],
+		] );
 	}
 
 	/**
@@ -289,7 +303,7 @@ final class InpostGUI {
 	 * @return bool True if user has acces. False otherwise.
 	 */
 	public static function current_user_can_edit_post( $post_id = null ) {
-		$post_id = isset( $post_id ) ? $post_id : $GLOBALS['post']->ID;
+		$post_id = $post_id ?? $GLOBALS['post']->ID;
 		return \current_user_can( 'edit_post', $post_id );
 	}
 
@@ -400,7 +414,7 @@ final class InpostGUI {
 	 * @param array $tabs The registered tabs.
 	 * @return array $tabs The SEO Framework's tabs.
 	 */
-	public function _load_tabs( array $tabs ) {
+	public function _load_tabs( $tabs ) {
 
 		$registered_tabs = static::$tabs;
 		$active_tab_keys = static::$active_tab_keys;
@@ -426,7 +440,7 @@ final class InpostGUI {
 
 		if ( isset( static::$views[ $tab ] ) ) {
 			$views = static::$views[ $tab ];
-			//= Sort by the priority indexes. Priority values get lost in this process.
+			// Sort by the priority indexes. Priority values get lost in this process.
 			sort( $views );
 
 			foreach ( $views as $view )
@@ -449,14 +463,14 @@ final class InpostGUI {
 	 * @param string $file The file location.
 	 * @param array  $args The registered view arguments.
 	 */
-	private function output_view( $file, array $args ) {
+	private function output_view( $file, $args ) {
 
 		foreach ( $args as $_key => $_val )
 			$$_key = $_val;
 
 		unset( $_key, $_val, $args );
 
-		//= Prevent private includes hijacking.
+		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- Includes.
 		static::$include_secret = $_secret = mt_rand() . uniqid( '', true );
 		include $file;
 		static::$include_secret = null;
@@ -507,8 +521,8 @@ final class InpostGUI {
 	 * @param string    $tab  The tab the view is outputted in.
 	 * @param int|float $priority The priority of the view. A lower value results in an earlier output.
 	 */
-	public static function register_view( $file, array $args = [], $tab = 'advanced', $priority = 10 ) {
-		//= Prevent excessive static calls and write directly to var.
+	public static function register_view( $file, $args = [], $tab = 'advanced', $priority = 10 ) {
+		// Prevent excessive static calls and write directly to var.
 		$_views =& static::$views;
 
 		if ( ! isset( $_views[ $tab ] ) )

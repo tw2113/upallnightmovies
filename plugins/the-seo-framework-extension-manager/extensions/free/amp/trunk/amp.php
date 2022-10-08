@@ -17,8 +17,7 @@ namespace TSF_Extension_Manager\Extension\AMP;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * AMP extension for The SEO Framework
@@ -117,7 +116,7 @@ final class Front {
 
 		\do_action( 'the_seo_framework_do_before_amp_output' );
 
-		$output_start = microtime( true );
+		$output_start = hrtime( true );
 
 		$output = '';
 
@@ -125,11 +124,14 @@ final class Front {
 		$output .= $this->get_social_metadata();
 		$output .= $this->get_structured_metadata();
 
-		$tsf = \the_seo_framework();
+		$tsf = \tsf();
 
 		$output = $tsf->get_plugin_indicator( 'before' )
 				. $output
-				. $tsf->get_plugin_indicator( 'after', $output_start );
+				. $tsf->get_plugin_indicator(
+					'after',
+					( $output_start - hrtime( true ) ) / 1e9
+				);
 
 		// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped.
 		echo PHP_EOL . $output . PHP_EOL;
@@ -155,7 +157,7 @@ final class Front {
 	 * @return string The general metadata.
 	 */
 	protected function get_general_metadata() {
-		return \the_seo_framework()->the_description();
+		return \tsf()->the_description();
 	}
 
 	/**
@@ -169,7 +171,7 @@ final class Front {
 	 */
 	protected function get_social_metadata() {
 
-		$tsf = \the_seo_framework();
+		$tsf = \tsf();
 
 		/**
 		 * Adds content before the output.
@@ -218,6 +220,6 @@ final class Front {
 	 * @return string The structured metadata.
 	 */
 	protected function get_structured_metadata() {
-		return \the_seo_framework()->ld_json();
+		return \tsf()->ld_json();
 	}
 }

@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
@@ -39,11 +38,10 @@ final class Front extends Core {
 	use \TSF_Extension_Manager\Construct_Master_Once_Interface;
 
 	/**
-	 * States if the output is valid.
 	 * If the output is invalidated, the output should be cancelled.
 	 *
 	 * @since 1.0.0
-	 * @var array $is_json_valid : { key => bool }
+	 * @var array Whether the JSON output is valid : { key => bool }
 	 */
 	private $is_json_valid = [
 		'amp'    => true,
@@ -51,11 +49,9 @@ final class Front extends Core {
 	];
 
 	/**
-	 * Registers the image size name.
-	 *
 	 * @since 1.1.0
 	 * @since 2.0.0 Value changed from 'tsfem-e-articles-logo'.
-	 * @var string $image_size_name
+	 * @var string The image size name.
 	 */
 	private $image_size_name = 'tsfem-e-articles-logo-rect';
 
@@ -93,12 +89,7 @@ final class Front extends Core {
 			// Initialize output in The SEO Framework's front-end AMP meta object.
 			\add_filter( 'the_seo_framework_amp_pro', [ $this, '_articles_hook_amp_output' ] );
 		} else {
-			if ( version_compare( THE_SEO_FRAMEWORK_VERSION, '4.2', '<' ) ) {
-				// Initialize output in The SEO Framework's front-end meta object.
-				\add_filter( 'the_seo_framework_after_output', [ $this, '_articles_hook_output' ] );
-			} else {
-				\add_action( 'the_seo_framework_after_meta_output', [ $this, '_output_articles_json' ] );
-			}
+			\add_action( 'the_seo_framework_after_meta_output', [ $this, '_output_articles_json' ] );
 		}
 	}
 
@@ -188,7 +179,7 @@ final class Front extends Core {
 	 */
 	private function get_current_post() {
 		static $post;
-		return isset( $post ) ? $post : $post = \get_post( $this->get_current_id() );
+		return $post ?? $post = \get_post( $this->get_current_id() );
 	}
 
 	/**
@@ -200,7 +191,7 @@ final class Front extends Core {
 	 */
 	private function get_current_id() {
 		static $id;
-		return $id ?: $id = \get_queried_object_id();
+		return $id ?? ( $id = \get_queried_object_id() );
 	}
 
 	/**
@@ -226,25 +217,6 @@ final class Front extends Core {
 	public function _output_articles_json() {
 		// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- is escaped.
 		echo $this->_get_articles_json_output();
-	}
-
-	/**
-	 * Hooks into 'the_seo_framework_after_output' filter.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @param array $functions The hooked functions.
-	 * @return array The hooked functions.
-	 */
-	public function _articles_hook_output( $functions = [] ) {
-
-		$functions[] = [
-			'callback' => [ $this, '_get_articles_json_output' ],
-			'args'     => [],
-		];
-
-		return $functions;
 	}
 
 	/**
@@ -283,7 +255,7 @@ final class Front extends Core {
 			$this->get_article_data()
 		);
 
-		if ( ! empty( $data ) ) {
+		if ( $data ) {
 			$options  = 0;
 			$options |= JSON_UNESCAPED_SLASHES;
 			$options |= static::$tsf->script_debug ? JSON_PRETTY_PRINT : 0;
@@ -378,12 +350,10 @@ final class Front extends Core {
 	 */
 	private function get_article_type() {
 
-		// We can collapse these 3 lines into one using PHP 7+...
-		$settings  = $this->get_option( 'post_types' );
-		$post_type = \get_post_type();
-		$_default  = \tsf_extension_manager()->coalesce_var( $settings[ $post_type ]['default_type'], 'Article' );
-
-		$type = static::filter_article_type( $this->get_post_meta( 'type', $_default ) );
+		$type = static::filter_article_type( $this->get_post_meta(
+			'type',
+			$this->get_option( 'post_types' )[ \get_post_type() ]['default_type'] ?? 'Article' // Default
+		) );
 
 		if ( 'disabled' === $type ) {
 			$this->invalidate( 'both' );
@@ -622,7 +592,7 @@ final class Front extends Core {
 		}
 
 		$author = \get_userdata( $post->post_author );
-		$name   = isset( $author->display_name ) ? $author->display_name : '';
+		$name   = $author->display_name ?? '';
 
 		if ( ! $name ) {
 			$this->invalidate( 'amp' );
@@ -699,7 +669,7 @@ final class Front extends Core {
 
 		$_src = \wp_get_attachment_image_src( $_img_id, $size );
 		if ( $resize && isset( $_src[3] ) && ! $_src[3] ) {
-			//= Add intermediate size, so $_src[3] will return true next time.
+			// Add intermediate size, so $_src[3] will return true next time.
 			if ( $this->make_amp_logo( $_img_id ) )
 				$_src = \wp_get_attachment_image_src( $_img_id, $size );
 		}

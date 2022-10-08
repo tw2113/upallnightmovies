@@ -40,7 +40,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_FOCUS_VERSION', '1.5.1' );
+\define( 'TSFEM_E_FOCUS_VERSION', '1.5.2' );
 
 /**
  * The extension file, absolute unix path.
@@ -75,7 +75,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
  *
  * @since 1.0.0
  */
-if ( false === \tsf_extension_manager()->_init_early_extension_autoloader( TSFEM_E_FOCUS_PATH_CLASS, 'Focus', $_instance, $bits ) )
+if ( false === \tsfem()->_init_early_extension_autoloader( TSFEM_E_FOCUS_PATH_CLASS, 'Focus', $_instance, $bits ) )
 	return;
 
 \add_action( 'admin_init', __NAMESPACE__ . '\\_focus_init', 10 );
@@ -100,18 +100,4 @@ function _focus_init() {
 	}
 
 	return $loaded = (bool) $loaded;
-}
-
-/**
- * Returns the active base class.
- *
- * @since 1.0.0
- *
- * @return string The active class name.
- */
-function get_active_class() {
-	if ( \is_admin() ) {
-		return __NAMESPACE__ . '\\Admin';
-	}
-	return '';
 }

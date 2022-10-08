@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
@@ -28,6 +27,13 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  */
 
 /**
+ * Require extension views trait.
+ *
+ * @since 2.2.1
+ */
+\TSF_Extension_Manager\_load_trait( 'extension/views' );
+
+/**
  * Class TSF_Extension_Manager\Extension\Articles\Admin
  *
  * @since 1.2.0
@@ -35,12 +41,18 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  * @final
  */
 final class Admin extends Core {
-	use \TSF_Extension_Manager\Construct_Master_Once_Interface;
+	use \TSF_Extension_Manager\Construct_Master_Once_Interface,
+		\TSF_Extension_Manager\Extension_Views;
 
 	/**
 	 * Constructor.
 	 */
 	private function construct() {
+
+		/**
+		 * @see trait TSF_Extension_Manager\Extension_Views
+		 */
+		$this->view_location_base = TSFEM_E_ARTICLES_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
 
 		$this->prepare_inpostgui();
 		$this->prepare_listedit();
@@ -56,10 +68,10 @@ final class Admin extends Core {
 	 */
 	private function prepare_inpostgui() {
 
-		//= Prepares InpostGUI's class for nonce checking.
+		// Prepares InpostGUI's class for nonce checking.
 		\TSF_Extension_Manager\InpostGUI::prepare();
 
-		//= Called late because we need to access the meta object after current_screen.
+		// Called late because we need to access the meta object after current_screen.
 		\add_action( 'the_seo_framework_pre_page_inpost_box', [ $this, '_prepare_inpost_views' ] );
 
 		\add_action( 'tsfem_inpostgui_verified_nonce', [ $this, '_save_meta' ], 10, 3 );
@@ -114,7 +126,7 @@ final class Admin extends Core {
 		static $default;
 		if ( ! $default ) {
 			$settings = $this->get_option( 'post_types' );
-			$default  = static::filter_article_type( \tsf_extension_manager()->coalesce_var( $settings[ $post->post_type ]['default_type'], 'Article' ) );
+			$default  = static::filter_article_type( $settings[ $post->post_type ]['default_type'] ?? 'Article' );
 		}
 
 		static $type_i18n = null;
@@ -156,6 +168,9 @@ final class Admin extends Core {
 		];
 
 		if ( static::is_organization() ) {
+
+			$tsf = \tsf();
+
 			$_settings += [
 				'news_sitemap' => [
 					'_default' => null,
@@ -171,7 +186,7 @@ final class Admin extends Core {
 								\__( 'For more information, please refer to the [Articles FAQ](%s).', 'the-seo-framework-extension-manager' ),
 								'https://theseoframework.com/extensions/articles/#faq'
 							) . (
-								\the_seo_framework()->get_option( 'sitemaps_output' )
+								$tsf->get_option( 'sitemaps_output' )
 								? ''
 								: ' ' . \__( 'To use this feature, you must enable the optimized sitemap of The SEO Framework.', 'the-seo-framework-extension-manager' )
 							),
@@ -193,7 +208,7 @@ final class Admin extends Core {
 						'url' => '',
 						'id'  => '',
 					],
-					'_ph'       => \the_seo_framework()->get_option( 'knowledge_logo_url' ) ?: '',
+					'_ph'       => $tsf->get_option( 'knowledge_logo_url' ) ?: '',
 					'_edit'     => true,
 					'_ret'      => 'image',
 					'_req'      => false,
@@ -217,17 +232,13 @@ final class Admin extends Core {
 			$this->o_index,
 			[
 				'title'    => 'Articles',
-				'logo'     => [
-					'svg' => TSFEM_E_ARTICLES_DIR_URL . 'lib/images/icon.svg',
-					'2x'  => TSFEM_E_ARTICLES_DIR_URL . 'lib/images/icon-58x58.png',
-					'1x'  => TSFEM_E_ARTICLES_DIR_URL . 'lib/images/icon-29x29px.png',
-				],
+				'logo'     => TSFEM_E_ARTICLES_DIR_URL . 'lib/images/icon.svg',
 				'before'   => '',
 				'after'    => '',
 				'pane'     => [],
 				'settings' => $_settings,
 				// When we add more panes, we can order them by adding up to 9.9999 to this value.
-				'priority' => \tsf_extension_manager()->get_extension_order()['articles'],
+				'priority' => \tsfem()->get_extension_order()['articles'],
 			]
 		);
 
@@ -322,18 +333,17 @@ final class Admin extends Core {
 			$fields['default_type']['_select'][] = $_select_item;
 		endforeach;
 
-		$tsf        = \the_seo_framework();
+		$tsf        = \tsf();
 		$post_types = $tsf->get_supported_post_types();
 
 		$settings = [];
+
+		$post_type_desc_i18n = \__( 'Adjust article settings for this post type.', 'the-seo-framework-extension-manager' );
 
 		foreach ( $post_types as $post_type ) {
 
 			// This is definitely not an Article type.
 			if ( 'attachment' === $post_type ) continue;
-
-			$pto             = \get_post_type_object( $post_type );
-			$post_type_label = isset( $pto->labels->name ) ? $pto->labels->name : $tsf->get_post_type_label( $post_type );
 
 			$settings[ $post_type ] = [
 				'_default' => null,
@@ -342,8 +352,8 @@ final class Admin extends Core {
 				'_req'     => false,
 				'_type'    => 'multi_placeholder',
 				'_desc'    => [
-					$post_type_label,
-					\__( 'Adjust article settings for this post type.', 'the-seo-framework-extension-manager' ),
+					$tsf->get_post_type_label( $post_type, false ),
+					$post_type_desc_i18n,
 				],
 				'_fields'  => $fields,
 			];
@@ -377,7 +387,7 @@ final class Admin extends Core {
 	public function _do_filter_upgrade_notice() {
 
 		if ( \has_filter( 'the_seo_framework_articles_supported_post_types' ) ) {
-			\the_seo_framework()->do_dismissible_notice(
+			\tsf()->do_dismissible_notice(
 				'Filter <code>the_seo_framework_articles_supported_post_types</code> is deprecated. Please remove it and use the settings below instead.',
 				'error',
 				true,
@@ -386,7 +396,7 @@ final class Admin extends Core {
 			);
 		}
 		if ( \has_filter( 'the_seo_framework_articles_default_meta' ) ) {
-			\the_seo_framework()->do_dismissible_notice(
+			\tsf()->do_dismissible_notice(
 				'Filter <code>the_seo_framework_articles_default_meta</code> is deprecated. Please remove it and use the settings below instead.',
 				'error',
 				true,
@@ -428,7 +438,7 @@ final class Admin extends Core {
 		if ( ! \is_array( $value ) )
 			$value = [];
 
-		$post_types = \the_seo_framework()->get_supported_post_types();
+		$post_types = \tsf()->get_supported_post_types();
 
 		// TODO do we want to strip unknown entries from payload?
 		// Only sanitize known post types.
@@ -514,7 +524,7 @@ final class Admin extends Core {
 
 		if ( isset( $supported ) ) return $supported;
 
-		$tsf = \the_seo_framework();
+		$tsf = \tsf();
 
 		$post_type = $post_type ?: $tsf->get_admin_post_type();
 		$settings  = $this->get_option( 'post_types' );
@@ -538,10 +548,10 @@ final class Admin extends Core {
 
 		\TSF_Extension_Manager\InpostGUI::activate_tab( 'structure' );
 
-		$post_type = \the_seo_framework()->get_admin_post_type();
+		$post_type = \tsf()->get_admin_post_type();
 		$settings  = $this->get_option( 'post_types' );
 
-		$_default = static::filter_article_type( \tsf_extension_manager()->coalesce_var( $settings[ $post_type ]['default_type'], 'Article' ) );
+		$_default = static::filter_article_type( $settings[ $post_type ]['default_type'] ?? 'Article' );
 
 		$post_meta = [
 			'pm_index' => $this->pm_index,
@@ -567,7 +577,7 @@ final class Admin extends Core {
 		];
 
 		\TSF_Extension_Manager\InpostGUI::register_view(
-			$this->get_view_location( 'inpost/inpost' ),
+			$this->_get_view_location( 'inpost/inpost' ),
 			compact( 'post_meta' ),
 			'structure'
 		);
@@ -607,7 +617,7 @@ final class Admin extends Core {
 		];
 
 		\TSF_Extension_Manager\ListEdit::register_quick_view(
-			$this->get_view_location( 'list/quickedit' ),
+			$this->_get_view_location( 'list/quickedit' ),
 			get_defined_vars(),
 			'structure',
 			10
@@ -650,7 +660,7 @@ final class Admin extends Core {
 		];
 
 		\TSF_Extension_Manager\ListEdit::register_bulk_view(
-			$this->get_view_location( 'list/bulkedit' ),
+			$this->_get_view_location( 'list/bulkedit' ),
 			get_defined_vars(),
 			'structure',
 			10
@@ -668,14 +678,14 @@ final class Admin extends Core {
 	 */
 	public function _add_list_table_data( $data, $query ) {
 
-		// This should never happen...
+		// This should never happen... still...
 		if ( ! empty( $query['taxonomy'] ) ) return $data;
 
 		static $default;
 		if ( ! $default ) {
-			$post_type = \the_seo_framework()->get_admin_post_type();
+			$post_type = \tsf()->get_admin_post_type();
 			$settings  = $this->get_option( 'post_types' );
-			$default   = static::filter_article_type( \tsf_extension_manager()->coalesce_var( $settings[ $post_type ]['default_type'], 'Article' ) );
+			$default   = static::filter_article_type( $settings[ $post_type ]['default_type'] ?? 'Article' );
 		}
 
 		$this->set_extension_post_meta_id( $query['id'] );
@@ -716,9 +726,8 @@ final class Admin extends Core {
 			endswitch;
 		endforeach;
 
-		foreach ( $store as $key => $value ) {
+		foreach ( $store as $key => $value )
 			$this->update_post_meta( $key, $value );
-		}
 	}
 
 	/**
@@ -757,9 +766,8 @@ final class Admin extends Core {
 
 		$this->set_extension_post_meta_id( $post->ID );
 
-		foreach ( $store as $key => $value ) {
+		foreach ( $store as $key => $value )
 			$this->update_post_meta( $key, $value );
-		}
 	}
 
 	/**
@@ -795,25 +803,12 @@ final class Admin extends Core {
 			}
 		endforeach;
 
-		if ( empty( $store ) ) {
-			//= Delete everything. Using defaults.
+		if ( ! $store ) {
+			// Delete everything. Using defaults.
 			$this->delete_post_meta_index();
 		} else {
-			foreach ( $store as $key => $value ) {
+			foreach ( $store as $key => $value )
 				$this->update_post_meta( $key, $value );
-			}
 		}
-	}
-
-	/**
-	 * Returns view location.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param string $view The relative file location and name without '.php'.
-	 * @return string The view file location.
-	 */
-	protected function get_view_location( $view ) {
-		return TSFEM_E_ARTICLES_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . $view . '.php';
 	}
 }

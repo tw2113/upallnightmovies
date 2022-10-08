@@ -39,21 +39,18 @@ trait Secure_Post {
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation nonce name.
 	 */
 	protected $nonce_name;
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation request name.
 	 */
 	protected $request_name = [];
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation nonce action.
 	 */
 	protected $nonce_action = [];
@@ -94,9 +91,8 @@ trait Secure_Post {
 		// AJAX only, not registered. Also, this method AFTER admin_init, so it went by unnoticed.
 		// \add_action( 'admin_init', [ $this, '_handle_update_post' ] );
 
-		if ( \wp_doing_ajax() ) {
+		if ( \wp_doing_ajax() )
 			$this->init_ajax_post_checks();
-		}
 	}
 
 	/**
@@ -150,7 +146,7 @@ trait Secure_Post {
 	public function _do_ajax_form_save() {
 
 		// phpcs:ignore, WordPress.Security.NonceVerification -- Already done at _wp_ajax_tsfemForm_save()
-		$post_data = isset( $_POST['data'] ) ? $_POST['data'] : '';
+		$post_data = $_POST['data'] ?? '';
 		parse_str( $post_data, $data );
 
 		$send = [];
@@ -181,7 +177,7 @@ trait Secure_Post {
 			}
 		}
 
-		\tsf_extension_manager()->send_json( $send, \tsf_extension_manager()->coalesce_var( $type, 'failure' ) );
+		\tsfem()->send_json( $send, $type ?? 'failure' );
 	}
 
 	/**
@@ -216,7 +212,7 @@ trait Secure_Post {
 
 		$items = $this->get_registered_iterator_callbacks();
 
-		return isset( $items[ $key ] ) ? $items[ $key ] : '';
+		return $items[ $key ] ?? '';
 	}
 
 	/**
@@ -250,7 +246,7 @@ trait Secure_Post {
 				}
 			endif;
 
-			\tsf_extension_manager()->send_json( [ 'results' => $this->get_ajax_notice( false, 1079001 ) ], 'failure' );
+			\tsfem()->send_json( [ 'results' => $this->get_ajax_notice( false, 1079001 ) ], 'failure' );
 		endif;
 
 		exit;
@@ -272,7 +268,7 @@ trait Secure_Post {
 
 		// phpcs:disable, WordPress.Security.NonceVerification.Missing -- Caller must check for this.
 
-		$post_data = isset( $_POST['data'] ) ? $_POST['data'] : '';
+		$post_data = $_POST['data'] ?? '';
 
 		parse_str( $post_data, $data );
 
@@ -303,7 +299,7 @@ trait Secure_Post {
 			}
 		}
 
-		\tsf_extension_manager()->send_json( $send, \tsf_extension_manager()->coalesce_var( $type, 'failure' ) );
+		\tsfem()->send_json( $send, $type ?? 'failure' );
 
 		// phpcs:enable, WordPress.Security.NonceVerification.Missing
 	}

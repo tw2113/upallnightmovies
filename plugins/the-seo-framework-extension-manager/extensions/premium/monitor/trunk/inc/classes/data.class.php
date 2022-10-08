@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
@@ -82,15 +81,13 @@ class Data {
 			$this->set_installing_site( false );
 			return null;
 		}
+
 		/**
 		 * @see trait TSF_Extension_Manager\Extension_Options
 		 */
-		$data = $this->get_option( $type, [] );
-
-		if ( empty( $data ) )
-			$data = $this->get_remote_data( $type );
-
-		return empty( $data ) ? $default : $data;
+		return $this->get_option( $type, [] )
+			?: $this->get_remote_data( $type )
+			?: $default;
 	}
 
 	/**

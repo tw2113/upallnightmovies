@@ -83,7 +83,7 @@ final class InpostHTML {
 	 * @param array  $contents The contents to wrap. Should be escaped.
 	 * @param string $id       The wrap ID.
 	 */
-	public static function wrap_flex_multi( $what, array $contents, $id = '' ) {
+	public static function wrap_flex_multi( $what, $contents, $id = '' ) {
 		// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- See method docs
 		echo static::contruct_flex_wrap_multi( $what, $contents, $id );
 	}
@@ -102,7 +102,7 @@ final class InpostHTML {
 	 * @param array  $contents The contents to wrap. Should be escaped.
 	 * @param string $id       The wrap ID.
 	 */
-	public static function contruct_flex_wrap_multi( $what, array $contents, $id = '' ) {
+	public static function contruct_flex_wrap_multi( $what, $contents, $id = '' ) {
 		return static::construct_flex_wrap( $what, implode( PHP_EOL, $contents ), $id );
 	}
 
@@ -150,7 +150,7 @@ final class InpostHTML {
 				break;
 
 			case 'label-input':
-				$for or \the_seo_framework()->_doing_it_wrong( __METHOD__, 'Set the <code>$for</code> (3rd) parameter.' );
+				$for or \tsf()->_doing_it_wrong( __METHOD__, 'Set the <code>$for</code> (3rd) parameter.' );
 				$content = sprintf(
 					'<div class="tsf-flex-setting-label tsf-flex" %s>
 						<div class="tsf-flex-setting-label-inner-wrap tsf-flex">
@@ -186,9 +186,9 @@ final class InpostHTML {
 				break;
 
 			// phpcs:disable
-			//! Not used.
+			// Not used.
 			// case 'checkbox':
-			// 	$content = sprintf( '<div class="tsf-checkbox-wrapper">%s</div>', $content );
+			// 	$content = sprintf( '<div class=tsf-checkbox-wrapper>%s</div>', $content );
 			// 	break;
 			// phpcs:enable
 

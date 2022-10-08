@@ -156,7 +156,7 @@ final class Upgrader {
 	 */
 	public function get_previous_version( $member ) {
 		$versions = $this->previous_db_versions;
-		return isset( $versions[ $member ] ) ? $versions[ $member ] : '0';
+		return $versions[ $member ] ?? '0';
 	}
 
 	/**
@@ -170,7 +170,7 @@ final class Upgrader {
 	 */
 	public function get_current_version( $member ) {
 		$versions = $this->current_db_versions;
-		return isset( $versions[ $member ] ) ? $versions[ $member ] : '0';
+		return $versions[ $member ] ?? '0';
 	}
 
 	/**
@@ -190,7 +190,7 @@ final class Upgrader {
 	 * @param string   $version  TSFEM's database version.
 	 * @param callable $callback The callback to perform for the upgrade.
 	 */
-	public function _register_upgrade( $member, $version, callable $callback ) {
+	public function _register_upgrade( $member, $version, $callback ) {
 
 		$c = &$this->_upgrade_collector();
 
@@ -364,7 +364,7 @@ final class Upgrader {
 	 * @param \stdClass $upgrade The upgrade iterator object.
 	 * @yield array { $member => $version }
 	 */
-	private function yield_runs( \stdClass $upgrade ) {
+	private function yield_runs( $upgrade ) {
 		foreach ( $upgrade as $member => $versions ) {
 			foreach ( $versions as $version => $callbacks ) {
 				foreach ( $callbacks as $callback ) {
@@ -386,7 +386,7 @@ final class Upgrader {
 	 *   'version' => string $version
 	 * }
 	 */
-	private function do_upgrade_cb( $version, callable $callback ) {
+	private function do_upgrade_cb( $version, $callback ) {
 		return [
 			'success' => (bool) \call_user_func_array( $callback, [ $version ] ),
 			'version' => $version,
@@ -424,9 +424,9 @@ final class Upgrader {
 	 * @return bool True if possible, false othewise.
 	 */
 	private function can_do_upgrade() {
-		return $this->has_free_memory( 1024 * 1024 * 2 );
+		return $this->has_free_memory( 2 * MB_IN_BYTES );
 	}
 }
 
-//= Loads class.
+// Loads class.
 $_load_upgrader_class();

@@ -70,43 +70,43 @@ final class ListEdit {
 
 	/**
 	 * @since 2.5.0
-	 * @var string $include_secret The inclusion secret generated on section load.
+	 * @var string The inclusion secret generated on section load.
 	 */
 	private static $include_secret;
 
 	/**
 	 * @since 2.5.0
-	 * @var array $quick_sections The registered quick-edit sections.
+	 * @var array The registered quick-edit sections.
 	 */
 	private static $quick_sections = [];
 
 	/**
 	 * @since 2.5.0
-	 * @var array $bulk_sections The registered bulk-edit sections.
+	 * @var array The registered bulk-edit sections.
 	 */
 	private static $bulk_sections = [];
 
 	/**
 	 * @since 2.5.0
-	 * @var array $active_quick_section_keys The activate section keys of static::$quick_sections.
+	 * @var array The activate section keys of static::$quick_sections.
 	 */
 	private static $active_quick_section_keys = [];
 
 	/**
 	 * @since 2.5.0
-	 * @var array $active_bulk_section_keys The activate section keys of static::$bulk_sections.
+	 * @var array The activate section keys of static::$bulk_sections.
 	 */
 	private static $active_bulk_section_keys = [];
 
 	/**
 	 * @since 2.5.0
-	 * @var array $quick_views The registered quick-edit view files for the sections.
+	 * @var array The registered quick-edit view files for the sections.
 	 */
 	private static $quick_views = [];
 
 	/**
 	 * @since 2.5.0
-	 * @var array $bulk_views The registered bulk-edit view files for the sections.
+	 * @var array The registered bulk-edit view files for the sections.
 	 */
 	private static $bulk_views = [];
 
@@ -124,22 +124,22 @@ final class ListEdit {
 	 * Constructor. Loads all appropriate actions asynchronously.
 	 *
 	 * @TODO consider running "post type supported" calls, instead of relying on failsafes in TSF.
-	 * @see \the_seo_framework()->_init_admin_scripts(); this requires TSF 4.0+ dependency, however.
+	 * @see \tsf()->_init_admin_scripts(); this requires TSF 4.0+ dependency, however.
 	 */
 	private function construct() {
 
 		$this->register_quick_sections();
 		$this->register_bulk_sections();
 
-		//= Scripts.
+		// Scripts.
 		\add_action( 'admin_enqueue_scripts', [ $this, '_prepare_admin_scripts' ], 1 );
 
-		//= Saving.
+		// Saving.
 		\add_action( 'save_post', [ static::class, '_verify_nonce_post' ], 1, 2 );
 		// phpcs:ignore -- No extension supports this.
 		// \add_action( 'edit_term', [ static::class, '_verify_nonce_term' ], 1, 3 );
 
-		//= Output.
+		// Output.
 		\add_action( 'the_seo_framework_after_quick_edit', [ $this, '_load_quick_sections' ], 10, 2 );
 		\add_action( 'the_seo_framework_after_bulk_edit', [ $this, '_load_bulk_sections' ], 10, 2 );
 	}
@@ -343,7 +343,7 @@ final class ListEdit {
 		endforeach;
 
 		// TODO We need to differentiate between post and term!
-		$this->output_view( \tsf_extension_manager()->get_view_location( 'listedit/quick' ), compact( 'sections', 'post_type', 'taxonomy' ) );
+		$this->output_view( \tsfem()->get_view_location( 'listedit/quick' ), compact( 'sections', 'post_type', 'taxonomy' ) );
 	}
 
 	/**
@@ -367,7 +367,7 @@ final class ListEdit {
 				$sections[ $index ] = $args;
 		endforeach;
 
-		$this->output_view( \tsf_extension_manager()->get_view_location( 'listedit/bulk' ), compact( 'sections', 'post_type', 'taxonomy' ) );
+		$this->output_view( \tsfem()->get_view_location( 'listedit/bulk' ), compact( 'sections', 'post_type', 'taxonomy' ) );
 	}
 
 	/**
@@ -384,7 +384,7 @@ final class ListEdit {
 		if ( isset( static::$quick_views[ $section ] ) ) {
 			$views = static::$quick_views[ $section ];
 
-			//= Sort by the priority indexes. Priority values get lost in this process.
+			// Sort by the priority indexes. Priority values get lost in this process.
 			sort( $views );
 
 			foreach ( $views as $view )
@@ -405,7 +405,7 @@ final class ListEdit {
 
 		if ( isset( static::$bulk_views[ $section ] ) ) {
 			$views = static::$bulk_views[ $section ];
-			//= Sort by the priority indexes. Priority values get lost in this process.
+			// Sort by the priority indexes. Priority values get lost in this process.
 			sort( $views );
 
 			foreach ( $views as $view )
@@ -427,14 +427,14 @@ final class ListEdit {
 	 * @param string $file The file location.
 	 * @param array  $args The registered view arguments.
 	 */
-	private function output_view( $file, array $args ) {
+	private function output_view( $file, $args ) {
 
 		foreach ( $args as $_key => $_val )
 			$$_key = $_val;
 
 		unset( $_key, $_val, $args );
 
-		//= Prevent private includes hijacking.
+		// Prevent private includes hijacking.
 		static::$include_secret = $_secret = mt_rand() . uniqid( '', true ); // phpcs:ignore, VariableAnalysis.CodeAnalysis -- includes
 		include $file;
 		static::$include_secret = null;
@@ -503,8 +503,8 @@ final class ListEdit {
 	 * @param string    $section  The section the view is outputted in.
 	 * @param int|float $priority The priority of the view. A lower value results in an earlier output.
 	 */
-	public static function register_quick_view( $file, array $args = [], $section = 'advanced', $priority = 10 ) {
-		//= Prevent excessive static calls and write directly to var.
+	public static function register_quick_view( $file, $args = [], $section = 'advanced', $priority = 10 ) {
+		// Prevent excessive static calls and write directly to var.
 		$_views =& static::$quick_views;
 
 		if ( ! isset( $_views[ $section ] ) )
@@ -529,8 +529,8 @@ final class ListEdit {
 	 * @param string    $section  The section the view is outputted in.
 	 * @param int|float $priority The priority of the view. A lower value results in an earlier output.
 	 */
-	public static function register_bulk_view( $file, array $args = [], $section = 'advanced', $priority = 10 ) {
-		//= Prevent excessive static calls and write directly to var.
+	public static function register_bulk_view( $file, $args = [], $section = 'advanced', $priority = 10 ) {
+		// Prevent excessive static calls and write directly to var.
 		$_views =& static::$bulk_views;
 
 		if ( ! isset( $_views[ $section ] ) )

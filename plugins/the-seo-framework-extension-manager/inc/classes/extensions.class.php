@@ -41,7 +41,7 @@ namespace TSF_Extension_Manager;
  *       deferred for their memory usage. Secure_Abstract prevents interaction.
  * @TODO Move trait items to own static class.
  */
-if ( \tsf_extension_manager()->is_tsf_extension_manager_page( false ) ) {
+if ( \tsfem()->is_tsf_extension_manager_page( false ) ) {
 	\TSF_Extension_Manager\_load_trait( 'manager/extensions-layout' );
 } else {
 	// Empty dummy traits.
@@ -96,12 +96,12 @@ final class Extensions extends Secure_Abstract {
 	 * @param string $instance Required. The instance key. Passed by reference.
 	 * @param array  $bits Required. The instance bits. Passed by reference.
 	 */
-	public static function initialize( $type = '', &$instance = '', &$bits = null ) {
+	public static function initialize( $type, &$instance = '', &$bits = null ) {
 
 		self::reset();
 
-		if ( empty( $type ) ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You must specify an initialization type.' );
+		if ( ! $type ) {
+			\tsf()->_doing_it_wrong( __METHOD__, 'You must specify an initialization type.' );
 			return;
 		}
 
@@ -113,7 +113,7 @@ final class Extensions extends Secure_Abstract {
 			case 'list':
 			case 'load':
 			case 'ajax_layout':
-				\tsf_extension_manager()->_verify_instance( $instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die();
+				\tsfem()->_verify_instance( $instance, $bits[1] ) or \tsfem()->_maybe_die();
 				self::set( '_type', $type );
 				static::set_up_variables();
 				break;
@@ -138,12 +138,12 @@ final class Extensions extends Secure_Abstract {
 	 * @param string $slug The extension slug. Required with AJAX.
 	 * @return string|bool False on failure. String on success.
 	 */
-	public static function get( $type = '', $slug = '' ) {
+	public static function get( $type, $slug = '' ) {
 
 		if ( ! self::verify_instance() ) return;
 
-		if ( empty( $type ) ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You must specify an get type.' );
+		if ( ! $type ) {
+			\tsf()->_doing_it_wrong( __METHOD__, 'You must specify an get type.' );
 			return false;
 		}
 
@@ -167,7 +167,7 @@ final class Extensions extends Secure_Abstract {
 				return static::get_extension_description_footer( static::get_extension( $slug ), false );
 
 			default:
-				\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You must specify a correct get type.' );
+				\tsf()->_doing_it_wrong( __METHOD__, 'You must specify a correct get type.' );
 				break;
 		endswitch;
 
@@ -206,7 +206,7 @@ final class Extensions extends Secure_Abstract {
 	 * @param string|array $what       What to filter out of the list.
 	 * @return array The leftover extensions.
 	 */
-	private static function filter_extensions( array $extensions = [], $what = 'maybe_network' ) {
+	private static function filter_extensions( $extensions = [], $what = 'maybe_network' ) {
 
 		// Temporarily. Exchange for count( $what ) > 1
 		if ( \is_array( $what ) ) {
@@ -220,7 +220,7 @@ final class Extensions extends Secure_Abstract {
 
 		// Temporarily check. Will be substituted by new functions that pass these as filters.
 		if ( 'maybe_network' === $what ) {
-			$network_mode = \tsf_extension_manager()->is_plugin_in_network_mode();
+			$network_mode = \tsfem()->is_plugin_in_network_mode();
 
 			if ( $network_mode )
 				return $extensions;

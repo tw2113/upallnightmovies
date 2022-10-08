@@ -37,11 +37,8 @@ namespace TSF_Extension_Manager;
 final class SecureOption extends Secure_Abstract {
 
 	/**
-	 * The update action instances.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var array The instance array.
+	 * @var array The update instance array.
 	 */
 	private static $_instance = []; // phpcs:ignore, PSR2.Classes.PropertyDeclaration.Underscore -- confusing otherwise.
 
@@ -54,18 +51,17 @@ final class SecureOption extends Secure_Abstract {
 	 * @param string $instance Required. The instance key. Passed by reference.
 	 * @param array  $bits     Required. The instance bits. Passed by reference.
 	 */
-	public static function initialize( $type = '', &$instance = '', &$bits = null ) {
+	public static function initialize( $type, &$instance = '', &$bits = null ) {
 
 		self::reset();
 
-		if ( empty( $type ) ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You must specify an initialization type.' );
+		if ( ! $type ) {
+			\tsf()->_doing_it_wrong( __METHOD__, 'You must specify an initialization type.' );
 		} else {
-
 			switch ( $type ) :
 				case 'update_option':
 				case 'update_option_instance':
-					\tsf_extension_manager()->_verify_instance( $instance, $bits[1] ) or die;
+					\tsfem()->_verify_instance( $instance, $bits[1] ) or die;
 					self::set( '_type', $type );
 					break;
 
@@ -90,7 +86,7 @@ final class SecureOption extends Secure_Abstract {
 	 * @param string $type Determines what to get.
 	 * @return bool false
 	 */
-	public static function get( $type = '' ) {
+	public static function get( $type ) {
 		return false;
 	}
 	// phpcs:enable
@@ -114,7 +110,7 @@ final class SecureOption extends Secure_Abstract {
 
 			default:
 				self::reset();
-				\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You must specify a correct instance type.' );
+				\tsf()->_doing_it_wrong( __METHOD__, 'You must specify a correct instance type.' );
 				break;
 		endswitch;
 
@@ -137,7 +133,7 @@ final class SecureOption extends Secure_Abstract {
 
 		$type = self::get_property( '_type' );
 
-		if ( empty( self::$_instance ) || empty( $type ) ) {
+		if ( empty( self::$_instance ) || ! $type ) {
 			self::reset();
 			\wp_die( '<code>' . \esc_html( $option ) . '</code> is a protected option.' );
 			return $old_value;
@@ -146,7 +142,7 @@ final class SecureOption extends Secure_Abstract {
 		$instance = self::$_instance;
 
 		if ( isset( $instance[0], $instance[1][1] ) ) {
-			\tsf_extension_manager()->_verify_instance( $instance[0], $instance[1][1] );
+			\tsfem()->_verify_instance( $instance[0], $instance[1][1] );
 		} else {
 			self::reset();
 			\wp_die( 'Instance verification could not be done on option update.' );
@@ -162,7 +158,7 @@ final class SecureOption extends Secure_Abstract {
 			} elseif ( 'update_option' === $type ) {
 				$options = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS );
 				// phpcs:ignore -- No objects are inserted, nor is this ever unserialized.
-				if ( \tsf_extension_manager()->verify_options_hash( serialize( $options ) ) ) {
+				if ( \tsfem()->verify_options_hash( serialize( $options ) ) ) {
 					$verified = true;
 				} else {
 					self::reset();
@@ -177,9 +173,9 @@ final class SecureOption extends Secure_Abstract {
 						$results = \TSF_Extension_Manager\get_ajax_notice( false, $notice, -1 );
 						$type    = 'failure';
 
-						\tsf_extension_manager()->send_json( compact( 'results' ), $type );
+						\tsfem()->send_json( compact( 'results' ), $type );
 
-						//= Who knows, someone could filter wp_die();.
+						// Who knows, someone could filter wp_die();.
 						$value = $old_value;
 
 						\wp_die();

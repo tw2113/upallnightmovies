@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
@@ -87,7 +86,7 @@ final class SitemapBuilder extends \The_SEO_Framework\Builders\Sitemap\Main {
 		$bridge           = \The_SEO_Framework\Bridges\Sitemap::get_instance();
 		$_caching_enabled = $bridge->sitemap_cache_enabled();
 
-		$sitemap_content = $_caching_enabled ? \the_seo_framework()->get_transient( $transient_name ) : false;
+		$sitemap_content = $_caching_enabled ? \tsf()->get_transient( $transient_name ) : false;
 
 		if ( false === $sitemap_content ) {
 			$this->prepare_generation();
@@ -98,7 +97,7 @@ final class SitemapBuilder extends \The_SEO_Framework\Builders\Sitemap\Main {
 			$this->news_is_regenerated = true;
 
 			if ( $_caching_enabled ) {
-				\the_seo_framework()->set_transient(
+				\tsf()->set_transient(
 					$transient_name,
 					$sitemap_content,
 					HOUR_IN_SECONDS // Keep the sitemap for at most 1 hour. Will expire during post actions.
@@ -183,12 +182,14 @@ final class SitemapBuilder extends \The_SEO_Framework\Builders\Sitemap\Main {
 
 		$post_ids = $wp_query->get_posts();
 
+		// phpcs:disable, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- $count is passed by reference.
 		foreach ( $this->generate_url_item_values( $post_ids, $count ) as $_values ) {
 			// No more than 1000 complex items are allowed. (ref:https://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd)
 			// Also stated here: https://support.google.com/news/publisher-center/answer/6075793
 			$content .= $this->build_url_item( $_values );
 			if ( $count > 999 ) break;
 		}
+		// phpcs:enable, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
 		return $content;
 	}
@@ -242,8 +243,8 @@ final class SitemapBuilder extends \The_SEO_Framework\Builders\Sitemap\Main {
 				// publication(name/language) is inferred later. Save processing power and memory during generation here.
 				// access is deprecated.
 				// genres is deprecated.
-				'publication_date' => isset( $post->post_date_gmt ) ? $post->post_date_gmt : '0000-00-00 00:00:00',
-				'title'            => isset( $post->post_title ) ? $post->post_title : '',
+				'publication_date' => $post->post_date_gmt ?? '0000-00-00 00:00:00',
+				'title'            => $post->post_title ?? '',
 				// keywords is deprecated.
 				// stock_tickers is deprecated.
 			];
@@ -255,7 +256,7 @@ final class SitemapBuilder extends \The_SEO_Framework\Builders\Sitemap\Main {
 
 			// @see https://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd
 			$_values['image'] = [
-				'loc' => isset( $image_details['url'] ) ? $image_details['url'] : '',
+				'loc' => $image_details['url'] ?? '',
 				// caption in inferred from post description. Tested: this field is ignored.
 				// geo_location is inferred from publication.
 				// title is inferred from title. Tested: this field is ignored.

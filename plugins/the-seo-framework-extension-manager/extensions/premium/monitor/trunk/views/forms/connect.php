@@ -6,7 +6,7 @@
 // phpcs:disable, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- includes.
 // phpcs:disable, WordPress.WP.GlobalVariablesOverride -- This isn't the global scope.
 
-defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and $_class = TSF_Extension_Manager\Extension\Monitor\get_active_class() and $this instanceof $_class or die;
+defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and $this->_verify_include_secret( $_secret ) or die;
 
 $class = 'tsfem-button-primary tsfem-button-cloud';
 $name  = __( 'Register', 'the-seo-framework-extension-manager' );
@@ -21,4 +21,4 @@ $args = [
 	'input' => compact( 'nonce_action', 'nonce', 'submit' ),
 ];
 
-$this->_action_button( tsf_extension_manager()->get_admin_page_url( $this->monitor_page_slug ), $args );
+$this->_action_button( menu_page_url( $this->monitor_page_slug, false ), $args );

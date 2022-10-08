@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
 // phpcs:disable, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- includes.
 // phpcs:disable, WordPress.WP.GlobalVariablesOverride -- This isn't the global scope.
 
-\defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and $_class = \TSF_Extension_Manager\Extension\Focus\get_active_class() and $this instanceof $_class or die;
+\defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and $this->_verify_include_secret( $_secret ) or die;
 
 $scoring = Scoring::get_instance();
 
@@ -17,29 +17,29 @@ $scoring->key    = $sub_scores['key'];
 $scoring->values = $sub_scores['values'];
 
 printf(
-	'<span class="hide-if-js attention">%s %s</span>',
+	'<span class="hide-if-tsf-js attention">%s %s</span>',
 	\esc_html__( 'JavaScript is required to perform a subject analysis.', 'the-seo-framework-extension-manager' ),
 	$has_keyword ? \esc_html__( 'Below you find the previous assessments.', 'the-seo-framework-extension-manager' ) : ''
 );
 printf(
-	'<span class="tsfem-e-focus-no-keyword-wrap hide-if-no-js attention" %s>%s</span>',
+	'<span class="tsfem-e-focus-no-keyword-wrap hide-if-no-tsf-js attention" %s>%s</span>',
 	( $has_keyword ? 'style=display:none' : '' ),
 	\esc_html__( 'No keyword has been set, so no analysis can be made.', 'the-seo-framework-extension-manager' )
 );
 printf(
-	'<span class="tsfem-e-focus-something-wrong-wrap hide-if-no-js attention" %s>%s</span>',
+	'<span class="tsfem-e-focus-something-wrong-wrap hide-if-no-tsf-js attention" %s>%s</span>',
 	'style=display:none',
 	\esc_html__( 'Something went wrong evaluating the subject.', 'the-seo-framework-extension-manager' )
 );
 
-output_scores :;
+output_scores:;
 	printf(
 		'<div class="tsfem-e-focus-scores-wrap tsfem-flex" id=%s %s>',
 		\esc_attr( $scoring->key ),
 		$has_keyword ? '' : 'style="display:none"'
 	);
 	foreach ( $scoring->get_template() as $type => $args ) :
-		//! All output below should already be escaped.
+		// All output below should already be escaped.
 		vprintf(
 			'<span id=%s class="%s" %s>%s%s</span>',
 			[
@@ -63,11 +63,11 @@ output_scores :;
 				),
 			]
 		);
-		//= Data capturer.
+		// Data capturer.
 		printf(
 			'<input type=hidden name=%s value="%s">',
 			\esc_attr( $scoring->get_id( $type ) ),
 			\esc_attr( $scoring->get_value( $type ) )
 		);
 	endforeach;
-	echo '</div>'; //= END tsfem-e-focus-scores-wrap;
+	echo '</div>'; // END tsfem-e-focus-scores-wrap;

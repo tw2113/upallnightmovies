@@ -298,6 +298,9 @@ trait Construct_Core_Static_Final {
  * use this trait can't be used with a 'new' keyword. They can be safely called without
  * interrupting flow.
  *
+ * You cannot instantiate a child class with this on PHP 7.3 or below. 7.4 or later do
+ * ignore the private variable.
+ *
  * Does not load parent.
  * Does load instance methods and properties.
  *
@@ -313,13 +316,11 @@ trait Construct_Core_Static_Final_Instance {
 	private function __construct() {}
 
 	/**
-	 * The object instance.
-	 *
 	 * @since 1.3.0
-	 *
+	 * @since 2.6.0 Made protected from private; scope binding is ignored anyway on PHP 7.4+.
 	 * @var object|null This object instance.
 	 */
-	private static $instance;
+	protected static $instance;
 
 	/**
 	 * Sets the class instance.
@@ -351,6 +352,75 @@ trait Construct_Core_Static_Final_Instance {
 	}
 }
 
+
+/**
+ * Forces the classes to be treated as a single static. In essence, classes that
+ * use this trait can't be used with a 'new' keyword. They can be safely called without
+ * interrupting flow.
+ *
+ * Does load instance methods and properties.
+ *
+ * This trait applies nicely with the following design patterns:
+ * - Singleton Pattern.
+ * - Prototype Pattern.
+ *
+ * @see Construct_Core_Static_Unique_Instance_Master.
+ *      That trait allows overriding the instance so the class can be extended
+ *      by various arbitrary classes, each holding a unique instance.
+ * @since 2.6.0
+ * @access private
+ */
+trait Construct_Core_Static_Unique_Instance_Core {
+
+	private function __construct() {}
+
+	/**
+	 * Sets the class instance.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 * @static
+	 */
+	final public static function reset_instance() {
+		self::class === static::class
+			and \wp_die( '<code>' . \esc_html( __CLASS__ ) . '()</code> must be extended. See trait <code>' . \esc_html( __TRAIT__ ) . '</code>.' );
+
+		static::$instance = new static;
+	}
+
+	/**
+	 * Gets the class instance. It's set when it's null.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 * @static
+	 *
+	 * @return object The current instance.
+	 */
+	final public static function get_instance() {
+
+		// static::$instance::class is PHP 8.0+
+		if ( ! static::$instance || ( \get_class( static::$instance ) !== static::class ) )
+			static::reset_instance();
+
+		return static::$instance;
+	}
+}
+
+/**
+ * @see Construct_Core_Static_Unique_Instance_Core
+ * @since 2.6.0
+ * @access private
+ */
+trait Construct_Core_Static_Unique_Instance_Master {
+
+	/**
+	 * @since 2.6.0
+	 * @var object|null This object instance.
+	 */
+	protected static $instance;
+}
+
 /**
  * Forces the classes to be treated as a single static. In essence, classes that
  * use this trait can't be used with a 'new' keyword. They may have public functions that
@@ -371,10 +441,7 @@ trait Construct_Core_Static_Stray_Private_Instance {
 	private function __construct() {}
 
 	/**
-	 * The object instance.
-	 *
 	 * @since 2.2.0
-	 *
 	 * @var object|null This object instance.
 	 */
 	private static $instance;
@@ -448,7 +515,9 @@ trait Destruct_Core_Public_Final_Interface {
 
 		static $died = false;
 
-		return $died || $set && $died = true;
+		if ( $set ) $died = true;
+
+		return $died;
 	}
 }
 
@@ -470,7 +539,7 @@ trait Ignore_Properties_Core_Public_Final {
 	 * @param mixed  $value The propertie value that ought to be set.
 	 */
 	final public function __set( $name = '', $value = null ) { // phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		\the_seo_framework()->_doing_it_wrong( __METHOD__, \esc_html( __CLASS__ . '::$' . $name . ' does not exist.' ) );
+		\tsf()->_doing_it_wrong( __METHOD__, \esc_html( __CLASS__ . '::$' . $name . ' does not exist.' ) );
 	}
 
 	/**
@@ -483,7 +552,7 @@ trait Ignore_Properties_Core_Public_Final {
 	 */
 	final public function __get( $name = '' ) {
 
-		\the_seo_framework()->_doing_it_wrong( __METHOD__, \esc_html( __CLASS__ . '::$' . $name . ' does not exist.' ) );
+		\tsf()->_doing_it_wrong( __METHOD__, \esc_html( __CLASS__ . '::$' . $name . ' does not exist.' ) );
 
 		return null;
 	}

@@ -185,7 +185,7 @@ trait Extension_Forms {
 	public function _get_submit_button( $name, $title = '', $class = '' ) {
 
 		$title = $title ? sprintf( ' title="%s" ', \esc_attr( $title ) ) : '';
-		$class = $class ? sprintf( ' class="%s"', \esc_attr( $class ) ) : ' class="tsfem-button-primary"';
+		$class = $class ? sprintf( ' class="%s"', \esc_attr( $class ) ) : ' class=tsfem-button-primary';
 
 		return sprintf(
 			'<button type=submit name=submit %s%s>%s</button>',
@@ -211,7 +211,7 @@ trait Extension_Forms {
 	 *    'input'   => array The form input entry items.
 	 * }
 	 */
-	public function _action_button( $url = '', array $items = [] ) {
+	public function _action_button( $url = '', $items = [] ) {
 		// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- The input must be escaped.
 		echo $this->_get_action_button( $url, $items );
 	}
@@ -235,15 +235,15 @@ trait Extension_Forms {
 	 * }
 	 * @return string The input submit button.
 	 */
-	public function _get_action_button( $url = '', array $items = [] ) {
+	public function _get_action_button( $url, $items = [] ) {
 
-		if ( empty( $url ) ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You need to supply an action URL.' );
+		if ( ! $url ) {
+			\tsf()->_doing_it_wrong( __METHOD__, 'You need to supply an action URL.' );
 			return '';
 		}
 
 		if ( empty( $items['input'] ) || ! \is_array( $items['input'] ) ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'Form input items must be in an array. Supply at least a submit button.' );
+			\tsf()->_doing_it_wrong( __METHOD__, 'Form input items must be in an array. Supply at least a submit button.' );
 			return '';
 		}
 
@@ -268,12 +268,12 @@ trait Extension_Forms {
 		$output = '';
 		if ( $items['ajax'] ) {
 			if ( '' === $items['ajax-id'] ) {
-				\the_seo_framework()->_doing_it_wrong( __METHOD__, 'No AJAX ID supplied.' );
+				\tsf()->_doing_it_wrong( __METHOD__, 'No AJAX ID supplied.' );
 				return '';
 			}
 
 			$output .= sprintf(
-				'<form action="%s" method=post id=%s class="hide-if-js %s">%s</form>',
+				'<form action="%s" method=post id=%s class="hide-if-tsf-js %s" autocomplete=off data-form-type=other>%s</form>',
 				\esc_url( $url, [ 'https', 'http' ] ),
 				\esc_attr( $items['id'] ),
 				\esc_attr( $items['class'] ),
@@ -281,7 +281,7 @@ trait Extension_Forms {
 			);
 
 			$button = sprintf(
-				'<a id=%s class="hide-if-no-js %s" href=javascript:; title="%s">%s</a>',
+				'<a id=%s class="hide-if-no-tsf-js %s" href=javascript:; title="%s">%s</a>',
 				\esc_attr( $items['ajax-id'] ),
 				\esc_attr( $items['ajax-class'] ),
 				\esc_attr( $items['ajax-title'] ),
@@ -291,7 +291,7 @@ trait Extension_Forms {
 			$output .= $button;
 		} else {
 			$output .= sprintf(
-				'<form action="%s" method=post id="%s" class="%s">%s</form>',
+				'<form action="%s" method=post id="%s" class="%s" autocomplete=off data-form-type=other>%s</form>',
 				\esc_url( $url, [ 'https', 'http' ] ),
 				\esc_attr( $items['id'] ),
 				\esc_attr( $items['class'] ),

@@ -86,7 +86,7 @@ final class ExtensionSettings {
 	/**
 	 * @since 2.2.0
 	 * @see static::verify()
-	 * @var string|null $include_secret The inclusion secret generated on tab load.
+	 * @var string|null The inclusion secret generated on tab load.
 	 */
 	private static $include_secret;
 
@@ -207,7 +207,7 @@ final class ExtensionSettings {
 	 * @access private
 	 */
 	public function _init_menu() {
-		if ( \TSF_Extension_Manager\can_do_extension_settings() && ! \the_seo_framework()->is_headless['settings'] )
+		if ( \TSF_Extension_Manager\can_do_extension_settings() && ! \tsf()->is_headless['settings'] )
 			\add_action( 'admin_menu', [ $this, '_add_menu_link' ], 12 );
 	}
 
@@ -220,7 +220,7 @@ final class ExtensionSettings {
 	public function _add_menu_link() {
 
 		$menu = [
-			'parent_slug' => \the_seo_framework()->seo_settings_page_slug,
+			'parent_slug' => \tsf()->seo_settings_page_slug,
 			'page_title'  => \__( 'Extension Settings', 'the-seo-framework-extension-manager' ),
 			'menu_title'  => \__( 'Extension Settings', 'the-seo-framework-extension-manager' ),
 			'capability'  => TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
@@ -250,7 +250,7 @@ final class ExtensionSettings {
 			// Run after other extensions are done parsing. They must ignore empty indexes.
 			\add_action( 'tsfem_form_do_ajax_save', [ $this, '_do_ajax_form_save' ], 20 );
 		} else {
-			\add_action( 'load-' . $this->ui_hook, [ $this, '_do_settings_page_actions' ] );
+			\add_action( "load-{$this->ui_hook}", [ $this, '_do_settings_page_actions' ] );
 		}
 	}
 
@@ -277,7 +277,7 @@ final class ExtensionSettings {
 		\do_action( 'tsfem_register_settings_sanitization', static::class );
 
 		// phpcs:ignore, WordPress.Security.NonceVerification -- Already done at _wp_ajax_tsfemForm_save()
-		$post_data = isset( $_POST['data'] ) ? $_POST['data'] : '';
+		$post_data = $_POST['data'] ?? '';
 		parse_str( $post_data, $data );
 
 		$store = [];
@@ -291,15 +291,13 @@ final class ExtensionSettings {
 			foreach ( $sanitizations as $_key => $_cb ) {
 				$store[ $slug ][ $_key ] = \call_user_func(
 					$_cb,
-					isset( $data[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ][ $_key ] )
-						? $data[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ][ $_key ]
-						: null
+					$data[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ][ $_key ] ?? null
 				);
 			}
 		}
 
 		if ( empty( $store ) )
-			\tsf_extension_manager()->send_json( [ 'results' => $this->get_ajax_notice( false, 18101 ) ], 'failure' );
+			\tsfem()->send_json( [ 'results' => $this->get_ajax_notice( false, 18101 ) ], 'failure' );
 
 		$success = [];
 
@@ -322,7 +320,7 @@ final class ExtensionSettings {
 			if ( \in_array( true, $success, true ) ) {
 				// Some data got saved.
 				// TODO do something with the failures (when we implement a save-all button).
-				\tsf_extension_manager()->send_json(
+				\tsfem()->send_json(
 					[
 						'results' => $this->get_ajax_notice( false, 18102 ),
 						'data'    => $data,
@@ -330,7 +328,7 @@ final class ExtensionSettings {
 					'failure'
 				);
 			} else {
-				\tsf_extension_manager()->send_json(
+				\tsfem()->send_json(
 					[
 						'results' => $this->get_ajax_notice( false, 18103 ),
 						'data'    => $data,
@@ -341,7 +339,7 @@ final class ExtensionSettings {
 		}
 
 		if ( \count( $success ) > 1 ) {
-			\tsf_extension_manager()->send_json(
+			\tsfem()->send_json(
 				[
 					'results' => $this->get_ajax_notice( true, 18104 ),
 					'data'    => $data,
@@ -349,7 +347,7 @@ final class ExtensionSettings {
 				'success'
 			);
 		} else {
-			\tsf_extension_manager()->send_json(
+			\tsfem()->send_json(
 				[
 					'results' => $this->get_ajax_notice( true, 18105 ),
 					'data'    => $data,
@@ -367,7 +365,7 @@ final class ExtensionSettings {
 	 */
 	public function _do_settings_page_actions() {
 
-		if ( ! \the_seo_framework()->is_menu_page( $this->ui_hook ) ) return;
+		if ( ! \tsf()->is_menu_page( $this->ui_hook ) ) return;
 
 		/**
 		 * @see trait TSF_Extension_Manager\Error
@@ -379,7 +377,7 @@ final class ExtensionSettings {
 		\add_action( 'tsfem_before_enqueue_scripts', [ $this, '_register_scripts' ] );
 
 		// Add something special for Vivaldi & Android.
-		\add_action( 'admin_head', [ \tsf_extension_manager(), '_output_theme_color_meta' ], 0 );
+		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 	}
 
 	/**
@@ -472,7 +470,7 @@ final class ExtensionSettings {
 			$args = [
 				'caller'       => __CLASS__,
 				'o_index'      => $index,
-				'o_defaults'   => \tsf_extension_manager()->coalesce_var( static::$defaults[ $index ], [] ),
+				'o_defaults'   => static::$defaults[ $index ] ?? [],
 				'o_key'        => '',
 				'use_stale'    => false,
 				'levels'       => 5,
@@ -495,7 +493,7 @@ final class ExtensionSettings {
 		// TODO
 		// phpcs:disable
 		return sprintf(
-			'<button type="submit" name="tsf-extension-manager-extension-settings" form="tsf-extension-manager-extension-settings" class="tsfem-button-primary tsfem-button-primary-bright tsfem-button-upload" onclick="tsfemForm.saveAll()">%s</button>',
+			'<button type=submit name=tsf-extension-manager-extension-settings form=tsf-extension-manager-extension-settings class="tsfem-button-primary tsfem-button-primary-bright tsfem-button-upload" onclick="tsfemForm.saveAll()">%s</button>',
 			\esc_html__( 'Save All', 'the-seo-framework-extension-manager' )
 		);
 		// phpcs:enable
@@ -563,16 +561,16 @@ final class ExtensionSettings {
 	 * @param string $file The file location, relative to TSFEM base view folder.
 	 * @param array  $args The registered view arguments.
 	 */
-	private function output_view( $file, array $args = [] ) {
+	private function output_view( $file, $args = [] ) {
 
 		foreach ( $args as $_key => $_val )
 			$$_key = $_val;
 		unset( $_key, $_val, $args );
 
-		//= Prevents private-includes hijacking.
+		// Prevents private-includes hijacking.
 		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis -- Read the include?
 		static::$include_secret = $_secret = mt_rand() . uniqid( '', true );
-		include \tsf_extension_manager()->get_view_location( $file );
+		include \tsfem()->get_view_location( $file );
 		static::$include_secret = null;
 	}
 }

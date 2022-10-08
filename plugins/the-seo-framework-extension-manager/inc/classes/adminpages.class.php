@@ -44,28 +44,19 @@ class AdminPages extends AccountActivation {
 		UI;
 
 	/**
-	 * Name of the page hook when the menu is registered.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string Page hook.
+	 * @var string Page hook name.
 	 */
 	public $seo_extensions_menu_page_hook;
 
 	/**
-	 * The plugin page ID/slug.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string Page ID/Slug
+	 * @var string Page ID/Slug.
 	 */
 	public $seo_extensions_page_slug = 'theseoframework-extensions';
 
 	/**
-	 * The plugin settings field.
-	 *
 	 * @since 1.0.0
-	 *
 	 * @var string TSF Extension Manager Settings Field.
 	 */
 	const SETTINGS_FIELD = TSF_EXTENSION_MANAGER_SITE_OPTIONS;
@@ -78,7 +69,7 @@ class AdminPages extends AccountActivation {
 	private function construct() {
 
 		// Nothing to do here...
-		if ( \the_seo_framework()->is_headless['settings'] ) return;
+		if ( \tsf()->is_headless['settings'] ) return;
 
 		// Initialize menu links. TODO add network menu.
 		\add_action( 'admin_menu', [ $this, '_init_menu' ] );
@@ -93,7 +84,7 @@ class AdminPages extends AccountActivation {
 	 * @since 1.0.0
 	 * @since 2.0.0 Now uses \TSF_Extension_Manager\can_do_manager_settings()
 	 * @since 2.4.0 Removed security check, and offloads it to WordPress.
-	 * @uses \the_seo_framework()->is_headless
+	 * @uses \tsf()->is_headless
 	 * @access private
 	 *
 	 * @todo determine network activation @see core class.
@@ -116,13 +107,13 @@ class AdminPages extends AccountActivation {
 	 * @since 1.0.0
 	 * @since 1.5.2 Added TSF v3.1 compat.
 	 * @since 2.4.0 Added menu access control check for notification display.
-	 * @uses \the_seo_framework()->seo_settings_page_slug
+	 * @uses \tsf()->seo_settings_page_slug
 	 * @access private
 	 */
 	final public function _add_menu_link() {
 
 		$menu = [
-			'parent_slug' => \the_seo_framework()->seo_settings_page_slug,
+			'parent_slug' => \tsf()->seo_settings_page_slug,
 			'page_title'  => 'Extension Manager',
 			'menu_title'  => 'Extension Manager',
 			'capability'  => TSF_EXTENSION_MANAGER_MAIN_ADMIN_ROLE,
@@ -150,7 +141,7 @@ class AdminPages extends AccountActivation {
 			);
 
 			$menu['menu_title'] .= ' ' . sprintf(
-				'<span class="tsfem-menu-notice tsfem-menu-errors count-%d"><span class="tsfem-error-count" aria-hidden="true">%s</span><span class="tsfem-error-count-text screen-reader-text">%s</span></span>',
+				'<span class="tsfem-menu-notice tsfem-menu-errors count-%d"><span class=tsfem-error-count aria-hidden=true>%s</span><span class="tsfem-error-count-text screen-reader-text">%s</span></span>',
 				$notice_count,
 				$notice_i18n,
 				$notice_text
@@ -213,7 +204,7 @@ class AdminPages extends AccountActivation {
 	 * @access private
 	 */
 	final public function _load_tsfem_admin_actions() {
-		\add_action( 'load-' . $this->seo_extensions_menu_page_hook, [ $this, '_do_tsfem_admin_actions' ] );
+		\add_action( "load-{$this->seo_extensions_menu_page_hook}", [ $this, '_do_tsfem_admin_actions' ] );
 	}
 
 	/**
@@ -337,7 +328,7 @@ class AdminPages extends AccountActivation {
 	 * @access private
 	 */
 	final public function _output_theme_color_meta() {
-		$this->get_view( 'layout/pages/meta' );
+		$this->get_view( 'layout/general/meta' );
 	}
 
 	/**
@@ -356,12 +347,13 @@ class AdminPages extends AccountActivation {
 	 * @since 1.0.0
 	 * @since 2.0.1 Added the push argument.
 	 * @since 2.2.0 Added the logo, wide, tall, and fcbargs arguments.
+	 * @since 2.7.0 Logo is now a string from associative array; preferably SVG.
 	 * @access private
 	 *
 	 * @param string $title   The pane title.
 	 * @param string $content The escaped pane content.
 	 * @param array  $args    The output arguments : {
-	 *   'logo'       array    : An array with svg, 1x, and 2x logo links. 1x is required. svg is preferred.
+	 *   'logo'       string   : An string with svg logo link.
 	 *   'full'       bool     : Whether to output a two wide and high pane.
 	 *   'wide'       bool     : Whether to output a two wide pane.
 	 *   'tall'       bool     : Whether to output a two tall pane. Quite useless and ugly.
@@ -382,7 +374,7 @@ class AdminPages extends AccountActivation {
 
 		$args = array_merge(
 			[
-				'logo'     => [],
+				'logo'     => '',
 				'full'     => true,
 				'wide'     => false,
 				'tall'     => false,
@@ -540,7 +532,7 @@ class AdminPages extends AccountActivation {
 	 * @param string $key The action key.
 	 */
 	final public function _get_nonce_action_field( $key ) {
-		return '<input type="hidden" name="' . \esc_attr( $this->_get_field_name( 'nonce-action' ) ) . '" value="' . \esc_attr( $key ) . '">';
+		return '<input type=hidden name="' . \esc_attr( $this->_get_field_name( 'nonce-action' ) ) . '" value="' . \esc_attr( $key ) . '">';
 	}
 
 	/**
@@ -572,7 +564,7 @@ class AdminPages extends AccountActivation {
 	final public function _get_nonce_field( $action, $name, $referer = true ) {
 
 		$name        = \esc_attr( $name );
-		$nonce_field = '<input type="hidden" name="' . $name . '" value="' . \wp_create_nonce( $action ) . '" />';
+		$nonce_field = '<input type=hidden name="' . $name . '" value="' . \wp_create_nonce( $action ) . '" />';
 
 		if ( $referer ) {
 			$nonce_field .= \wp_referer_field( false );

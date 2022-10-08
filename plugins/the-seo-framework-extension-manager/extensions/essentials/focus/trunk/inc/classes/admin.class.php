@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Focus extension for The SEO Framework
@@ -28,6 +27,13 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  */
 
 /**
+ * Require extension views trait.
+ *
+ * @since 1.5.2
+ */
+\TSF_Extension_Manager\_load_trait( 'extension/views' );
+
+/**
  * Class TSF_Extension_Manager\Extension\Focus\Admin
  *
  * @since 1.0.0
@@ -35,12 +41,19 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  * @final
  */
 final class Admin extends Core {
-	use \TSF_Extension_Manager\Construct_Master_Once_Interface;
+	use \TSF_Extension_Manager\Construct_Master_Once_Interface,
+		\TSF_Extension_Manager\Extension_Views;
 
 	/**
 	 * Constructor.
 	 */
 	private function construct() {
+
+		/**
+		 * @see trait TSF_Extension_Manager\Extension_Views
+		 */
+		$this->view_location_base = TSFEM_E_FOCUS_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
+
 		$this->prepare_ajax();
 		$this->prepare_inpostgui();
 	}
@@ -61,12 +74,12 @@ final class Admin extends Core {
 	 */
 	private function prepare_inpostgui() {
 
-		//= Prepares InpostGUI's class for nonce checking.
+		// Prepares InpostGUI's class for nonce checking.
 		\TSF_Extension_Manager\InpostGUI::prepare();
 
 		\add_action( 'tsfem_inpost_before_enqueue_scripts', [ $this, '_enqueue_inpost_scripts' ] );
 
-		//= Called late because we need to access the meta object after current_screen.
+		// Called late because we need to access the meta object after current_screen.
 		\add_action( 'the_seo_framework_pre_page_inpost_box', [ $this, '_prepare_inpost_views' ] );
 
 		\add_action( 'tsfem_inpostgui_verified_nonce', [ $this, '_save_meta' ], 10, 3 );
@@ -195,12 +208,14 @@ final class Admin extends Core {
 				'name'     => 'tsfem-focus-inpost',
 				'base'     => TSFEM_E_FOCUS_DIR_URL . 'lib/js/',
 				'ver'      => TSFEM_E_FOCUS_VERSION,
-				'deps'     => [ 'jquery', 'tsf', 'tsf-tt', 'tsfem-inpost' ],
+				'deps'     => [ 'jquery', 'tsf', 'tsf-tt', 'tsfem-inpost', 'tsfem-worker' ],
 				'autoload' => true,
 				'l10n'     => [
 					'name' => 'tsfem_e_focusInpostL10n',
 					'data' => [
-						'nonce'              => \current_user_can( 'edit_post', $GLOBALS['post']->ID ) ? \wp_create_nonce( 'tsfem-e-focus-inpost-nonce' ) : false,
+						'nonce'              => \current_user_can( 'edit_post', $GLOBALS['post']->ID )
+							? \wp_create_nonce( 'tsfem-e-focus-inpost-nonce' )
+							: false,
 						'focusElements'      => $this->get_focus_elements(),
 						'defaultLexicalForm' => json_encode( $this->default_lexical_form ),
 						'languageSupported'  => [
@@ -222,7 +237,7 @@ final class Admin extends Core {
 					],
 				],
 				'tmpl'     => [
-					'file' => $this->get_view_location( 'inpost/js-templates' ),
+					'file' => $this->_get_view_location( 'inpost/js-templates' ),
 				],
 			],
 			[
@@ -255,7 +270,7 @@ final class Admin extends Core {
 	 */
 	private function get_worker_file_location() {
 
-		$min = \the_seo_framework()->script_debug ? '' : '.min';
+		$min = \tsf()->script_debug ? '' : '.min';
 
 		return \esc_url( \set_url_scheme( TSFEM_E_FOCUS_DIR_URL . "lib/js/tsfem-focus-parser.worker{$min}.js" ) );
 	}
@@ -276,26 +291,26 @@ final class Admin extends Core {
 
 		$post_meta = [
 			'pm_index' => $this->pm_index,
-			'post_id'  => \the_seo_framework()->get_the_real_ID(),
+			'post_id'  => \tsf()->get_the_real_ID(),
 			'kw'       => [
 				'label'        => [
 					'title' => \__( 'Subject Analysis', 'the-seo-framework-extension-manager' ),
 					'desc'  => \__( 'Set subjects and learn how you can improve their focus.', 'the-seo-framework-extension-manager' ),
 					'link'  => 'https://theseoframework.com/extensions/focus/#usage',
 				],
-				//! Don't set default, it's already pre-populated.
+				// Don't set default, it's already pre-populated.
 				'values'       => $this->get_post_meta( 'kw', null ),
 				'option_index' => 'kw',
 			],
 		];
 
 		\TSF_Extension_Manager\InpostGUI::register_view(
-			$this->get_view_location( 'inpost/inpost' ),
+			$this->_get_view_location( 'inpost/inpost' ),
 			[
 				'post_meta'          => $post_meta,
 				'defaults'           => $this->pm_defaults,
 				'template_cb'        => [ $this, '_output_focus_template' ],
-				'is_premium'         => \tsf_extension_manager()->is_premium_user(),
+				'is_premium'         => \tsfem()->is_premium_user(),
 				'language_supported' => $this->is_language_supported( 'any' ),
 			],
 			'audit'
@@ -350,12 +365,11 @@ final class Admin extends Core {
 			if ( \is_null( $store[ $key ] ) ) unset( $store[ $key ] );
 		endforeach;
 
-		if ( empty( $store ) ) {
-			$this->delete_post_meta_index();
-		} else {
-			foreach ( $store as $key => $value ) {
+		if ( $store ) {
+			foreach ( $store as $key => $value )
 				$this->update_post_meta( $key, $value );
-			}
+		} else {
+			$this->delete_post_meta_index();
 		}
 	}
 
@@ -367,11 +381,12 @@ final class Admin extends Core {
 	 * @param array $values The keyword data.
 	 * @return array|null The sanitized keyword data.
 	 */
-	private function sanitize_keyword_data( array $values ) {
+	private function sanitize_keyword_data( $values ) {
+
 		$output = [];
 		foreach ( $values as $id => $items ) {
-			//= Don't store when no keyword is set.
-			if ( ! isset( $items['keyword'] ) || ! \strlen( $items['keyword'] ) )
+			// Don't store when no keyword is set.
+			if ( ! \strlen( $items['keyword'] ?? '' ) )
 				continue;
 
 			foreach ( (array) $items as $key => $value ) {
@@ -382,12 +397,13 @@ final class Admin extends Core {
 			}
 		}
 
-		//= When all entries are emptied, clear meta data.
-		if ( empty( $output ) )
+		// When all entries are emptied, clear meta data.
+		if ( ! $output )
 			return null;
 
-		//= Fills missing data to maintain consistency.
+		// Fills missing data to maintain consistency.
 		foreach ( [ 0, 1, 2 ] as $k ) {
+			// PHP 7.4: ??=
 			if ( ! isset( $output[ $k ] ) ) {
 				$output[ $k ] = $this->pm_defaults['kw'][ $k ];
 			}
@@ -418,7 +434,7 @@ final class Admin extends Core {
 			case 'lexical_data':
 			case 'inflection_data':
 			case 'synonym_data':
-				//= An empty array will be returned on failure. This will be refilled in the UI.
+				// An empty array will be returned on failure. This will be refilled in the UI.
 				$value = json_decode( $value, true ) ?: [];
 				break;
 
@@ -427,7 +443,9 @@ final class Admin extends Core {
 					$value = [];
 				} else {
 					foreach ( $value as $_t => $_v ) {
-						//= Convert to float, have 2 f decimals, trim trailing zeros, trim trailing dots, convert to string.
+						// Convert to float, have 2 f decimals, trim trailing zeros, trim trailing dots, convert to string.
+						// 2x rtrim: first trim trailing 0's, then trim remainder . (if any);
+						// don't trim both at the same time, otherwise 90.0 -> 9, instead of 90.0 -> 90
 						$value[ $_t ] = (string) ( rtrim( rtrim( sprintf( '%.2F', (float) $_v ), '0' ), '.' ) ?: 0 );
 					}
 				}
@@ -448,7 +466,7 @@ final class Admin extends Core {
 				break;
 		endswitch;
 
-		return isset( $value ) ? $value : null;
+		return $value ?? null;
 	}
 
 	/**
@@ -459,7 +477,7 @@ final class Admin extends Core {
 	 *
 	 * @param array $args The focus template arguments.
 	 */
-	public function _output_focus_template( array $args ) {
+	public function _output_focus_template( $args ) {
 		$this->get_view( 'inpost/focus-template', $args );
 	}
 
@@ -471,38 +489,7 @@ final class Admin extends Core {
 	 *
 	 * @param array $args The focus template arguments.
 	 */
-	private function output_score_template( array $args ) {
+	private function output_score_template( $args ) {
 		$this->get_view( 'inpost/score-template', $args );
-	}
-
-	/**
-	 * Fetches files based on input to reduce memory overhead.
-	 * Passes on input vars.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $view The file name.
-	 * @param array  $args The arguments to be supplied within the file name.
-	 *                     Each array key is converted to a variable with its value attached.
-	 */
-	protected function get_view( $view, array $args = [] ) {
-
-		foreach ( $args as $key => $val ) {
-			$$key = $val;
-		}
-
-		include $this->get_view_location( $view );
-	}
-
-	/**
-	 * Returns view location.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $view The relative file location and name without '.php'.
-	 * @return string The view file location.
-	 */
-	private function get_view_location( $view ) {
-		return TSFEM_E_FOCUS_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . $view . '.php';
 	}
 }

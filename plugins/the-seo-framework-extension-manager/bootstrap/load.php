@@ -116,7 +116,7 @@ function _pre_execute_protect_option( $new_value, $old_value, $option ) {
  * Priority 6: Use anything above 6, or any action later than plugins_loaded and
  *             you can access the class and functions. Failing to do so will perform wp_die().
  *             This makes sure The SEO Framework has been initialized correctly as well.
- *             So you can use function `the_seo_framework()` at all times.
+ *             So you can use function `tsf()` at all times.
  *
  * Performs wp_die() when called prior to action `plugins_loaded`.
  *
@@ -129,13 +129,13 @@ function _pre_execute_protect_option( $new_value, $old_value, $option ) {
 function _init_tsf_extension_manager() {
 
 	// Memoize the class object. Do not run everything more than once.
-	static $tsf_extension_manager;
+	static $tsfem;
 
-	if ( $tsf_extension_manager )
-		return $tsf_extension_manager;
+	if ( $tsfem )
+		return $tsfem;
 
 	if ( false === \doing_action( 'plugins_loaded' ) ) {
-		\wp_die( 'Use tsf_extension_manager() after action `plugins_loaded` priority 6.' );
+		\wp_die( 'Use tsfem() after action `plugins_loaded` priority 6.' );
 		exit;
 	}
 
@@ -150,13 +150,13 @@ function _init_tsf_extension_manager() {
 		 * @package TSF_Extension_Manager
 		 */
 		if ( \is_admin() ) {
-			$tsf_extension_manager = new LoadAdmin;
+			$tsfem = new LoadAdmin;
 		} else {
-			$tsf_extension_manager = new LoadFront;
+			$tsfem = new LoadFront;
 		}
 
 		// Initialize extensions.
-		$tsf_extension_manager->_init_extensions();
+		$tsfem->_init_extensions();
 
 		/**
 		 * Runs after extensions are initialized
@@ -164,7 +164,7 @@ function _init_tsf_extension_manager() {
 		 * @since 1.5.0
 		 */
 		\do_action( 'tsfem_extensions_initialized' );
-	} elseif ( ! \function_exists( '\\the_seo_framework' ) ) {
+	} elseif ( ! \function_exists( '\\tsf' ) ) {
 		/**
 		 * Nothing is loaded at this point; not even The SEO Framework.
 		 *
@@ -173,7 +173,7 @@ function _init_tsf_extension_manager() {
 		\do_action( 'tsfem_needs_the_seo_framework' );
 	}
 
-	return $tsf_extension_manager;
+	return $tsfem;
 }
 
 \TSF_Extension_Manager\_register_autoloader();
@@ -195,7 +195,7 @@ function _register_autoloader() {
 	];
 
 	foreach ( $integrity_classes as $_class ) {
-		 // phpcs:ignore, TSF.Performance.Functions.PHP -- no other method exists.
+		// phpcs:ignore, TSF.Performance.Functions.PHP -- no other method exists.
 		if ( class_exists( $_class, false ) ) die;
 	}
 
@@ -216,6 +216,7 @@ function _register_autoloader() {
  * @since 2.2.0 Now requires TSF 3.3+ to load.
  * @since 2.5.0 Now requires TSF 4.1.2+ to load.
  * @since 2.5.1 Now requires TSF 4.1.4+ to load.
+ * @since 2.6.0 Now requires TSF 4.2.0+ to load.
  *
  * @return bool Whether the plugin can load. Always returns false on the front-end.
  */
@@ -226,8 +227,8 @@ function can_load_class() {
 	if ( isset( $can_load ) )
 		return $can_load;
 
-	if ( \function_exists( '\\the_seo_framework' ) ) {
-		if ( version_compare( THE_SEO_FRAMEWORK_VERSION, '4.1.4', '>=' ) && \the_seo_framework()->loaded ) {
+	if ( \function_exists( '\\tsf' ) ) {
+		if ( version_compare( THE_SEO_FRAMEWORK_VERSION, '4.2.0', '>=' ) && \tsf()->loaded ) {
 			/**
 			 * @since 1.0.0
 			 * @param bool $can_load
@@ -245,6 +246,7 @@ function can_load_class() {
  *
  * @since 1.0.0
  * @since 2.5.1 Now handles mixed-case class names.
+ * @since 2.6.0 Now uses `hrtime()` instead of `microtime()`.
  * @uses TSF_EXTENSION_MANAGER_DIR_PATH_CLASS
  * @access private
  *
@@ -256,7 +258,7 @@ function can_load_class() {
  */
 function _autoload_classes( $class ) {
 
-	// It's TSF_Extension_Manager, not tsf_extension_manager!
+	// NB It's TSF_Extension_Manager, not tsf_extension_manager!
 	if ( 0 !== strpos( strtolower( $class ), 'tsf_extension_manager\\', 0 ) ) return;
 
 	if ( WP_DEBUG ) {
@@ -273,9 +275,9 @@ function _autoload_classes( $class ) {
 	}
 
 	static $_timenow = true;
-
+	// Prevent running two timers at once, restart timing once done loading batch.
 	if ( $_timenow ) {
-		$_bootstrap_timer = microtime( true );
+		$_bootstrap_timer = hrtime( true );
 		$_timenow         = false;
 	} else {
 		$_bootstrap_timer = 0;
@@ -293,7 +295,7 @@ function _autoload_classes( $class ) {
 	require TSF_EXTENSION_MANAGER_DIR_PATH_CLASS . "{$rel_dir}{$file}.class.php";
 
 	if ( $_bootstrap_timer ) {
-		$_t = microtime( true ) - $_bootstrap_timer;
+		$_t = ( hrtime( true ) - $_bootstrap_timer ) / 1e9;
 		\The_SEO_Framework\_bootstrap_timer( $_t );
 		\TSF_Extension_Manager\_bootstrap_timer( $_t );
 		$_timenow = true;

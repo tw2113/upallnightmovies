@@ -40,11 +40,8 @@ final class Extensions_Post_Meta_Cache {
 	use Construct_Core_Static_Final;
 
 	/**
-	 * Holds the extension meta.
-	 *
 	 * @since 1.5.0
-	 *
-	 * @var array $meta : {
+	 * @var array Cached extension post metadata : {
 	 *    'id' => [ 'key' => 'value' ],
 	 * }
 	 */
@@ -60,7 +57,10 @@ final class Extensions_Post_Meta_Cache {
 	 */
 	private static function init_meta_cache( $id ) {
 		static::$meta[ $id ] = (array) unserialize( // phpcs:ignore -- Security check OK, full serialization happened prior, can't execute sub-items.
-			\get_post_meta( $id, TSF_EXTENSION_MANAGER_EXTENSION_POST_META, true ) ?: serialize( [] ) // phpcs:ignore -- serializing simple array.
+			(
+				\get_post_meta( $id, TSF_EXTENSION_MANAGER_EXTENSION_POST_META, true ) ?: serialize( [] ) // phpcs:ignore -- serializing simple array.
+			),
+			[ 'allowed_classes' => [ 'stdClass' ] ] // Redundant.
 		);
 	}
 
@@ -125,41 +125,34 @@ final class Extensions_Post_Meta_Cache {
 trait Extension_Post_Meta {
 
 	/**
-	 * Current Extension meta index field. Likely equal to extension slug.
-	 *
 	 * @NOTE: Always set this directly in the constructor of the class.
 	 *        Traits do not share class properties and thus properties hold their
 	 *        value as if it were its user's class.
 	 *
 	 * @since 1.5.0
-	 * @var string $pm_index The current extension meta base index field.
+	 * @var string The current extension meta base index field.
+	 *             Likely equal to extension slug.
 	 */
 	protected $pm_index = '';
 
 	/**
-	 * Holds the post ID.
-	 *
 	 * @since 1.5.0
-	 * @var int|null $id
+	 * @var int|null The current post ID.
 	 */
 	protected $pm_id = null;
 
 	/**
-	 * Current Extension default meta.
-	 *
 	 * If meta key's value is not null, it will fall back to set meta when
 	 * $this->get_post_meta()'s second parameter is not null either.
 	 *
 	 * @since 1.5.0
-	 * @var array $pm_defaults The default meta.
+	 * @var array The current extension default meta.
 	 */
 	protected $pm_defaults = [];
 
 	/**
-	 * Flag for initialization.
-	 *
 	 * @since 1.5.0
-	 * @var bool $pm_initialized Whether the meta is initialized.
+	 * @var bool Whether the meta is initialized.
 	 */
 	protected $pm_initialized = false;
 
@@ -181,7 +174,7 @@ trait Extension_Post_Meta {
 	 * @since 1.5.0
 	 */
 	final protected function reset_extension_post_meta_id() {
-		$this->set_extension_post_meta_id( \the_seo_framework()->get_the_real_ID() );
+		$this->set_extension_post_meta_id( \tsf()->get_the_real_ID() );
 	}
 
 	/**
@@ -202,7 +195,7 @@ trait Extension_Post_Meta {
 			return $meta[ $this->pm_index ];
 		} else {
 			empty( $this->pm_index )
-				and \the_seo_framework()->_doing_it_wrong( __METHOD__, 'You need to assign property <code>\TSF_Extension_Manager\Extension_Post_Meta::$pm_index</code>.' );
+				and \tsf()->_doing_it_wrong( __METHOD__, 'You need to assign property <code>\TSF_Extension_Manager\Extension_Post_Meta::$pm_index</code>.' );
 		}
 
 		return [];
@@ -270,7 +263,7 @@ trait Extension_Post_Meta {
 		$c_meta[ $this->pm_index ] = $meta;
 
 		// Addslashes here, so WordPress doesn't unslash it, whereafter unserialization fails.
-		// phpcs:ignore -- Security check OK, this is a serialization of an array, sub-unserialization can't happen.
+		// phpcs:ignore -- Security check OK, this is a serialization of an array, sub-unserialization can't happen in our code.
 		$success = \update_post_meta( $this->pm_id, TSF_EXTENSION_MANAGER_EXTENSION_POST_META, addslashes( serialize( $c_meta ) ) );
 
 		if ( $success ) {
@@ -310,7 +303,7 @@ trait Extension_Post_Meta {
 		$c_meta[ $this->pm_index ] = $meta;
 
 		// Addslashes here, so WordPress doesn't unslash it, whereafter unserialization fails.
-		// phpcs:ignore -- Security check OK, this is a serialization of an array, sub-unserialization can't happen.
+		// phpcs:ignore -- Security check OK, this is a serialization of an array, sub-unserialization can't happen in our code.
 		$success = \update_post_meta( $this->pm_id, TSF_EXTENSION_MANAGER_EXTENSION_POST_META, addslashes( serialize( $c_meta ) ) );
 
 		if ( $success ) {
@@ -348,7 +341,7 @@ trait Extension_Post_Meta {
 		if ( [] === $c_meta ) {
 			$success = \delete_post_meta( $this->pm_id, TSF_EXTENSION_MANAGER_EXTENSION_POST_META );
 		} else {
-			// phpcs:ignore -- Security check OK, this is a serialization of an array, sub-unserialization can't happen.
+			// phpcs:ignore -- Security check OK, this is a serialization of an array, sub-unserialization can't happen in our code.
 			$success = \update_post_meta( $this->pm_id, TSF_EXTENSION_MANAGER_EXTENSION_POST_META, addslashes( serialize( $c_meta ) ) );
 		}
 

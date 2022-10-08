@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
@@ -37,21 +36,23 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  * @uses TSF_Extension_Manager\Traits
  */
 final class Tests {
-	use \TSF_Extension_Manager\Construct_Core_Static_Final;
+	use \TSF_Extension_Manager\Construct_Core_Static_Final_Instance;
 
 	/**
-	 * The object instance.
+	 * @since 1.0.0
+	 * @var \The_SEO_Framework\Load TSF's class instance.
+	 */
+	private static $tsf;
+
+	/**
+	 * The constructor.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @var object|null This object instance.
+	 * @override See Trait \TSF_Extension_Manager\Construct_Core_Static_Final_Instance.
 	 */
-	private static $instance;
-
-	/**
-	 * The constructor. Does nothing.
-	 */
-	private function construct() { }
+	private function __construct() {
+		static::$tsf = \tsf();
+	}
 
 	/**
 	 * Handles unapproachable invoked methods.
@@ -65,33 +66,6 @@ final class Tests {
 	 */
 	public function __call( $name, $arguments ) { // phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis
 		return '';
-	}
-
-	/**
-	 * Sets the class instance.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 */
-	public static function set_instance() {
-		if ( ! static::$instance )
-			static::$instance = new static;
-	}
-
-	/**
-	 * Gets the class instance. It's set when it's null.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @return object The current instance.
-	 */
-	public static function get_instance() {
-
-		if ( ! static::$instance )
-			static::set_instance();
-
-		return static::$instance;
 	}
 
 	/**
@@ -121,13 +95,13 @@ final class Tests {
 			$state    = 'warning';
 
 			if ( empty( $data['static'] ) ) {
-				$content .= $this->wrap_info( \the_seo_framework()->convert_markdown(
+				$content .= $this->wrap_info( static::$tsf->convert_markdown(
 					/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 					\esc_html__( 'No `favicon.ico` file was found in the root directory of your website. Web browsers automatically try to call this file; so, you should add one to prevent 404 hits and improve website performance.', 'the-seo-framework-extension-manager' ),
 					[ 'code' ]
 				) );
 			} else {
-				$content .= $this->wrap_info( \the_seo_framework()->convert_markdown(
+				$content .= $this->wrap_info( static::$tsf->convert_markdown(
 					\esc_html__( 'A `favicon.ico` file was found in the root directory of your website. This is good, because it prevents 404 hits to your website.', 'the-seo-framework-extension-manager' ),
 					[ 'code' ]
 				) );
@@ -136,7 +110,7 @@ final class Tests {
 			$content .= $this->wrap_info( \esc_html__( 'A dynamic favicon has been found, this increases support for mobile devices.', 'the-seo-framework-extension-manager' ) );
 		}
 
-		end :;
+		end:;
 		return compact( 'content', 'state' );
 	}
 
@@ -182,15 +156,13 @@ final class Tests {
 				$consult_theme_author = true;
 			} else {
 
-				$tsf = \the_seo_framework();
-
-				$_expected_title = $tsf->get_title( [ 'id' => $tsf->get_the_front_page_ID() ] );
+				$_expected_title = static::$tsf->get_title( [ 'id' => static::$tsf->get_the_front_page_ID() ] );
 
 				if ( $_expected_title !== $first_found_title ) {
 					$content  = $this->wrap_info( \esc_html__( 'The homepage title is not as expected. You should activate the Title Fix extension.', 'the-seo-framework-extension-manager' ) );
 					$content .= $this->wrap_info(
 						sprintf(
-							\the_seo_framework()->convert_markdown(
+							static::$tsf->convert_markdown(
 								/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 								\esc_html__( 'Found: `%s`', 'the-seo-framework-extension-manager' ),
 								[ 'code' ]
@@ -200,7 +172,7 @@ final class Tests {
 					);
 					$content .= $this->wrap_info(
 						sprintf(
-							\the_seo_framework()->convert_markdown(
+							static::$tsf->convert_markdown(
 								/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 								\esc_html__( 'Expected: `%s`', 'the-seo-framework-extension-manager' ),
 								[ 'code' ]
@@ -230,7 +202,7 @@ final class Tests {
 			$_theme         = \wp_get_theme();
 			$_theme_contact = $_theme->get( 'ThemeURI' ) ?: $_theme->get( 'AuthorURI' ) ?: '';
 			if ( $_theme_contact ) {
-				$_dev = \tsf_extension_manager()->get_link( [
+				$_dev = \tsfem()->get_link( [
 					'url'     => $_theme_contact,
 					'content' => \__( 'theme developer', 'the-seo-framework-extension-manager' ),
 					'target'  => '_blank',
@@ -246,7 +218,7 @@ final class Tests {
 			) );
 		}
 
-		end :;
+		end:;
 		return [
 			'content' => $content,
 			'state'   => $state,
@@ -300,7 +272,7 @@ final class Tests {
 			$_theme         = \wp_get_theme();
 			$_theme_contact = $_theme->get( 'ThemeURI' ) ?: $_theme->get( 'AuthorURI' ) ?: '';
 			if ( $_theme_contact ) {
-				$_dev = \tsf_extension_manager()->get_link( [
+				$_dev = \tsfem()->get_link( [
 					'url'     => $_theme_contact,
 					'content' => \__( 'theme developer', 'the-seo-framework-extension-manager' ),
 					'target'  => '_blank',
@@ -316,7 +288,7 @@ final class Tests {
 			) );
 		}
 
-		end :;
+		end:;
 		return [
 			'content' => $content,
 			'state'   => $state,
@@ -344,7 +316,6 @@ final class Tests {
 		}
 
 		$links = [];
-		$tsf   = \the_seo_framework();
 
 		foreach ( $data as $value ) :
 			if ( isset( $value['value'] ) && false === $value['value'] ) :
@@ -352,19 +323,19 @@ final class Tests {
 
 				if ( false !== $id ) {
 					if ( ! $id ) {
-						$id = $tsf->get_the_front_page_ID();
+						$id = static::$tsf->get_the_front_page_ID();
 					}
 
-					$title = $tsf->get_title( [ 'id' => $id ] );
-					$url   = $tsf->create_canonical_url( [ 'id' => $id ] );
+					$title = static::$tsf->get_title( [ 'id' => $id ] );
+					$url   = static::$tsf->create_canonical_url( [ 'id' => $id ] );
 
-					$links[] = sprintf( '<a href="%s" target="_blank" rel="noopener">%s</a>', $url, $title );
+					$links[] = sprintf( '<a href="%s" target=_blank rel=noopener>%s</a>', $url, $title );
 				}
 			endif;
 		endforeach;
 
 		// Links are filled in with erroneous pages.
-		if ( empty( $links ) ) {
+		if ( ! $links ) {
 			$state   = 'good';
 			$content = $this->wrap_info( $this->no_issue_found() );
 		} else {
@@ -372,7 +343,7 @@ final class Tests {
 			$content  = $this->wrap_info( \esc_html__( 'Something is causing a PHP error on your website. This prevents correctly closing of HTML tags.', 'the-seo-framework-extension-manager' ) );
 			$content .= sprintf( '<h4>%s</h4>', \esc_html( \_n( 'Affected page:', 'Affected pages:', \count( $links ), 'the-seo-framework-extension-manager' ) ) );
 
-			$content .= '<ul class="tsfem-ul-disc">';
+			$content .= '<ul class=tsfem-ul-disc>';
 			foreach ( $links as $link ) {
 				$content .= sprintf( '<li>%s</li>', $link );
 			}
@@ -381,7 +352,7 @@ final class Tests {
 
 		$content .= $this->wrap_info( $this->small_sample_disclaimer() );
 
-		end :;
+		end:;
 		return [
 			'content' => $content,
 			'state'   => $state,
@@ -407,7 +378,7 @@ final class Tests {
 		if ( ! $data['located'] ) {
 			$state   = 'error';
 			$content = $this->wrap_info(
-				\the_seo_framework()->convert_markdown(
+				static::$tsf->convert_markdown(
 					/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 					\esc_html__( 'No `robots.txt` file has been found. Please check your server configuration.', 'the-seo-framework-extension-manager' ),
 					[ 'code' ]
@@ -431,7 +402,7 @@ final class Tests {
 		}
 
 		// Cache safe.
-		$sample_tsf = \the_seo_framework()->robots_txt();
+		$sample_tsf = static::$tsf->robots_txt();
 
 		// TSF 4.0.5 compat, remove robots.txt warning. This warning cannot be translated, so this is fine... for now.
 		// TODO see note at robots_txt() method in The SEO Framework, and adjust this for that.
@@ -444,7 +415,7 @@ final class Tests {
 		if ( $sample_tsf === $data['value'] ) {
 			$state   = 'good';
 			$content = $this->wrap_info(
-				\the_seo_framework()->convert_markdown(
+				static::$tsf->convert_markdown(
 					/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 					\esc_html__( 'The `robots.txt` file is handled correctly by The SEO Framework.', 'the-seo-framework-extension-manager' ),
 					[ 'code' ]
@@ -457,7 +428,7 @@ final class Tests {
 		if ( ! file_exists( \get_home_path() . 'robots.txt' ) ) {
 			$state   = 'unknown';
 			$content = $this->wrap_info(
-				\the_seo_framework()->convert_markdown(
+				static::$tsf->convert_markdown(
 					/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 					\esc_html__( 'The `robots.txt` file is not handled by The SEO Framework.', 'the-seo-framework-extension-manager' ),
 					[ 'code' ]
@@ -469,13 +440,13 @@ final class Tests {
 		static_file : {
 			$state   = 'okay';
 			$content = $this->wrap_info(
-				\the_seo_framework()->convert_markdown(
+				static::$tsf->convert_markdown(
 					/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 					\esc_html__( 'The `robots.txt` file is static or overwritten in another way. Consider deleting the `robots.txt` file from your home directory folder because The SEO Framework handles this appropriately.', 'the-seo-framework-extension-manager' ),
 					[ 'code' ]
 				)
 			);
-			goto end;
+			// goto end; // Not needed.
 		}
 
 		end:;
@@ -516,20 +487,20 @@ final class Tests {
 			$content .= $this->wrap_info( \esc_html__( 'The sitemap file is bigger than 10MB, you should make it smaller.', 'the-seo-framework-extension-manager' ) );
 		}
 
-		if ( isset( $data['index'] ) && $data['index'] ) {
-			$content .= $this->wrap_info( $this->small_sample_disclaimer() );
-		}
-
 		if ( isset( $data['valid'] ) && ! $data['valid'] ) {
 			$state    = 'bad';
 			$content .= $this->wrap_info( \esc_html__( 'The sitemap file is found to be invalid. Please request Premium Support if you do not know how to resolve this.', 'the-seo-framework-extension-manager' ) );
+		} else {
+			$content .= $this->wrap_info( \esc_html__( 'The sitemap file is found and valid.', 'the-seo-framework-extension-manager' ) );
 		}
 
-		if ( empty( $content ) ) {
+		if ( isset( $data['index'] ) && $data['index'] )
+			$content .= $this->wrap_info( $this->small_sample_disclaimer() );
+
+		if ( ! $content )
 			$content = $this->wrap_info( $this->no_issue_found() );
-		}
 
-		end :;
+		end:;
 		return [
 			'content' => $content,
 			'state'   => $state,
@@ -611,13 +582,13 @@ final class Tests {
 					else :
 						$state = 'bad';
 						// Cache safe.
-						\wp_doing_ajax() and \the_seo_framework()->add_menu_link();
+						\wp_doing_ajax() and static::$tsf->add_menu_link();
 						$content .= $this->wrap_info(
-							\the_seo_framework()->convert_markdown(
+							static::$tsf->convert_markdown(
 								sprintf(
 									/* translators: URLs are in markdown. %s = SEO Settings page admin URL. */
 									\esc_html__( 'The canonical URL scheme is automatically determined. Set the preferred scheme to either HTTP or HTTPS in the [General SEO settings](%s).', 'the-seo-framework-extension-manager' ),
-									\esc_url( \the_seo_framework()->get_admin_page_url( \the_seo_framework()->seo_settings_page_slug ), [ 'https', 'http' ] )
+									static::$tsf->get_seo_settings_page_url()
 								),
 								[ 'a' ]
 							)
@@ -631,20 +602,20 @@ final class Tests {
 				endif;
 			else :
 				if ( $_expected_scheme === $data['canonical_url_scheme'] ) {
-					//= Don't change state.
+					// Don't change state.
 					$content .= $this->wrap_info(
 						\esc_html__( 'The canonical URL scheme matches the expected scheme.', 'the-seo-framework-extension-manager' )
 					);
 				} else {
 					$state = 'bad';
 					// Cache safe.
-					\wp_doing_ajax() and \the_seo_framework()->add_menu_link();
+					\wp_doing_ajax() and static::$tsf->add_menu_link();
 					$content .= $this->wrap_info(
-						\the_seo_framework()->convert_markdown(
+						static::$tsf->convert_markdown(
 							sprintf(
 								/* translators: URLs are in markdown. %s = SEO Settings page admin URL. */
 								\esc_html__( 'The canonical URL scheme is set incorrectly. Set the preferred scheme to be detected automatically in the [General SEO settings](%s).', 'the-seo-framework-extension-manager' ),
-								\esc_url( \tsf_extension_manager()->get_admin_page_url( \the_seo_framework()->seo_settings_page_slug ), [ 'https', 'http' ] )
+								static::$tsf->get_seo_settings_page_url()
 							),
 							[ 'a' ]
 						)
@@ -658,10 +629,10 @@ final class Tests {
 			);
 		endif;
 
-		if ( empty( $content ) )
+		if ( ! $content )
 			$content = $this->wrap_info( $this->no_issue_found() );
 
-		end :;
+		end:;
 		return [
 			'content' => $content,
 			'state'   => $state,
@@ -673,10 +644,9 @@ final class Tests {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $data The input data.
 	 * @return string The information string in HTML.
 	 */
-	public function issue_moresoon( $data ) {
+	public function issue_moresoon() {
 		return [
 			'content' => $this->wrap_info( \esc_html__( 'More issue tests are coming soon!', 'the-seo-framework-extension-manager' ) ),
 			'state'   => 'unknown',
@@ -692,7 +662,7 @@ final class Tests {
 	 * @return string The HTML wrapped information text.
 	 */
 	protected function wrap_info( $text ) {
-		return sprintf( '<p class="tsfem-e-monitor-info">%s</p>', $text );
+		return "<p class=tsfem-e-monitor-info>$text</p>";
 	}
 
 	/**
@@ -703,11 +673,11 @@ final class Tests {
 	 * @return string HTML wrapped no issues found.
 	 */
 	protected function no_issue_found() {
-		static $cache;
-		return $cache ?: $cache = sprintf(
-			'<span class="tsfem-description">%s</span>',
+		static $memo;
+		return $memo ?? ( $memo = sprintf(
+			'<span class=tsfem-description>%s</span>',
 			\esc_html__( 'No issues have been found.', 'the-seo-framework-extension-manager' )
-		);
+		) );
 	}
 
 	/**
@@ -718,11 +688,11 @@ final class Tests {
 	 * @return string HTML wrapped no data found.
 	 */
 	protected function no_data_found() {
-		static $cache;
-		return $cache ?: $cache = sprintf(
-			'<span class="tsfem-description">%s</span>',
+		static $memo;
+		return $memo ?? ( $memo = sprintf(
+			'<span class=tsfem-description>%s</span>',
 			\esc_html__( 'No data has been found on this issue.', 'the-seo-framework-extension-manager' )
-		);
+		) );
 	}
 
 	/**
@@ -733,10 +703,10 @@ final class Tests {
 	 * @return string HTML wrapped small sample size used.
 	 */
 	protected function small_sample_disclaimer() {
-		static $cache;
-		return $cache ?: $cache = sprintf(
-			'<span class="tsfem-description">%s</span>',
+		static $memo;
+		return $memo ?? ( $memo = sprintf(
+			'<span class=tsfem-description>%s</span>',
 			\esc_html__( 'This has been evaluated with a small sample size.', 'the-seo-framework-extension-manager' )
-		);
+		) );
 	}
 }

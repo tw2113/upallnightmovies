@@ -55,16 +55,16 @@ final class FormFieldParser {
 	 */
 	public static function get_mda_value( $keys, &$value ) {
 
-		//= Because it's cast to array, the return will always be inside this loop.
+		// Because it's cast to array, the return will always be inside this loop.
 		foreach ( (array) $keys as $k => $v ) {
 			if ( \is_array( $v ) ) {
 				return isset( $value[ $k ] ) ? static::get_mda_value( $v, $value[ $k ] ) : null;
 			} else {
 				if ( $k ) {
-					return isset( $value[ $k ][ $v ] ) ? $value[ $k ][ $v ] : null;
+					return $value[ $k ][ $v ] ?? null;
 				}
 
-				return isset( $value[ $v ] ) ? $value[ $v ] : null;
+				return $value[ $v ] ?? null;
 			}
 		}
 	}
@@ -113,7 +113,7 @@ final class FormFieldParser {
 	 * @param array $a The array to get the last value from.
 	 * @return string The last array value.
 	 */
-	public static function get_last_value( array $a ) {
+	public static function get_last_value( $a ) {
 
 		// phpcs:ignore, WordPress.CodeAnalysis.AssignmentInCondition -- Don't fault my amazingness.
 		while ( \is_array( $a = end( $a ) ) );
@@ -137,7 +137,7 @@ final class FormFieldParser {
 	 * @param array $a The single dimensional array.
 	 * @return array Multidimensional array, where the values are the dimensional keys.
 	 */
-	public static function satoma( array $a ) {
+	public static function satoma( $a ) {
 
 		$r = [];
 

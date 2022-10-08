@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Focus extension for The SEO Framework
@@ -39,26 +38,20 @@ final class Scoring {
 	use \TSF_Extension_Manager\Construct_Core_Static_Final_Instance;
 
 	/**
-	 * The scoring template.
-	 *
 	 * @since 1.0.0
-	 * @var array The template to iterate over.
+	 * @var array The scoring template to iterate over.
 	 */
 	public $template = [];
 
 	/**
-	 * The current ID prefix key.
-	 *
 	 * @since 1.0.0
-	 * @var string $key
+	 * @var string The current ID prefix key.
 	 */
 	public $key;
 
 	/**
-	 * The current score values.
-	 *
 	 * @since 1.0.0
-	 * @var array $values
+	 * @var array The current score values.
 	 */
 	public $values;
 
@@ -69,11 +62,20 @@ final class Scoring {
 	 *
 	 * @since 1.0.0
 	 * @ignore
-	 * @var int $current_score The current score.
-	 * @var int $max_score     The maximum score.
+	 * @var int The current score.
 	 */
 	public $current_score = 0;
-	public $max_score     = 0;
+
+	/**
+	 * Not utilized.
+	 * Can be summed from $this->values[x]['endScore'] (not stored yet)
+	 * Can be summed from $this->template[x]['maxScore']-
+	 *
+	 * @since 1.0.0
+	 * @ignore
+	 * @var int The maximum score.
+	 */
+	public $max_score = 0;
 
 	/**
 	 * Returns complete template, or part thereof.
@@ -124,7 +126,7 @@ final class Scoring {
 	 * @return string The score value.
 	 */
 	public function get_value( $type ) {
-		return $this->sanitize( isset( $this->values[ $type ] ) ? $this->values[ $type ] : 0 );
+		return $this->sanitize( $this->values[ $type ] ?? 0 );
 	}
 
 	/**
@@ -175,7 +177,7 @@ final class Scoring {
 			4  => 'tsfem-e-inpost-icon-good',
 		];
 
-		return isset( $classes[ $index ] ) ? $classes[ $index ] : $classes[0];
+		return $classes[ $index ] ?? $classes[0];
 	}
 
 	/**
@@ -190,7 +192,7 @@ final class Scoring {
 	 * @param int   $value The value to find nearest index of.
 	 * @return mixed The nearest index value.
 	 */
-	public function get_nearest_numeric_index_value( array $a, $value ) {
+	public function get_nearest_numeric_index_value( $a, $value ) {
 
 		ksort( $a, SORT_NUMERIC );
 
@@ -204,7 +206,7 @@ final class Scoring {
 			}
 		}
 
-		return isset( $ret ) ? $ret : array_values( $a )[0];
+		return $ret ?? array_values( $a )[0];
 	}
 
 	/**
@@ -214,8 +216,8 @@ final class Scoring {
 	 * @return string The data attributes.
 	 */
 	public function get_data_attributes( $type ) {
-		return \TSF_Extension_Manager\HTML::make_data_attributes( [
-			'scores'         => \tsf_extension_manager()->filter_keys(
+		return \The_SEO_Framework\Interpreters\HTML::make_data_attributes( [
+			'scores'         => \tsfem()->filter_keys(
 				$this->get_template( $type ),
 				[ 'assessment', 'maxScore', 'minScore', 'phrasing', 'rating', 'scoring' ]
 			),
@@ -226,8 +228,8 @@ final class Scoring {
 
 // phpcs:disable -- WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned, oh boy, this is a lot.
 
-//= Registers template.
-//= To register more templates, simply call the instance and merge arrays before output.
+// Registers template.
+// To register more templates, simply call the instance and merge arrays before output.
 Scoring::get_instance()->template = [
 	'seoTitle' => [
 		'title' => \esc_html__( 'Meta title:', 'the-seo-framework-extension-manager' ),

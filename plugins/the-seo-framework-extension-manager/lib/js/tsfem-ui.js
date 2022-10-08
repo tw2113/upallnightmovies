@@ -38,18 +38,6 @@
 window.tsfem_ui = function( $ ) {
 
 	/**
-	 * Signifies known states on-load.
-	 *
-	 * @since 2.5.0
-	 * @access public
-	 *
-	 * @const {string}                nonce
-	 * @const {object<string,string>} i18n
-	 */
-	const nonce = tsfemUIL10n.nonce;
-	const i18n  = tsfemUIL10n.i18n;
-
-	/**
 	 * Engages switcher button reset toggle.
 	 *
 	 * @since 1.5.0
@@ -107,7 +95,7 @@ window.tsfem_ui = function( $ ) {
 
 		target.style.willChange = 'opacity';
 
-		ms   = ms || 250;
+		ms ||= 250;
 		show = void 0 === show ? true : show;
 
 		let opacity   = 0,
@@ -119,7 +107,7 @@ window.tsfem_ui = function( $ ) {
 			target.style.opacity = 0;
 			target.style.display = null;
 			fadeGo = timestamp => {
-				start    = start || timestamp;
+				start ||= timestamp;
 				progress = ( timestamp - start ) / ms;
 
 				opacity = Number.parseFloat( progress ).toPrecision( 2 ); // at 144hz, 1 paint every ~2 frames.
@@ -136,14 +124,14 @@ window.tsfem_ui = function( $ ) {
 		} else {
 			opacity = 100;
 			fadeGo = timestamp => {
-				start    = start || timestamp;
+				start ||= timestamp;
 				progress = ( timestamp - start ) / ms;
 
 				opacity = Number.parseFloat( 1 - progress ).toPrecision( 2 ); // at 144hz, 1 paint every ~2 frames.
 				if ( opacity <= 0 ) {
 					target.style.opacity    = 0;
 					target.style.willChange = 'auto';
-					//= Defer paint asynchronously to prevent bounce if there's a callback.
+					// Defer paint asynchronously to prevent bounce if there's a callback.
 					setTimeout( () => { target.style.display = 'none' }, 0 );
 					typeof done === 'function' && (done)();
 				} else {
@@ -223,8 +211,8 @@ window.tsfem_ui = function( $ ) {
 
 			tsf.l10n.states.debug && console.log( response );
 
-			let data = response && response.data || void 0,
-				type = response && response.type || void 0;
+			let data = response?.data,
+				type = response?.type;
 
 			// debugger;
 
@@ -236,9 +224,9 @@ window.tsfem_ui = function( $ ) {
 				if ( hasMsg ) {
 					notice = $( notice );
 					if ( window.isRtl ) {
-						notice.find( 'p' ).first().prepend( msg + ' ' );
+						notice.find( 'p' ).first().prepend( `${msg} ` );
 					} else {
-						notice.find( 'p' ).first().append( ' ' + msg );
+						notice.find( 'p' ).first().append( ` ${msg}` );
 					}
 				}
 
@@ -253,7 +241,10 @@ window.tsfem_ui = function( $ ) {
 
 			// Output fallback notice.
 			let fallbackNotice = hasMsg ? wp.template( 'tsfem-fbtopnotice-msg' ) : wp.template( 'tsfem-fbtopnotice' ),
-				template       = fallbackNotice( { 'code' : noticeKey, 'msg' : msg } );
+				template       = fallbackNotice( {
+					code: noticeKey,
+					msg
+				} );
 			_appendTopNotice( template );
 		} ).always( () => {
 			_noticeBuffer = false;
@@ -281,7 +272,7 @@ window.tsfem_ui = function( $ ) {
 
 		$top.css( 'willChange', 'contents' );
 
-		//= Prevent bounce by locking maxHeight to current height.
+		// Prevent bounce by locking maxHeight to current height.
 		$notices.length > 1 && $top.css( 'maxHeight', $top.outerHeight() + 'px' );
 
 		if ( $notices.length > 1 ) {
@@ -296,7 +287,7 @@ window.tsfem_ui = function( $ ) {
 
 		$( notice ).hide().appendTo( $top ).slideDown( $.extend(
 			slideOps,
-			//= Reset CSS.
+			// Reset CSS.
 			{ complete: () => $top.css( 'maxHeight', '' ) }
 		) );
 
@@ -318,7 +309,7 @@ window.tsfem_ui = function( $ ) {
 
 		response = tsf.convertJSONResponse( response ) || void 0;
 
-		let data = response && response.data || void 0;
+		let data = response?.data;
 
 		if ( tsf.l10n.states.debug ) console.log( response );
 
@@ -433,31 +424,29 @@ window.tsfem_ui = function( $ ) {
 
 			selectWrapItem.label = document.createElement( 'label' );
 
-			(() => {
-				for ( let i in select ) {
-					let wrap = selectWrapItem.wrap.cloneNode( true ),
-						radio = selectWrapItem.radio.cloneNode( false ),
-						label = selectWrapItem.label.cloneNode( false );
+			for ( let i in select ) {
+				let wrap  = selectWrapItem.wrap.cloneNode( true ),
+					radio = selectWrapItem.radio.cloneNode( false ),
+					label = selectWrapItem.label.cloneNode( false );
 
-					radio.setAttribute( 'value', i );
-					label.innerHTML = select[ i ];
+				radio.setAttribute( 'value', i );
+				label.innerHTML = select[ i ];
 
-					//= i can be a string and integer because of "possible" JSON parsing.
-					if ( i == 0 ) {
-						radio.checked = true;
-					}
-
-					let id = 'tsfem-dialog-option-' + i;
-
-					radio.setAttribute( 'id', id );
-					label.setAttribute( 'for', id );
-
-					wrap.appendChild( radio );
-					wrap.appendChild( label );
-
-					modal.selectWrap.appendChild( wrap );
+				// i can be a string and integer because of "possible" JSON parsing.
+				if ( i == 0 ) {
+					radio.checked = true;
 				}
-			})();
+
+				let id = `tsfem-dialog-option-${i}`;
+
+				radio.setAttribute( 'id', id );
+				label.setAttribute( 'for', id );
+
+				wrap.appendChild( radio );
+				wrap.appendChild( label );
+
+				modal.selectWrap.appendChild( wrap );
+			}
 
 			modal.inner.appendChild( modal.selectWrap );
 		}
@@ -478,7 +467,7 @@ window.tsfem_ui = function( $ ) {
 				}
 
 				modal.confirmButton.innerHTML = confirm;
-				modal.confirmButton.addEventListener( 'click', function() {
+				modal.confirmButton.addEventListener( 'click', () => {
 					let detail = void 0;
 					if ( hasSelect ) {
 						detail = { 'detail' : {
@@ -529,7 +518,7 @@ window.tsfem_ui = function( $ ) {
 		modal.maskNoScroll.addEventListener( 'wheel', preventDefault );
 		modal.maskNoScroll.addEventListener( 'touchmove', preventDefault );
 
-		const resizeListener = function() {
+		const resizeListener = () => {
 			modal.dialogWrap.style.marginLeft = document.getElementById( 'adminmenuwrap' ).offsetWidth + 'px';
 			modal.dialogWrap.style.marginTop = document.getElementById( 'wpadminbar' ).offsetHeight + 'px';
 		}
@@ -547,6 +536,178 @@ window.tsfem_ui = function( $ ) {
 
 		window.addEventListener( 'tsfem_modalCancel', removeModal );
 		window.addEventListener( 'tsfem_modalConfirm', removeModal );
+	}
+
+	/**
+	 * Prepares logger for fast logging without freezing the interface.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return <{
+	 *   start:function(HTMLElement):string,
+	 *   stop:function(HTMLElement),
+	 *   queue:function(HTMLElement|string),
+	 *   copy:function(HTMLElement|string),
+	 *   scrollToBottom:function(HTMLElement|string),
+	 * }>
+	 */
+	const logger = () => {
+
+		const FPS        = 60;
+		const animations = {};
+		const charLimit = {
+			'trimAt':   0x7FFF,
+			'trimSize': 0x2000,
+		};
+
+		let animating = false,
+			frame     = -1;
+
+		function startAnimating() {
+			if ( ! animating ) {
+				animating = true;
+				requestAnimationFrame( tick );
+			}
+		}
+		function hasRunningAnimations() {
+			let running = false;
+			for ( let id in animations ) {
+				if ( animations[ id ].get( 'animating' ) ) {
+					running = true;
+					break;
+				}
+			}
+			return running;
+		}
+		function tick( timestamp ) {
+			let seg = Math.floor( timestamp / ( 1000 / FPS ) );
+
+			if ( seg > frame )
+				for ( let id in animations )
+					animations[ id ].get( 'animating' ) && paintFrame( id );
+
+			frame = seg;
+
+			if ( hasRunningAnimations() ) {
+				requestAnimationFrame( tick );
+			} else {
+				animating = false;
+			}
+		}
+		function paintFrame( id ) {
+			const logEl = document.getElementById( id );
+
+			// 1px + 14 font size for jitter
+			let scrollToBottom = logEl.scrollHeight - logEl.clientHeight - logEl.scrollTop < 15;
+
+			logEl.innerHTML = animations[ id ].get( 'queuedlog' );
+
+			if ( scrollToBottom )
+				logEl.scrollTop = logEl.scrollHeight;
+		}
+
+		return {
+			/**
+			 * Starts logger animation listener.
+			 *
+			 * Must be the first method called.
+			 * TODO, even if that's implied ^ must we not make it impossible to call others?
+			 * e.g., by moving the stack and "autostart" the moment the logger is instantiated?
+			 * That's what constructors are for...
+			 *
+			 * @param {HTMLElement} logger The logger element.
+			 * @return {String} The unique logger animation ID.
+			 */
+			start: logger => {
+
+				const id = (
+					logger.id ||= `tsfem-logger-${Date.now().toString( 36 )}-${Math.floor( Math.random() * 5e5 ).toString( 36 )}`
+				);
+
+				animations[ id ] ||= new Map();
+				animations[ id ].set( 'animating', true );
+				// Copy current log into queue so it won't vanish.
+				animations[ id ].set( 'queuedlog', document.getElementById( id ).innerHTML );
+
+				startAnimating();
+
+				return id;
+			},
+			/**
+			 * Stops logger animation listener.
+			 *
+			 * NOTE: It will perform one last paint to clear the queue.
+			 *
+			 * @param {HTMLElement|String} logger The logger element or animation ID.
+			 */
+			stop: logger => {
+				const id = logger?.id || logger;
+				paintFrame( id );
+				animations[ id ].set( 'animating', false );
+			},
+			/**
+			 * Stops logger animation listener.
+			 *
+			 * @param {HTMLElement|String} logger The logger element or animation ID.
+			 */
+			queue: ( logger, logText ) => {
+				const id  = logger?.id || logger;
+				let log = animations[ id ].get( 'queuedlog' ) + logText;
+
+				// Trim 4k if exceeds 32k characters. Queue can otherwise grown indefinitely if user isn't focussing screen.
+				if ( log.length > charLimit.trimAt ) {
+					const newLinePos = log.indexOf( '\n', charLimit.trimSize );
+					log = log.substring(
+						-1 !== newLinePos ? newLinePos : charLimit.trimSize
+					);
+				}
+
+				animations[ id ].set( 'queuedlog', log );
+			},
+			/**
+			 * Copies text with insecure fallback support.
+			 *
+			 * @param {HTMLElement|String} logger The logger element or animation ID.
+			 * @return {Promise} Promise object
+			 */
+			copy: logger => {
+				const logEl = document.getElementById( logger?.id || logger );
+
+				if ( navigator.clipboard ) {
+					return navigator.clipboard.writeText( logEl.innerText );
+				} else {
+					const text = logEl.childNodes[0];
+					const range = new Range();
+					const selection = document.getSelection();
+
+					range.setStart( text, 0 );
+					range.setEnd( text, text.length );
+					selection.removeAllRanges();
+					selection.addRange( range );
+
+					return new Promise( ( resolve, reject ) => {
+						try {
+							document.execCommand( 'copy' ); // Deprecated, with no alternative available.
+							resolve();
+						} catch ( e ) {
+							reject();
+						}
+						selection.removeAllRanges();
+					} );
+				}
+			},
+			/**
+			 * Scrolls logger to bottom.
+			 *
+			 * @param {HTMLElement|String} logger The logger element or animation ID.
+			 */
+			scrollToBottom: logger => {
+				const id = logger?.id || logger;
+
+				const logEl = document.getElementById( id );
+				logEl.scrollTop = logEl.scrollHeight;
+			}
+		}
 	}
 
 	/**
@@ -596,6 +757,7 @@ window.tsfem_ui = function( $ ) {
 		setTopNotice,
 		unexpectedAjaxErrorNotice,
 		dialog,
+		logger: logger(),
 	} );
 }( jQuery );
 window.tsfem_ui.load();

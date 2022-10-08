@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
@@ -69,7 +68,7 @@ class Core {
 	private function construct() {
 
 		if ( ! isset( static::$tsf ) )
-			static::$tsf = \the_seo_framework();
+			static::$tsf = \tsf();
 
 		/**
 		 * @see trait TSF_Extension_Manager\Extension_Post_Meta
@@ -115,7 +114,7 @@ class Core {
 		foreach ( $filtered_post_types as $post_type ) {
 			$this->o_defaults['post_types'][ $post_type ] = [
 				'enabled'      => 1,
-				'default_type' => static::filter_article_type( \tsf_extension_manager()->coalesce_var( $this->pm_defaults['type'], 'Article' ) ),
+				'default_type' => static::filter_article_type( $this->pm_defaults['type'] ?? 'Article' ),
 			];
 		}
 
@@ -132,7 +131,7 @@ class Core {
 	 */
 	protected static function is_organization() {
 		static $is;
-		return isset( $is ) ? $is : $is = 'organization' === static::$tsf->get_option( 'knowledge_type' );
+		return $is ?? ( $is = 'organization' === static::$tsf->get_option( 'knowledge_type' ) );
 	}
 
 	/**
@@ -145,12 +144,9 @@ class Core {
 	 * @return string The filtered Article type.
 	 */
 	protected static function filter_article_type( $type ) {
-
-		if ( ! \in_array( $type, static::get_available_article_types(), true ) ) {
-			$type = 'Article';
-		}
-
-		return $type;
+		return \in_array( $type, static::get_available_article_types(), true )
+			? $type
+			: 'Article';
 	}
 
 	/**
@@ -161,7 +157,7 @@ class Core {
 	 * @param array $items An array with Article types as keys.
 	 * @return string The filtered array.
 	 */
-	protected static function filter_article_keys( array $items ) {
+	protected static function filter_article_keys( $items ) {
 		return array_intersect_key(
 			$items,
 			array_flip( static::get_available_article_types() )

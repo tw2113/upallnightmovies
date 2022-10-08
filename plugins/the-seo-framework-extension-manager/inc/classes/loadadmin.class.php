@@ -88,7 +88,7 @@ final class LoadAdmin extends AdminPages {
 
 			if ( $this->is_tsf_extension_manager_page( false ) ) {
 				// Reload dashboard.
-				\the_seo_framework()->admin_redirect( $this->seo_extensions_page_slug );
+				\tsf()->admin_redirect( $this->seo_extensions_page_slug );
 				exit;
 			}
 		} else {
@@ -104,7 +104,7 @@ final class LoadAdmin extends AdminPages {
 
 			if ( $this->is_tsf_extension_manager_page( false ) ) {
 				// Reload dashboard.
-				\the_seo_framework()->admin_redirect( $this->seo_extensions_page_slug );
+				\tsf()->admin_redirect( $this->seo_extensions_page_slug );
 				exit;
 			}
 		}
@@ -163,7 +163,7 @@ final class LoadAdmin extends AdminPages {
 
 		if ( ! $show_notice ) return;
 
-		$tsf = \the_seo_framework();
+		$tsf = \tsf();
 
 		// Already escaped.
 		$tsf->do_dismissible_notice(
@@ -268,7 +268,7 @@ final class LoadAdmin extends AdminPages {
 
 		// Adds action to the URI. It's only used to visualize what has happened.
 		$args = WP_DEBUG ? [ 'did-' . $options['nonce-action'] => 'true' ] : [];
-		\the_seo_framework()->admin_redirect( $this->seo_extensions_page_slug, $args );
+		\tsf()->admin_redirect( $this->seo_extensions_page_slug, $args );
 		exit;
 	}
 
@@ -325,7 +325,7 @@ final class LoadAdmin extends AdminPages {
 		if ( false === $result ) {
 			// Nonce failed. Set error notice and reload.
 			$this->set_error_notice( [ 9001 => '' ] );
-			\the_seo_framework()->admin_redirect( $this->seo_extensions_page_slug );
+			\tsf()->admin_redirect( $this->seo_extensions_page_slug );
 			exit;
 		}
 
@@ -343,16 +343,14 @@ final class LoadAdmin extends AdminPages {
 		if ( $this->is_plugin_activated() || ! \TSF_Extension_Manager\can_do_manager_settings() || $this->is_tsf_extension_manager_page() )
 			return;
 
-		$text  = \__( 'Your extensions are only three clicks away', 'the-seo-framework-extension-manager' );
 		$url   = $this->get_admin_page_url();
 		$title = \__( 'Activate the SEO Extension Manager', 'the-seo-framework-extension-manager' );
 
 		$notice_link = '<a href="' . \esc_url( $url ) . '" title="' . \esc_attr( $title ) . '" target=_self>' . \esc_html( $title ) . '</a>';
-
-		$notice = \esc_html( $text ) . ' &mdash; ' . $notice_link;
+		$text        = \esc_html__( 'Your extensions are only three clicks away', 'the-seo-framework-extension-manager' );
 
 		// No a11y icon. Already escaped. Use TSF as it loads styles.
-		\the_seo_framework()->do_dismissible_notice( $notice, 'updated', false, false, false );
+		\tsf()->do_dismissible_notice( "$text &mdash; $notice_link", 'updated', false, false, false );
 	}
 
 	/**
@@ -360,6 +358,8 @@ final class LoadAdmin extends AdminPages {
 	 * Defaults to the Extension Manager page ID.
 	 *
 	 * @since 1.0.0
+	 * @TODO change to get_setitngs_page_url() (incl. parameter for extensions?).
+	 *       see get_seo_settings_page_url() of TSF.
 	 *
 	 * @param string $page The admin menu page slug. Defaults to TSF Extension Manager's.
 	 * @param array  $args Other query arguments.
@@ -369,9 +369,7 @@ final class LoadAdmin extends AdminPages {
 
 		$page = $page ? $page : $this->seo_extensions_page_slug;
 
-		$url = \add_query_arg( $args, \menu_page_url( $page, false ) );
-
-		return $url;
+		return \add_query_arg( $args, \menu_page_url( $page, false ) );
 	}
 
 	/**
@@ -393,15 +391,14 @@ final class LoadAdmin extends AdminPages {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $view The file name.
-	 * @param array  $args The arguments to be supplied within the file name.
-	 *                     Each array key is converted to a variable with its value attached.
+	 * @param string $view   The file name.
+	 * @param array  $__args The arguments to be supplied within the file name.
+	 *                       Each array key is converted to a variable with its value attached.
 	 */
-	protected function get_view( $view, array $args = [] ) {
+	protected function get_view( $view, $__args = [] ) {
 
-		foreach ( $args as $key => $val ) {
-			$$key = $val;
-		}
+		foreach ( $__args as $__k => $__v ) $$__k = $__v;
+		unset( $__k, $__v, $__args );
 
 		$this->get_verification_codes( $_instance, $bits );
 
@@ -430,7 +427,7 @@ final class LoadAdmin extends AdminPages {
 	 * @param string $view The view file name.
 	 */
 	public function get_view_location( $view ) {
-		return TSF_EXTENSION_MANAGER_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . $view . '.php';
+		return TSF_EXTENSION_MANAGER_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . "$view.php";
 	}
 
 	/**
@@ -467,9 +464,9 @@ final class LoadAdmin extends AdminPages {
 	 * }
 	 * @return string escaped link.
 	 */
-	public function get_link( array $args = [] ) {
+	public function get_link( $args ) {
 
-		if ( empty( $args ) )
+		if ( ! $args )
 			return '';
 
 		$defaults = [
@@ -492,7 +489,7 @@ final class LoadAdmin extends AdminPages {
 		}
 
 		if ( empty( $args['url'] ) ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, \esc_html__( 'No valid URL was supplied.', 'the-seo-framework-extension-manager' ), null );
+			\tsf()->_doing_it_wrong( __METHOD__, \esc_html__( 'No valid URL was supplied.', 'the-seo-framework-extension-manager' ), null );
 			return '';
 		}
 
@@ -549,7 +546,7 @@ final class LoadAdmin extends AdminPages {
 	 * @param array $args The button arguments.
 	 * @return string The download button.
 	 */
-	public function get_download_link( array $args = [] ) {
+	public function get_download_link( $args = [] ) {
 
 		$defaults = [
 			'url'      => '',
@@ -646,7 +643,7 @@ final class LoadAdmin extends AdminPages {
 
 		if ( false === $parent_set ) {
 			// Set parent slug.
-			\the_seo_framework()->add_menu_link();
+			\tsf()->add_menu_link();
 			$parent_set = true;
 		}
 
@@ -655,7 +652,7 @@ final class LoadAdmin extends AdminPages {
 
 		// Add arbitrary menu contents to known menu slug.
 		$menu = [
-			'parent_slug' => \the_seo_framework()->seo_settings_page_slug,
+			'parent_slug' => \tsf()->seo_settings_page_slug,
 			'page_title'  => '1',
 			'menu_title'  => '1',
 			'capability'  => $capability,
@@ -708,7 +705,7 @@ final class LoadAdmin extends AdminPages {
 
 		$slug = \sanitize_key( $options['extension'] );
 
-		//? PHP 7 please.
+		// PHP 7 please.
 		if ( \array_key_exists( $slug, (array) TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS ) ) {
 			$ajax or $this->register_extension_state_change_notice( 10013, $slug );
 			return $ajax ? $this->get_ajax_notice( false, 10013 ) : false;
@@ -760,13 +757,13 @@ final class LoadAdmin extends AdminPages {
 
 			$test = $this->test_extension( $slug, $ajax );
 
-			//= 5 means it's already activated. 4 means it passed all tests.
+			// 5 means it's already activated. 4 means it passed all tests.
 			if ( ! \in_array( $test, [ 4, 5 ], true ) || $this->_has_died() ) {
 				$ajax or $this->set_error_notice( [ 10005 => $test ] );
 				return $ajax ? $this->get_ajax_notice( false, 10005 ) : false;
 			}
 
-			//= 5 means it's already activated. Enable it otherwise.
+			// 5 means it's already activated. Enable it otherwise.
 			$success = 5 === $test || $this->enable_extension( $slug );
 
 			if ( false === $success ) {
@@ -837,7 +834,7 @@ final class LoadAdmin extends AdminPages {
 		 */
 		$slug = \sanitize_key( $options['extension'] );
 
-		//? PHP 7 please.
+		// PHP 7 please.
 		if ( \array_key_exists( $slug, (array) TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS ) ) {
 			$ajax or $this->register_extension_state_change_notice( 11003, $slug );
 			return $ajax ? $this->get_ajax_notice( false, 11003 ) : false;

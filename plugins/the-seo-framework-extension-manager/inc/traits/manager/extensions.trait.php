@@ -35,27 +35,23 @@ namespace TSF_Extension_Manager;
 trait Extensions_Properties {
 
 	/**
-	 * Holds the class extension list contents.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var array $extensions
+	 * @var array Map of extensions.
 	 */
 	private static $extensions = [];
 
 	/**
-	 * Holds the instance extension slug to handle.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string $current_slug
+	 * @var string The current extension slug to handle (activate/check/etc.).
 	 */
-	private static $current_slug = [];
+	private static $current_slug = '';
 
 	/**
 	 * Fetches all extensions.
 	 *
 	 * @since 1.0.0
+	 * @TODO Once we deprecate extensions, we'd want to do that here 'deprecated'=>true,
+	 *       and hide those from view when deactivated. Constant activation is still possible.
 	 *
 	 * @return array The extensions list.
 	 */
@@ -87,11 +83,11 @@ trait Extensions_Properties {
 				'area'         => 'audit, content, keywords',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1635798852',
+				'last_updated' => '1664262329',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'articles'  => [
 				'slug'         => 'articles',
@@ -100,11 +96,24 @@ trait Extensions_Properties {
 				'area'         => 'blogging, news',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1651198376',
+				'last_updated' => '1664262329',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
+			],
+			'transport' => [
+				'slug'         => 'transport',
+				'network'      => '0',
+				'type'         => 'free',
+				'area'         => 'setup',
+				'author'       => 'Sybre Waaijer',
+				'party'        => 'first',
+				'last_updated' => '1664387758',
+				'requires'     => '5.5',
+				'tested'       => '6.0',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'honeypot'  => [
 				'slug'         => 'honeypot',
@@ -113,11 +122,11 @@ trait Extensions_Properties {
 				'area'         => 'anti-spam',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1612160183',
+				'last_updated' => '1664173453',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'cord'      => [
 				'slug'         => 'cord',
@@ -126,11 +135,11 @@ trait Extensions_Properties {
 				'area'         => 'analytics',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1576470514',
+				'last_updated' => '1664173453',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'local'     => [
 				'slug'         => 'local',
@@ -139,11 +148,11 @@ trait Extensions_Properties {
 				'area'         => 'business',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1633798024',
+				'last_updated' => '1664262329',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'amp'       => [
 				'slug'         => 'amp',
@@ -155,21 +164,21 @@ trait Extensions_Properties {
 				'last_updated' => '1565627638',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'monitor'   => [
 				'slug'         => 'monitor',
 				'network'      => '0',
 				'type'         => 'premium',
-				'area'         => 'uptime, syntax',
+				'area'         => 'syntax',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1633797930',
+				'last_updated' => '1664262329',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'incognito' => [
 				'slug'         => 'incognito',
@@ -181,8 +190,8 @@ trait Extensions_Properties {
 				'last_updated' => '1515109560',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'origin'    => [
 				'slug'         => 'origin',
@@ -194,8 +203,8 @@ trait Extensions_Properties {
 				'last_updated' => '1541601833',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 			'title-fix' => [
 				'slug'         => 'title-fix',
@@ -207,8 +216,8 @@ trait Extensions_Properties {
 				'last_updated' => '1572496812',
 				'requires'     => '5.5',
 				'tested'       => '6.0',
-				'requires_tsf' => '4.1.4',
-				'tested_tsf'   => '4.2',
+				'requires_tsf' => '4.2.0',
+				'tested_tsf'   => '4.2.0',
 			],
 		];
 	}
@@ -226,9 +235,9 @@ trait Extensions_Properties {
 	 */
 	private static function get_external_extensions_checksum() {
 		return [
-			'sha256' => '5b80680cd8b82eb998370ea50b5aa5afdbe2c4a45d1386a1cec399f462741dc9',
-			'sha1'   => '00968dd9ff0d9791e083c2766a5d17af1dd0ad0a',
-			'md5'    => '3ddc34319cd368d11459cbc5cb34029e',
+			'sha256' => '907f04cfdbeace844e88793fd61bf1c48871ce230791103d0753a6fb9165c96b',
+			'sha1'   => '9345a800ec49536295ecd15fe998cd71544b71ec',
+			'md5'    => 'd586cf0a78a6228c9d97af72b4c831e4',
 		];
 	}
 
@@ -252,18 +261,18 @@ trait Extensions_Properties {
 			if ( isset( $extensions[ $slug ] ) ) {
 				return $extensions[ $slug ];
 			} else {
-				//! Extension that doesn't exist is registered as activated.
-				//! The user can't remove this notice without disconnecting the account. TODO Purge it? --> Not here!
-				//! TODO run $this->disable_extension( $slug ) and register a notice: "${slug} no longer exists"
-				//! TODO Forward this to the upgrader for whenever an extension's removed.
-				\the_seo_framework()->_doing_it_wrong(
-					__CLASS__ . '::' . __FUNCTION__,
-					sprintf( 'You must specify an existing extension slug. <code>%s</code> does not exist.', \esc_html( $slug ) )
-				);
+				// Extension that doesn't exist is registered as activated.
+				// The user can't remove this notice without disconnecting the account. TODO Purge it? --> Not here!
+				// TODO run $this->disable_extension( $slug ) and register a notice: "${slug} no longer exists"
+				// TODO Forward this to the upgrader for whenever an extension's removed.
+				// \tsf()->_doing_it_wrong(
+				// 	__CLASS__ . '::' . __FUNCTION__,
+				// 	sprintf( 'You must specify an existing extension slug. <code>%s</code> does not exist.', \esc_html( $slug ) )
+				// );
 				return [];
 			}
 		} else {
-			\the_seo_framework()->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'You must specify a slug.' );
+			\tsf()->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'You must specify a slug.' );
 			return [];
 		}
 	}
@@ -281,16 +290,16 @@ trait Extensions_Properties {
 	 */
 	private static function get_extension_asset_location( $slug, $file, $url = false ) {
 
-		if ( empty( $slug ) || empty( $file ) ) return '';
+		if ( ! $slug || ! $file ) return '';
 
 		$path = static::get_extension_relative_path( $slug );
 
 		if ( $url ) {
 			$path = str_replace( DIRECTORY_SEPARATOR, '/', $path );
 
-			return TSF_EXTENSION_MANAGER_DIR_URL . $path . 'assets/' . $file;
+			return TSF_EXTENSION_MANAGER_DIR_URL . "{$path}assets/$file";
 		} else {
-			return TSF_EXTENSION_MANAGER_DIR_PATH . $path . 'assets' . DIRECTORY_SEPARATOR . $file;
+			return TSF_EXTENSION_MANAGER_DIR_PATH . "{$path}assets" . DIRECTORY_SEPARATOR . $file;
 		}
 	}
 
@@ -303,12 +312,8 @@ trait Extensions_Properties {
 	 * @return string The extension trunk file path.
 	 */
 	private static function get_extension_trunk_path( $slug ) {
-
-		if ( empty( $slug ) ) return '';
-
-		$path = static::get_extension_relative_path( $slug );
-
-		return $path = TSF_EXTENSION_MANAGER_DIR_PATH . $path . 'trunk' . DIRECTORY_SEPARATOR;
+		if ( ! $slug ) return '';
+		return TSF_EXTENSION_MANAGER_DIR_PATH . static::get_extension_relative_path( $slug ) . 'trunk' . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -328,7 +333,7 @@ trait Extensions_Properties {
 
 		$extension = static::get_extension( $slug );
 
-		if ( empty( $extension ) )
+		if ( ! $extension )
 			return '';
 
 		// phpcs:ignore -- No network support like this, yet.
@@ -394,15 +399,12 @@ trait Extensions_Properties {
 			'MenuSlug'     => 'Extension Menu Slug',
 		];
 
-		$data[ $slug ] = false;
-
 		$file = static::get_extension_header_file_location( $slug );
 
-		// phpcs:ignore, TSF.Performance.Functions.PHP -- required.
-		if ( file_exists( $file ) )
-			$data[ $slug ] = \get_file_data( $file, $default_headers, 'tsfem-extension' );
-
-		return $data[ $slug ];
+		// phpcs:ignore, TSF.Performance.Functions.PHP -- file_exists is required.
+		return $data[ $slug ] = file_exists( $file )
+			? \get_file_data( $file, $default_headers, 'tsfem-extension' )
+			: false;
 	}
 }
 
@@ -437,7 +439,7 @@ trait Extensions_Actions {
 		if ( isset( $checksum ) )
 			return $checksum;
 
-		$type = \tsf_extension_manager()->get_hash_type();
+		$type = \tsfem()->get_hash_type();
 		// phpcs:ignore -- No objects are inserted, nor is this ever unserialized.
 		$hash = hash( $type, serialize( static::$extensions ) );
 
@@ -466,11 +468,9 @@ trait Extensions_Actions {
 		if ( isset( $checksum ) )
 			return $checksum;
 
-		$slug = static::$current_slug;
+		$file = static::get_extension_header_file_location( static::$current_slug );
 
-		$file = static::get_extension_header_file_location( $slug );
-
-		$type = \tsf_extension_manager()->get_hash_type();
+		$type = \tsfem()->get_hash_type();
 		$hash = hash_file( $type, $file );
 
 		return $checksum = [
@@ -501,7 +501,7 @@ trait Extensions_Actions {
 			return $cache;
 
 		$options    = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
-		$extensions = isset( $options['active_extensions'] ) ? $options['active_extensions'] : [];
+		$extensions = $options['active_extensions'] ?? [];
 
 		$is_premium_user   = self::is_premium_user();
 		$is_connected_user = self::is_connected_user();
@@ -548,7 +548,7 @@ trait Extensions_Actions {
 
 		$extension = static::get_extension( static::$current_slug );
 
-		if ( empty( $extension ) )
+		if ( ! $extension )
 			return [ 'success' => false, 'case' => 1 ];
 
 		if ( static::is_extension_active( $extension ) )
@@ -798,7 +798,7 @@ trait Extensions_Actions {
 
 		$file = static::get_extension_header_file_location( $slug );
 
-		if ( empty( $file ) ) {
+		if ( ! $file ) {
 			$val = 1;
 			goto tick;
 		}
@@ -809,7 +809,7 @@ trait Extensions_Actions {
 		}
 
 		// Goto tick is now forbidden. Use goto clean.
-		unclean : {
+		unclean: {
 			ob_start();
 
 			\define( '_TSFEM_TESTING_EXTENSION', true );
@@ -821,13 +821,13 @@ trait Extensions_Actions {
 			register_shutdown_function( __CLASS__ . '::_shutdown_handle_test_extension_fatal_error' );
 		}
 
-		basetest : {
+		basetest: {
 			// Test base file.
 			$success = static::persist_include_extension( $file, $_instance, $bits );
 		}
 
 		if ( $success ) {
-			jsontest : {
+			jsontest: {
 				// Test json file and contents.
 				$success = static::perform_extension_json_tests( $slug, $_instance, $bits );
 			}
@@ -835,7 +835,7 @@ trait Extensions_Actions {
 
 		$val = $success ? 4 : 3;
 
-		clean : {
+		clean: {
 			ob_clean();
 
 			static::reset_error_reporting();
@@ -844,12 +844,12 @@ trait Extensions_Actions {
 			\define( '_TSFEM_TEST_EXT_PASS', true );
 		}
 
-		tick : {
+		tick: {
 			// Tick the instance.
-			\tsf_extension_manager()->_verify_instance( $_instance, $bits[1] );
+			\tsfem()->_verify_instance( $_instance, $bits[1] );
 		}
 
-		end :;
+		end:;
 
 		return $val;
 	}
@@ -881,7 +881,7 @@ trait Extensions_Actions {
 		// phpcs:ignore, WordPress.WP.AlternativeFunctions, TSF.Performance.Functions -- this is a local file call, required file get.
 		$json = json_decode( file_get_contents( $json_file, false, $timeout ) );
 
-		if ( empty( $json ) ) {
+		if ( ! $json ) {
 			// json file contents are invalid.
 			throw new \Exception( 'Extension test file is invalid', E_USER_ERROR );
 
@@ -909,12 +909,12 @@ trait Extensions_Actions {
 			}
 
 			if ( $_class ) {
-				$class     = $namespace . '\\' . $_class;
+				$class     = "$namespace\\$_class";
 				$success[] = (bool) new $class;
 			}
 		}
 
-		end :;
+		end:;
 		return ! \in_array( false, $success, true );
 	}
 
@@ -934,7 +934,7 @@ trait Extensions_Actions {
 		$success     = [];
 
 		// Get follow-up verification instance.
-		foreach ( \tsf_extension_manager()->_yield_verification_instance( 2, $_instance, $bits ) as $verification ) :
+		foreach ( \tsfem()->_yield_verification_instance( 2, $_instance, $bits ) as $verification ) :
 
 			$bits      = $verification['bits'];
 			$_instance = $verification['instance'];
@@ -942,7 +942,7 @@ trait Extensions_Actions {
 			switch ( $yield_count ) :
 				case 0:
 					$success[] = static::include_extension( $file, $_instance, $bits );
-					//= Continue to default for counting.
+					// Continue to default for counting.
 
 				default:
 					$yield_count++;
@@ -1022,12 +1022,9 @@ trait Extensions_Actions {
 		if ( \defined( '_TSFEM_TEST_EXT_PASS' ) )
 			return;
 
-		if ( $level = ob_get_level() ) { // phpcs:ignore, WordPress.CodeAnalysis.AssignmentInCondition -- this is fine.
-			while ( $level ) {
-				ob_end_clean();
-				$level--;
-			}
-		}
+		$level = ob_get_level();
+		if ( $level )
+			while ( $level-- ) ob_end_clean();
 
 		$error      = error_get_last();
 		$error_type = '';
@@ -1057,7 +1054,7 @@ trait Extensions_Actions {
 
 		if ( \wp_doing_ajax() ) {
 			// TODO send slug?
-			\tsf_extension_manager()->send_json(
+			\tsfem()->send_json(
 				[
 					'results'     => \TSF_Extension_Manager\get_ajax_notice( false, $error_notice, 10005 ),
 					'fatal_error' => sprintf( '<strong>Error message:</strong> %s', $advanced_error_notice ),
@@ -1066,7 +1063,7 @@ trait Extensions_Actions {
 			);
 		} else {
 			$error_notice .= '<br>' . \esc_html__( 'Extension has not been activated.', 'the-seo-framework-extension-manager' );
-			$error_notice .= '<p><strong>Error message:</strong> <br>' . $advanced_error_notice . '</p>';
+			$error_notice .= "<p><strong>Error message:</strong> <br>$advanced_error_notice</p>";
 
 			\wp_die(
 				$error_notice, // phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- it's escaped.
@@ -1142,7 +1139,7 @@ trait Extensions_Actions {
 			return static::include_extension( $file, $_instance, $bits );
 
 		// Tick the instance on failure.
-		\tsf_extension_manager()->_verify_instance( $_instance, $bits[1] );
+		\tsfem()->_verify_instance( $_instance, $bits[1] );
 
 		return false;
 	}
@@ -1166,7 +1163,7 @@ trait Extensions_Actions {
 
 		if ( isset( $loaded[ $file ] ) ) {
 			// Tick the instance for we bypass inclusion.
-			\tsf_extension_manager()->_verify_instance( $_instance, $bits[1] );
+			\tsfem()->_verify_instance( $_instance, $bits[1] );
 
 			return $loaded[ $file ];
 		}
@@ -1185,7 +1182,7 @@ trait Extensions_Actions {
 	 */
 	private static function validate_file( $file, $type = 'php' ) {
 
-		if ( ( '.' . $type ) === substr( $file, - ( \strlen( $type ) + 1 ) ) ) {
+		if ( ( ".$type" ) === substr( $file, - ( \strlen( $type ) + 1 ) ) ) {
 			switch ( \validate_file( $file ) ) :
 				case 2:
 					if ( 'WIN' !== strtoupper( substr( PHP_OS, 0, 3 ) ) ) {

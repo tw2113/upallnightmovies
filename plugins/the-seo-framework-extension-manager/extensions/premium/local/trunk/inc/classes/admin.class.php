@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
@@ -42,19 +41,13 @@ final class Admin extends Core {
 	use \TSF_Extension_Manager\Construct_Master_Once_Interface;
 
 	/**
-	 * Name of the page hook when the menu is registered.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string Page hook.
+	 * @var string Page hook name.
 	 */
 	protected $local_menu_page_hook;
 
 	/**
-	 * The extension page ID/slug.
-	 *
 	 * @since 1.0.0
-	 *
 	 * @var string Page ID/Slug
 	 */
 	protected $local_page_slug;
@@ -70,7 +63,7 @@ final class Admin extends Core {
 		$this->local_page_slug = 'theseoframework-local';
 
 		// Load admin actions.
-		if ( ! \the_seo_framework()->is_headless['settings'] )
+		if ( ! \tsf()->is_headless['settings'] )
 			$this->load_admin_actions();
 	}
 
@@ -107,13 +100,13 @@ final class Admin extends Core {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.0 Added TSF v3.1 compat.
-	 * @uses \the_seo_framework()->seo_settings_page_slug.
+	 * @uses \tsf()->seo_settings_page_slug.
 	 * @access private
 	 */
 	public function _add_menu_link() {
 
 		$menu = [
-			'parent_slug' => \the_seo_framework()->seo_settings_page_slug,
+			'parent_slug' => \tsf()->seo_settings_page_slug,
 			'page_title'  => 'Local',
 			'menu_title'  => 'Local',
 			'capability'  => TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
@@ -153,7 +146,7 @@ final class Admin extends Core {
 		if ( \wp_doing_ajax() ) {
 			$this->do_settings_page_ajax_actions();
 		} else {
-			\add_action( 'load-' . $this->local_menu_page_hook, [ $this, '_do_settings_page_actions' ] );
+			\add_action( "load-{$this->local_menu_page_hook}", [ $this, '_do_settings_page_actions' ] );
 		}
 	}
 
@@ -205,11 +198,8 @@ final class Admin extends Core {
 	 * @return bool
 	 */
 	public function is_local_page() {
-
-		static $cache;
-
 		// Don't load from $_GET request.
-		return isset( $cache ) ? $cache : $cache = \the_seo_framework()->is_menu_page( $this->local_menu_page_hook );
+		return \The_SEO_Framework\memo( \tsf()->is_menu_page( $this->local_menu_page_hook ) );
 	}
 
 	/**

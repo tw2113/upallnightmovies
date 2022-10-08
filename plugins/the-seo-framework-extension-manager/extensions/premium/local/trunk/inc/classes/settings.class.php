@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
@@ -56,6 +55,13 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
 \TSF_Extension_Manager\Extension\Local\_load_trait( 'schema-packer' );
 
 /**
+ * Require extension views trait.
+ *
+ * @since 1.2.0
+ */
+\TSF_Extension_Manager\_load_trait( 'extension/views' );
+
+/**
  * Class TSF_Extension_Manager\Extension\Local\Settings
  *
  * Holds extension settings methods.
@@ -67,19 +73,23 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
 final class Settings {
 	use \TSF_Extension_Manager\Construct_Core_Static_Final_Instance,
 		\TSF_Extension_Manager\UI,
+		\TSF_Extension_Manager\Extension_Views,
 		\TSF_Extension_Manager\Extension_Options,
 		\TSF_Extension_Manager\Error,
 		Secure_Post,
 		Schema_Packer;
 
 	/**
-	 * The settings page slug.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string $slug
+	 * @var string Settings page slug name.
 	 */
 	protected $slug = '';
+
+	/**
+	 * @since 1.0.0
+	 * @var array The settings form architectural arguments.
+	 */
+	protected $form_args = [];
 
 	/**
 	 * Initializes and outputs Settings page.
@@ -93,6 +103,11 @@ final class Settings {
 	 * @param string $o_index The options index.
 	 */
 	public function _init( Core $_core, $slug, $hook, $o_index ) {
+
+		/**
+		 * @see trait TSF_Extension_Manager\Extension_Views
+		 */
+		$this->view_location_base = TSFEM_E_LOCAL_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
 
 		/**
 		 * Set options index.
@@ -279,8 +294,8 @@ final class Settings {
 
 		\add_action( 'tsfem_before_enqueue_scripts', [ $this, '_register_local_scripts' ] );
 
-		// Add something special for Vivaldi
-		\add_action( 'admin_head', [ $this, '_output_theme_color_meta' ], 0 );
+		// Add something special for Vivaldi & Android.
+		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 
 		/**
 		 * Initialize UI calls.
@@ -353,7 +368,7 @@ final class Settings {
 	 *
 	 * @param self $_s Used for integrity.
 	 */
-	public function _get_local_settings_overview( self $_s ) { // phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	public function _local_settings_overview( self $_s ) { // phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$this->get_view( 'layout/pages/settings' );
 	}
 
@@ -372,17 +387,6 @@ final class Settings {
 	}
 
 	/**
-	 * Outputs theme color meta tag for Vivaldi and mobile browsers.
-	 * Does not always work. So many browser bugs... It's just fancy.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 */
-	public function _output_theme_color_meta() {
-		$this->get_view( 'layout/general/meta' );
-	}
-
-	/**
 	 * Outputs department fields and floating buttons.
 	 *
 	 * @since 1.0.0
@@ -395,7 +399,7 @@ final class Settings {
 
 		$f = $this->get_form();
 
-		$f->_form_wrap( 'start', \tsf_extension_manager()->get_admin_page_url( $this->slug ), true );
+		$f->_form_wrap( 'start', \menu_page_url( $this->slug, false ), true );
 		$f->_fields( Fields::get_instance()->get_departments_fields() );
 		$f->_form_wrap( 'end' );
 	}
@@ -409,9 +413,9 @@ final class Settings {
 	 */
 	private function get_test_button() {
 		return sprintf(
-			'<button type=button name="tsfem-e-local-validateFormJson" form="%s" class="%s">%s</button>',
+			'<button type=button name=tsfem-e-local-validateFormJson form="%s" class="%s">%s</button>',
 			sprintf( '%s[%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index ),
-			'hide-if-no-js tsfem-button tsfem-button-external',
+			'hide-if-no-tsf-js tsfem-button tsfem-button-external',
 			\esc_html__( 'See Markup', 'the-seo-framework-extension-manager' )
 		);
 	}
@@ -426,24 +430,5 @@ final class Settings {
 	public function _reprocess_all_stored_data() {
 		$this->_init_main();
 		$this->process_all_stored_data();
-	}
-
-	/**
-	 * Fetches files based on input to reduce memory overhead.
-	 * Passes on input vars.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $view The file name.
-	 * @param array  $args The arguments to be supplied within the file name.
-	 *                     Each array key is converted to a variable with its value attached.
-	 */
-	private function get_view( $view, array $args = [] ) {
-
-		foreach ( $args as $key => $val ) {
-			$$key = $val;
-		}
-
-		include TSFEM_E_LOCAL_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . $view . '.php';
 	}
 }

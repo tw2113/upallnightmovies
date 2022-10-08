@@ -33,19 +33,13 @@ namespace TSF_Extension_Manager;
 trait UI {
 
 	/**
-	 * The User Interface hook where all scripts should be loaded.
-	 *
 	 * @since 1.0.0
-	 *
 	 * @var string The UI loader hook.
 	 */
 	private $ui_hook;
 
 	/**
-	 * The UI wrap type.
-	 *
 	 * @since 2.0.1
-	 *
 	 * @var string The UI wrap type. Accepts 'column' and 'row'.
 	 */
 	private $wrap_type = 'column';
@@ -58,11 +52,15 @@ trait UI {
 	 */
 	private function init_ui() {
 
-		$this->ui_hook or \the_seo_framework()->_doing_it_wrong( __METHOD__, 'You need to specify property <code>ui_hook</code>' );
+		$this->ui_hook or \tsf()->_doing_it_wrong( __METHOD__, 'You need to specify property <code>ui_hook</code>' );
 
 		// Remove WordPress footer strings.
 		\add_action( 'admin_footer_text', '__return_empty_string', PHP_INT_MAX );
 		\add_action( 'update_footer', '__return_empty_string', PHP_INT_MAX );
+
+		// Prevent annoying nags (they're hidden by CSS anyway).
+		\remove_action( 'admin_notices', 'update_nag', 3 );
+		\remove_action( 'admin_notices', 'maintenance_nag', 10 );
 
 		// Add body class.
 		\add_action( 'admin_body_class', [ $this, '_add_admin_body_class' ], 999, 1 );
@@ -79,8 +77,8 @@ trait UI {
 	 * @param string $type The type of main content. Accepts 'panes' and 'connect'.
 	 */
 	final protected function ui_wrap( $type = 'panes' ) {
-		\add_action( 'tsfem_page', [ $this, 'header_wrap' ], 25 );
-		\add_action( 'tsfem_page', [ $this, $type . '_wrap' ], 100 );
+		\add_action( 'tsfem_page', [ $this, "{$type}_header_wrap" ], 25 );
+		\add_action( 'tsfem_page', [ $this, "{$type}_page_wrap" ], 100 );
 		\add_action( 'tsfem_page', [ $this, 'footer_wrap' ], 200 );
 
 		\do_action( 'tsfem_before_page' );
@@ -102,13 +100,27 @@ trait UI {
 	/**
 	 * Outputs header wrap and does callback.
 	 *
-	 * @since 1.5.0
+	 * @since 2.6.0
 	 */
-	final public function header_wrap() {
+	final public function panes_header_wrap() {
 		echo '<div id=tsfem-sticky-top>';
-			echo '<section class="tsfem-top-wrap tsfem-flex tsfem-flex-row tsfem-flex-nogrowshrink tsfem-flex-space">';
+			echo '<div id=tsfem-top-super-wrap><section id=tsfem-top-wrap class="tsfem-flex tsfem-flex-row tsfem-flex-nogrowshrink tsfem-flex-space">';
 				\do_action( 'tsfem_header' );
-			echo '</section>';
+			echo '</section></div>';
+			$this->notice_wrap();
+		echo '</div>';
+	}
+
+	/**
+	 * Outputs header wrap and does callback.
+	 *
+	 * @since 2.6.0
+	 */
+	final public function connect_header_wrap() {
+		echo '<div id=tsfem-sticky-top>';
+			echo '<div id=tsfem-top-super-wrap><section id=tsfem-top-wrap class="tsfem-flex tsfem-flex-row tsfem-flex-nogrowshrink tsfem-flex-space connect-top-wrap">';
+				\do_action( 'tsfem_header' );
+			echo '</section></div>';
 			$this->notice_wrap();
 		echo '</div>';
 	}
@@ -132,15 +144,17 @@ trait UI {
 	 * @since 1.5.0
 	 * @since 2.0.1 Now listens to $this->wrap_type
 	 * @since 2.2.0 Is no longer a tsfem-flex-item.
+	 * @since 2.6.0 1. Added a super wrap to allow a condensed layout.
+	 *              2. Renamed from "panes_wrap".
 	 */
-	final public function panes_wrap() {
+	final public function panes_page_wrap() {
 		printf(
-			'<main class="tsfem-panes-wrap tsfem-panes-wrap-%s">',
+			'<div id=tsfem-panes-super-wrap><main class="tsfem-panes-wrap tsfem-panes-wrap-%s">',
 			// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped
 			\in_array( $this->wrap_type, [ 'column', 'row' ], true ) ? $this->wrap_type : 'column'
 		);
 		\do_action( 'tsfem_content' );
-		echo '</main>';
+		echo '</main></div>';
 	}
 
 	/**
@@ -148,10 +162,10 @@ trait UI {
 	 *
 	 * @since 1.5.0
 	 */
-	final public function connect_wrap() {
-		echo '<main class=tsfem-connect-wrap>';
+	final public function connect_page_wrap() {
+		echo '<div id=tsfem-panes-super-wrap><main id=tsfem-connect-wrap class="tsfem-flex tsfem-flex-row">';
 		\do_action( 'tsfem_content' );
-		echo '</main>';
+		echo '</main></div>';
 	}
 
 	/**
@@ -215,8 +229,8 @@ trait UI {
 
 		if ( has_run( __METHOD__ ) ) return;
 
-		\the_seo_framework()->init_admin_scripts();
-		$tsfem = \tsf_extension_manager();
+		\tsf()->init_admin_scripts();
+		$tsfem = \tsfem();
 
 		$scripts::register( [
 			[
@@ -272,6 +286,18 @@ trait UI {
 				'tmpl'     => [
 					'file' => $tsfem->get_template_location( 'fbtopnotice' ),
 				],
+			],
+		] );
+
+		$scripts::register( [
+			[
+				'id'       => 'tsfem-worker',
+				'type'     => 'js',
+				'deps'     => [],
+				'autoload' => false,
+				'name'     => 'tsfem-worker',
+				'base'     => TSF_EXTENSION_MANAGER_DIR_URL . 'lib/js/',
+				'ver'      => TSF_EXTENSION_MANAGER_VERSION,
 			],
 		] );
 
@@ -352,7 +378,7 @@ trait UI {
 					'name' => 'tsfemFormL10n',
 					'data' => [
 						'nonce'  => \TSF_Extension_Manager\can_do_extension_settings() ? \wp_create_nonce( 'tsfem-form-nonce' ) : '',
-						'callee' => \get_class( $this ), //! Don't use __CLASS__, we require the core instance.
+						'callee' => \get_class( $this ), // Don't use __CLASS__, we require the core instance. TODO self::class?
 						'i18n'   => [
 							// TODO categorize in multidimensionals
 							// phpcs:disable, WordPress.Arrays.MultipleStatementAlignment -- Alignment is fine.
@@ -387,7 +413,7 @@ trait UI {
 				// phpcs:disable
 				// Inherits from 'tsfem'
 				// 'tmpl'     => [
-				// 	'file' => \tsf_extension_manager()->get_template_location( 'fbtopnotice' ),
+				// 	'file' => \tsfem()->get_template_location( 'fbtopnotice' ),
 				// ],
 				// phpcs:enable
 			],

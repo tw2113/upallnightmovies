@@ -17,8 +17,7 @@ namespace TSF_Extension_Manager\Extension\Title_Fix;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Title Fix extension for The SEO Framework
@@ -86,33 +85,16 @@ final class Core {
 	use \TSF_Extension_Manager\Construct_Master_Once_Final_Interface;
 
 	/**
-	 * Check if title has been found, otherwise continue flushing till the bottom of plugin output.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var bool $title_found_and_flushed
+	 * @var bool Check if title has been found, otherwise continue flushing till the bottom of plugin output.
 	 */
 	protected $title_found_and_flushed = false;
 
 	/**
-	 * If Output Buffering is started or not.
-	 * If started, don't start again.
-	 * If stopped, don't stop again.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var bool $ob_started
+	 * @var bool Whether Output Buffering has started by extension.
 	 */
 	protected $ob_started = false;
-
-	/**
-	 * Determines if the title has been fixed yet.
-	 *
-	 * @since 1.0.3
-	 *
-	 * @var bool $is_fixed
-	 */
-	protected $is_fixed = false;
 
 	/**
 	 * The constructor, initialize plugin.
@@ -156,20 +138,13 @@ final class Core {
 	 * Loads plugin actions.
 	 *
 	 * @since 1.0.3
-	 *
-	 * @return null Early if title is fixed.
 	 */
 	public function loader() {
 
-		if ( $this->is_fixed )
-			return;
-
 		static $_sequence = 0;
 
-		$_sequence++;
-
 		switch ( $_sequence ) :
-			case 1:
+			case 0:
 				/**
 				 * First run.
 				 * Start at HTTP header.
@@ -179,7 +154,7 @@ final class Core {
 				\add_action( 'wp_head', [ $this, 'maybe_rewrite_title' ], 0 );
 				break;
 
-			case 2:
+			case 1:
 				/**
 				 * Second run. Capture WP head.
 				 * Scenario: \add_action( 'wp_head', 'wp_title' );.. or another callback.
@@ -190,7 +165,7 @@ final class Core {
 				\add_action( 'wp_head', [ $this, 'maybe_rewrite_title' ], 9999 );
 				break;
 
-			case 3:
+			case 2:
 				/**
 				 * Third run. Capture the page.
 				 * Start at where wp_head has ended (last run left off),
@@ -204,6 +179,8 @@ final class Core {
 			default:
 				break;
 		endswitch;
+
+		$_sequence++;
 	}
 
 	/**
@@ -240,7 +217,7 @@ final class Core {
 	public function maybe_start_ob() {
 
 		// Reset the output buffer if not found.
-		if ( false === $this->ob_started && false === $this->title_found_and_flushed ) {
+		if ( ! $this->ob_started && ! $this->title_found_and_flushed ) {
 			$this->start_ob();
 		}
 	}
@@ -266,7 +243,7 @@ final class Core {
 	 */
 	public function maybe_rewrite_title() {
 
-		if ( $this->ob_started && false === $this->title_found_and_flushed ) {
+		if ( $this->ob_started && ! $this->title_found_and_flushed ) {
 			$content = ob_get_clean();
 
 			$this->ob_started = false;
@@ -275,7 +252,9 @@ final class Core {
 		}
 
 		$this->maybe_stop_ob();
-		$this->loader();
+
+		if ( ! $this->title_found_and_flushed )
+			$this->loader();
 	}
 
 	/**
@@ -291,7 +270,7 @@ final class Core {
 
 		// Let's use regex.
 		if ( 1 === preg_match( '/<title.*?<\/title>/is', $content, $matches ) ) {
-			$title_tag = isset( $matches[0] ) ? $matches[0] : null;
+			$title_tag = $matches[0] ?? null;
 
 			if ( isset( $title_tag ) ) {
 				$this->replace_title_tag( $title_tag, $content );
@@ -305,25 +284,23 @@ final class Core {
 	}
 
 	/**
-	 * Replaces the title tag.
+	 * Replaces the title tag from buffer and outputs it.
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Added TSF v3.1 compat.
 	 * @since 1.2.1 Dropped TSF < v3.1 compat.
+	 * @TODO Use substr_replace to prevent multiple replacements? The DOM head should contain only one title tag, though.
 	 *
 	 * @param string $title_tag the Title tag with the title
 	 * @param string $content The content containing the $title_tag
 	 */
 	public function replace_title_tag( $title_tag, $content ) {
-
-		$new_title = '<title>' . \the_seo_framework()->get_title() . '</title>' . $this->indicator();
-
-		// Replace the title tag within the header.
-		// TODO substr_replace to prevent multiple replacements? The DOM should contain only one title tag, though.
-		$content = str_replace( $title_tag, $new_title, $content );
-
 		// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- Not our content.
-		echo $content;
+		echo str_replace(
+			$title_tag,
+			'<title>' . \tsf()->get_title() . '</title>' . $this->indicator(),
+			$content
+		);
 	}
 
 	/**

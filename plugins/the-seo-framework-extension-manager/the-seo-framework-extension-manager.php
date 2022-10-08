@@ -3,14 +3,14 @@
  * Plugin Name: The SEO Framework - Extension Manager
  * Plugin URI: https://theseoframework.com/extension-manager/
  * Description: Add more powerful SEO features to The SEO Framework. Right from your WordPress dashboard.
- * Version: 2.5.3
+ * Version: 2.6.0
  * Author: The SEO Framework Team
  * Author URI: https://theseoframework.com/
  * License: GPLv3
  * Text Domain: the-seo-framework-extension-manager
  * Domain Path: /language
  * Requires at least: 5.5
- * Requires PHP: 5.6.5
+ * Requires PHP: 7.3.0
  *
  * @package TSF_Extension_Manager\Bootstrap
  */
@@ -46,7 +46,7 @@ defined( 'ABSPATH' ) or die;
  *
  * @since 1.0.0
  */
-define( 'TSF_EXTENSION_MANAGER_VERSION', '2.5.3' );
+define( 'TSF_EXTENSION_MANAGER_VERSION', '2.6.0' );
 
 /**
  * The plugin's database version.
@@ -74,7 +74,10 @@ define( 'TSF_EXTENSION_MANAGER_PLUGIN_BASENAME', plugin_basename( TSF_EXTENSION_
  *
  * @since 1.5.0
  */
-define( 'TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH', dirname( TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE ) . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR );
+define(
+	'TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH',
+	dirname( TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE ) . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR
+);
 
 // Defines environental constants.
 require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'define.php';
@@ -91,6 +94,9 @@ if ( tsf_extension_manager_db_version() < TSF_EXTENSION_MANAGER_DB_VERSION )
 
 if ( is_admin() || wp_doing_cron() )
 	require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'update.php';
+
+if ( is_admin() )
+	require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'install.php';
 
 // Load plugin files.
 require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'load.php';

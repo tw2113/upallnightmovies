@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
@@ -28,6 +27,13 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  */
 
 /**
+ * Require extension views trait.
+ *
+ * @since 2.2.1
+ */
+\TSF_Extension_Manager\_load_trait( 'extension/views' );
+
+/**
  * Class TSF_Extension_Manager\Extension\Articles\Sitemap
  *
  * @since 2.0.0
@@ -36,11 +42,12 @@ if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager
  * @final
  */
 final class Sitemap extends Core {
-	use \TSF_Extension_Manager\Construct_Master_Once_Interface;
+	use \TSF_Extension_Manager\Construct_Master_Once_Interface,
+		\TSF_Extension_Manager\Extension_Views;
 
 	/**
 	 * @since 2.0.0
-	 * @var bool $doing_news_sitemap
+	 * @var bool Whether outputting news sitemap.
 	 */
 	private $doing_news_sitemap = false;
 
@@ -53,6 +60,11 @@ final class Sitemap extends Core {
 
 		if ( ! $this->get_option( 'news_sitemap' ) || ! static::is_organization() ) return;
 
+		/**
+		 * @see trait TSF_Extension_Manager\Extension_Views
+		 */
+		$this->view_location_base = TSFEM_E_ARTICLES_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
+
 		\add_filter( 'the_seo_framework_sitemap_endpoint_list', [ $this, '_register_news_sitemap_endpoint' ] );
 		\add_action( 'the_seo_framework_sitemap_schemas', [ $this, '_adjust_news_sitemap_schemas' ] );
 
@@ -61,7 +73,7 @@ final class Sitemap extends Core {
 		// Don't use action `the_seo_framework_ping_search_engines`; News Sitemaps don't have a ping threshold.
 		// Don't allow prerendering; News Sitemaps are small for a reason!
 		// Don't discern the post. For the cron callback to work, that'd be unreliable.
-		if ( \the_seo_framework()->get_option( 'ping_use_cron' ) ) {
+		if ( \tsf()->get_option( 'ping_use_cron' ) ) {
 			\add_action( 'tsf_sitemap_cron_hook', [ $this, '_ping_google_news' ] );
 		} else {
 			\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_ping_google_news' ] );
@@ -126,7 +138,7 @@ final class Sitemap extends Core {
 		$this->doing_news_sitemap = true;
 
 		// Remove output, if any.
-		\the_seo_framework()->clean_response_header();
+		\tsf()->clean_response_header();
 
 		if ( ! headers_sent() ) {
 			\status_header( 200 );
@@ -134,7 +146,7 @@ final class Sitemap extends Core {
 		}
 
 		// Fetch sitemap content and add trailing line. Already escaped internally.
-		include TSFEM_E_ARTICLES_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . 'sitemap' . DIRECTORY_SEPARATOR . 'news.php';
+		$this->get_view( 'sitemap/news' );
 		echo "\n";
 
 		exit;

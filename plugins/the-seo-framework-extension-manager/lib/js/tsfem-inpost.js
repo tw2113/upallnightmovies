@@ -133,11 +133,10 @@ window.tsfem_inpost = function( $ ) {
 	 *                                            Set to 0 to turn off.
 	 * @return {jQuery.Deferred|Promise} The promise object.
 	 */
-	const promiseLoop = ( iterable, cb, timeout, stopAt = 2000 ) => {
-		let $dfd = $.Deferred(),
-			its = iterable.length;
+	const promiseLoop = ( iterable, cb, timeout, stopAt = 2000 ) => new Promise( ( resolve, reject ) => {
+		let its = iterable.length;
 
-		if ( ! its ) return $dfd.resolve();
+		if ( ! its ) return resolve();
 
 		const loop = ( it ) => {
 			let looper, stopper, rejector;
@@ -149,247 +148,90 @@ window.tsfem_inpost = function( $ ) {
 					clearTimeout( looper );
 					rejector = setTimeout( () => {
 						// Rejector passed, reject loop.
-						$dfd.reject();
+						reject();
 					}, 250 );
 				}, stopAt );
 			}
 
-			looper = setTimeout( () => {
-				$.when( cb( iterable[ it ] ) ).done( () => {
-
-					if ( stopAt ) {
-						clearTimeout( stopper );
-						// If the rejector is enqueued, see if there are still items to loop over.
-						if ( rejector ) {
-							if ( it < its ) {
-								// There are still items... Cancel loop and let the rejector do its thing.
-								return;
-							} else {
-								// End of loop, nothing to reject: cancel rejection.
-								clearTimeout( rejector );
-							}
+			looper = setTimeout( () => new Promise( async ( _resolve, _reject ) => {
+				try {
+					await cb( iterable[ it ] );
+					_resolve();
+				} catch ( e ) {
+					_reject();
+				}
+			} ).then( () => {
+				if ( stopAt ) {
+					clearTimeout( stopper );
+					// If the rejector is enqueued, see if there are still items to loop over.
+					if ( rejector ) {
+						if ( it < its ) {
+							// There are still items... Don't propagate loop, and let the rejector do its thing.
+							return;
+						} else {
+							// End of loop, nothing to reject: cancel rejection.
+							clearTimeout( rejector );
 						}
 					}
-
-					if ( ++it === its ) {
-						$dfd.resolve();
-					} else {
-						loop( it );
-						looper = null;
-					}
-				} ).fail( () => {
-					$dfd.reject();
-				} );
-			}, timeout );
+				}
+				if ( ++it === its ) {
+					resolve();
+				} else {
+					looper = null;
+					loop( it );
+				}
+			} ).catch( () => {
+				reject();
+			} ), timeout );
 		}
 		loop( 0 );
-
-		return $dfd.promise();
-	}
-
-	let workers = {}, activeWorkers = {};
-	/**
-	 * Sets Worker status by ID.
-	 *
-	 * @since 2.0.2
-	 * @access private
-	 *
-	 * @function
-	 * @param {String} id
-	 * @param {String|undefined} to Either 'busy' or anything else.
-	 */
-	const setWorkerStatus = ( id, to ) => {
-		if ( 'busy' === to ) {
-			activeWorkers[ id ] = true;
-		} else {
-			delete activeWorkers[ id ];
-		}
-	}
-
-	/**
-	 * Occupies Worker by ID.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @function
-	 * @param {String} id
-	 */
-	const occupyWorker = id => setWorkerStatus( id, 'busy' );
-
-	/**
-	 * Deoccupies Worker by ID.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @function
-	 * @param {String} id
-	 */
-	const freeWorker = id => setWorkerStatus( id, 'clear' );
-
-	/**
-	 * Tells Worker status by ID.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @param {String} id
-	 * @return {Boolean}
-	 */
-	const isWorkerBusy = ( id ) => id in activeWorkers;
-
-	/**
-	 * Assigns a new Worker by ID.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @function
-	 * @param {String} file
-	 * @param {String} id
-	 * @return {Worker}
-	 */
-	const spawnWorker = ( file, id ) => workers[ id ] = new Worker( file );
-
-	/**
-	 * Returns an active Worker by ID.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @function
-	 * @param {String} id
-	 * @return {Worker|void}
-	 */
-	const getWorker = ( id ) => id in workers && workers[ id ] || void 0;
-
-	/**
-	 * Stops Worker by ID.
-	 *
-	 * Worker needs to be respawned after terminated. Alternatively, use despawnWorker.
-	 * @see tsfem_inpost.spawnWorker()
-	 * @see tsfem_inpost.despawnWorker()
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @function
-	 * @param {String} id
-	 */
-	const stopWorker = ( id ) => {
-		if ( workers[ id ] ) {
-			workers[ id ].terminate();
-			freeWorker( id );
-		}
-	}
-
-	/**
-	 * Stops and removes Worker by ID.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 *
-	 * @function
-	 * @param {String} id
-	 */
-	const despawnWorker = ( id ) => {
-		if ( workers[ id ] ) {
-			stopWorker( id );
-			delete workers[ id ];
-		}
-	}
-
-	/**
-	 * Tells worker to process input data via postMessage.
-	 *
-	 * @since 2.0.2
-	 * @access public
-	 * @TODO move these instances to tsfem-worker.js, and use the Promise object, instead of jQuery.
-	 *
-	 * @function
-	 * @param {String} id
-	 * @param {*}      data
-	 * @return {jQuery.Deferred|Promise} The promise object.
-	 */
-	const tellWorker = ( id, data ) => {
-		let $dfd = $.Deferred();
-
-		setTimeout( () => {
-			let worker = getWorker( id );
-
-			if ( ! worker ) return $dfd.reject();
-			worker.onmessage = ( oEvent ) => {
-				if ( 'error' in oEvent.data ) {
-					// debug && console.log( oEvent.data.error );
-					console.log( oEvent.data.error ); // DEBUG: phase this out later?
-					return $dfd.reject( oEvent.data.error );
-				}
-				return $dfd.resolve( oEvent.data );
-			}
-			worker.onerror = ( error ) => {
-				// debug && console.log( error );
-				console.log( error ); // DEBUG: phase this out later?
-				return $dfd.reject( error );
-			}
-
-			worker.postMessage( {
-				id,
-				data
-			} );
-		} );
-
-		return $dfd.promise();
-	}
+	} );
 
 	/**
 	 * Performs inpost AJAX request.
 	 *
-	 * @since 1.5.0
+	 * @since 2.6.0 Removed first parameter.
 	 * @access public
 	 *
 	 * @function
-	 * @param {jQuery.defered} dfd
+	 * @param {Promise} dfd
 	 * @param {object<string,*>} ajaxOps
 	 * @param {object<string,string>} options
 	 * @return {string}
 	 */
-	const doAjax = ( dfd, ajaxOps, options ) => {
+	const doAjax = ( ajaxOps, options ) => new Promise( ( resolve,reject ) => {
 		let notice,
 			noticeArea = options.noticeArea,
-			premium = options.premium || false;
+			premium    = options.premium || false;
 
 		if ( premium && ! isPremium ) {
-			//? Reject early without notice as it's forged.
-			dfd.reject();
-			return;
+			// Reject early without notice as it's forged.
+			return reject();
 		}
 
 		debug && console.log( ajaxOps );
 
 		$.ajax( ajaxOps ).done( ( response ) => {
-			dfd.notify();
-
 			response = tsf.convertJSONResponse( response );
 
 			debug && console.log( response );
 
-			let data = response && response.data || void 0,
-				type = response && response.type || void 0;
+			let data = response?.data,
+				type = response?.type;
 
 			if ( ! data || ! type ) {
-				dfd.reject();
 				notice = {
 					type: 'error',
 					code: -1,
 					text: i18n['InvalidResponse'],
 				};
+				reject();
 				return;
 			}
 
-			let noticeCode = data.results && data.results.code || void 0,
-				noticeText = data.results && data.results.notice || void 0,
-				noticeType = data.results && data.results.type || void 0;
+			let noticeCode = data?.results?.code,
+				noticeText = data?.results?.notice,
+				noticeType = data?.results?.type;
 
 			if ( noticeCode && noticeType ) {
 				notice = {
@@ -400,12 +242,11 @@ window.tsfem_inpost = function( $ ) {
 			}
 
 			if ( 'success' !== type || ! ( 'data' in data ) ) {
-				dfd.reject( noticeCode );
+				reject( noticeCode );
 			} else {
-				dfd.resolve( data.data );
+				resolve( data.data );
 			}
 		} ).fail( ( jqXHR, textStatus, errorThrown ) => {
-			dfd.reject();
 			if ( tsf.l10n.states.debug ) {
 				console.log( jqXHR.responseText );
 				console.log( errorThrown );
@@ -415,11 +256,11 @@ window.tsfem_inpost = function( $ ) {
 				code: -1,
 				text: getAjaxError( jqXHR, textStatus, errorThrown ),
 			};
+			reject();
 		} ).always( () => {
-			dfd.notify();
 			notice && setFlexNotice( notice ).in( noticeArea );
 		} );
-	}
+	} );
 
 	var noticeBuffer;
 	/**
@@ -505,8 +346,8 @@ window.tsfem_inpost = function( $ ) {
 
 				debug && console.log( response );
 
-				let data = response && response.data || void 0,
-					type = response && response.type || void 0;
+				let data = response?.data,
+					type = response?.type;
 
 				if ( ! data || ! type || 'undefined' === typeof data.notice ) {
 					// Erroneous output. Do nothing as this error is invoked internally.
@@ -516,9 +357,9 @@ window.tsfem_inpost = function( $ ) {
 					if ( hasMsg ) {
 						notice = $( data.notice );
 						if ( rtl ) {
-							notice.find( 'p' ).first().prepend( msg + ' ' );
+							notice.find( 'p' ).first().prepend( `${msg} ` );
 						} else {
-							notice.find( 'p' ).first().append( ' ' + msg );
+							notice.find( 'p' ).first().append( ` ${msg}` );
 						}
 					} else {
 						notice = data.notice;
@@ -576,7 +417,7 @@ window.tsfem_inpost = function( $ ) {
 						noticeBuffer = false;
 					} );
 				} else {
-					let template = wp.template( 'tsfem-inpost-notice-' + type );
+					let template = wp.template( `tsfem-inpost-notice-${type}` );
 						notice   = template( {
 							code: code,
 							msg:  text,
@@ -669,8 +510,8 @@ window.tsfem_inpost = function( $ ) {
 		];
 
 		classes.forEach( c => {
-			element.classList.remove( 'tsfem-e-inpost-icon-' + c );
-			c === to && element.classList.add( 'tsfem-e-inpost-icon-' + c );
+			element.classList.remove( `tsfem-e-inpost-icon-${c}` );
+			c === to && element.classList.add( `tsfem-e-inpost-icon-${c}` );
 		} );
 	}
 
@@ -705,14 +546,14 @@ window.tsfem_inpost = function( $ ) {
 			cb      = args;
 			promise = true;
 		} else if ( typeof args === 'object' ) {
-			cb      = typeof args.cb === 'undefined' && false || args.cb;
-			promise = typeof args.promise === 'undefined' && true || args.promise;
+			cb      = args?.cb || false;
+			promise = args?.promise || false;
 		}
 
-		ms   = ms || 250;
+		ms ||= 250;
 		show = void 0 === show ? true : show;
 		// Increased entropy.
-		let key = target.dataset.tsfemFadeId || '_' + Math.random().toString(22).substr(2,10) + Math.random().toString(22).substr(2,10);
+		let key = target.dataset.tsfemFadeId || '_' + Math.random().toString(22).substring(2,10) + Math.random().toString(22).substring(2,10);
 
 		let opacity = 0,
 			fadeGo,
@@ -739,9 +580,9 @@ window.tsfem_inpost = function( $ ) {
 			delete fadeDfd[ key ];
 		}
 		if ( promise && cb ) {
-			fadeDfd[ key ] = $.Deferred();
+			fadeDfd[ key ] = new Promise;
 			(()=>{
-				$.when( fadeDfd[ key ] ).done( () => {
+				fadeDfd[ key ].then( () => {
 					delete fadeDfd[ key ];
 					(cb)();
 				} );
@@ -754,8 +595,8 @@ window.tsfem_inpost = function( $ ) {
 		};
 
 		if ( show ) {
-			target.style.display = null; //? affects race condition.
-			target.style.opacity = 0;    //? affects race condition.
+			target.style.display = null; // affects race condition.
+			target.style.opacity = 0;    // affects race condition.
 			fadeGo = timestamp => {
 				start    = undefined === start ? timestamp : start;
 				progress = ( timestamp - start ) / ms;
@@ -777,7 +618,7 @@ window.tsfem_inpost = function( $ ) {
 
 					delete fadeBuffer[ key ];
 					if ( promise ) {
-						typeof fadeDfd[ key ] !== 'undefined' && fadeDfd[ key ].resolve();
+						fadeDfd?.[ key ].resolve();
 					} else {
 						cb && (cb)();
 					}
@@ -786,8 +627,8 @@ window.tsfem_inpost = function( $ ) {
 				}
 			}
 		} else {
-			target.style.display = null; //? affects race condition.
-			target.style.opacity = 1; //? affects race condition.
+			target.style.display = null; // affects race condition.
+			target.style.opacity = 1; // affects race condition.
 			fadeGo = timestamp => {
 				start    = undefined === start ? timestamp : start;
 				progress = ( timestamp - start ) / ms;
@@ -801,14 +642,14 @@ window.tsfem_inpost = function( $ ) {
 					cancelAnimationFrame( fadeBuffer[ key ].frame );
 
 					target.style.opacity    = 0;
-					target.style.display    = 'none'; //?! Prevents bounce, ! introduces race condition.
+					target.style.display    = 'none'; // Prevents bounce, ! introduces race condition.
 					target.style.willChange = 'auto';
 
 					delete target.dataset.tsfemFadeId;
 
 					delete fadeBuffer[ key ];
 					if ( promise ) {
-						typeof fadeDfd[ key ] !== 'undefined' && fadeDfd[ key ].resolve();
+						fadeDfd?.[ key ].resolve();
 					} else {
 						cb && (cb)();
 					}
@@ -872,14 +713,6 @@ window.tsfem_inpost = function( $ ) {
 		isActionableElement,
 		escapeStr,
 		promiseLoop,
-		occupyWorker,
-		freeWorker,
-		isWorkerBusy,
-		spawnWorker,
-		getWorker,
-		stopWorker,
-		despawnWorker,
-		tellWorker,
 		doAjax,
 		setFlexNotice,
 		getAjaxError,

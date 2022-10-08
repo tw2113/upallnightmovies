@@ -7,150 +7,22 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE' ) or die;
 
-\add_action( 'tsfem_needs_the_seo_framework', __NAMESPACE__ . '\\_prepare_tsf_installer' );
 /**
- * Prepares scripts for TSF "WP v4.6 Shiny Updates" installation.
+ * The SEO Framework - Extension Manager plugin
+ * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
- * @since 2.2.0
- * @access private
- */
-function _prepare_tsf_installer() {
-
-	if ( \wp_doing_cron() ) return;
-	if ( ! \is_admin() ) return; // This is implied, though.
-	if ( ! \is_main_site() ) return;
-	if ( ! \current_user_can( 'install_plugins' ) ) return;
-	if ( 'update.php' === $GLOBALS['pagenow'] ) return;
-
-	if ( ! \function_exists( '\\get_plugins' ) )
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-	$plugins = \get_plugins();
-
-	if ( isset( $plugins['autodescription/autodescription.php'] ) || isset( $plugins['the-seo-framework/autodescription.php'] ) ) return;
-
-	\add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\_prepare_tsf_nag_installer_scripts' );
-	\add_action( 'admin_notices', __NAMESPACE__ . '\\_nag_install_tsf' );
-}
-
-/**
- * Registers and enqueues the TSF installer-nag required scripts.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published
+ * by the Free Software Foundation.
  *
- * @since 2.5.0
- * @access private
- */
-function _prepare_tsf_nag_installer_scripts() {
-	$deps     = [
-		'plugin-install',
-		'updates',
-	];
-	$scriptid = 'tsfinstaller';
-	$suffix   = SCRIPT_DEBUG ? '' : '.min';
-	$strings  = [
-		'slug' => 'autodescription',
-	];
-
-	\wp_register_script( $scriptid, TSF_EXTENSION_MANAGER_DIR_URL . "lib/js/{$scriptid}{$suffix}.js", $deps, TSF_EXTENSION_MANAGER_VERSION, true );
-	\wp_localize_script( $scriptid, "{$scriptid}L10n", $strings );
-
-	\add_action( 'admin_print_styles', __NAMESPACE__ . '\\_print_tsf_nag_installer_styles' );
-	\add_action( 'admin_footer', '\\wp_print_request_filesystem_credentials_modal' );
-	\add_action( 'admin_footer', '\\wp_print_admin_notice_templates' );
-
-	\wp_enqueue_style( 'plugin-install' );
-	\wp_enqueue_script( $scriptid );
-	\add_thickbox();
-}
-
-/**
- * Outputs "button-small" "Shiny Updates" compatibility style.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * @since 2.2.0
- * @access private
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-function _print_tsf_nag_installer_styles() {
-	echo '<style type="text/css">#tsfem-tsf-install{margin-left:7px;margin-right:7px}#tsfem-tsf-install.updating-message:before{font-size:16px;vertical-align:top}</style>';
-}
-
-/**
- * Nags the site administrator to install TSF to continue.
- *
- * @since 2.2.0
- * @access private
- */
-function _nag_install_tsf() {
-
-	$plugin_slug = 'autodescription';
-	$tsf_text    = 'The SEO Framework';
-
-	/**
-	 * @source https://github.com/WordPress/WordPress/blob/4.9-branch/wp-admin/import.php#L162-L178
-	 * @uses Spaghetti.
-	 * @see WP Core class Plugin_Installer_Skin
-	 */
-	$details_url      = \add_query_arg(
-		[
-			'tab'       => 'plugin-information',
-			'plugin'    => $plugin_slug,
-			'from'      => 'plugins',
-			'TB_iframe' => 'true',
-			'width'     => 600,
-			'height'    => 550,
-		],
-		\network_admin_url( 'plugin-install.php' )
-	);
-	$tsf_details_link = sprintf(
-		'<a href="%1$s" id=tsfem-tsf-tb class="thickbox open-plugin-details-modal button button-small" aria-label="%2$s">%3$s</a>',
-		\esc_url( $details_url ),
-		/* translators: %s: Plugin name */
-		\esc_attr( sprintf( \__( 'Learn more about %s', 'the-seo-framework-extension-manager' ), $tsf_text ) ),
-		\esc_html__( 'View plugin details', 'the-seo-framework-extension-manager' )
-	);
-	$nag = sprintf(
-		/* translators: 1 = Extension Manager, 2 = The SEO Framework, 3 = View plugin details. */
-		\esc_html__( '%1$s requires %2$s plugin to function. %3$s', 'the-seo-framework-extension-manager' ),
-		sprintf( '<strong>%s</strong>', 'Extension Manager' ),
-		sprintf( '<strong>%s</strong>', \esc_html( $tsf_text ) ),
-		$tsf_details_link
-	);
-
-	/**
-	 * @source https://github.com/WordPress/WordPress/blob/4.9-branch/wp-admin/import.php#L125-L138
-	 * @uses Bolognese sauce.
-	 * @see The closest bowl of spaghetti. Or WordPress\Administration\wp.updates/updates.js
-	 * This joke was brought to you by the incomplete API of WP Shiny Updates, where
-	 * WP's import.php has been directly injected into, rather than "calling" it via its API.
-	 * Therefore, leaving the incompleteness undiscovered internally.
-	 * @TODO Open core track ticket.
-	 */
-	$install_nonce_url = \wp_nonce_url(
-		\add_query_arg(
-			[
-				'action' => 'install-plugin',
-				'plugin' => $plugin_slug,
-				'from'   => 'plugins',
-			],
-			\self_admin_url( 'update.php' )
-		),
-		'install-plugin_' . $plugin_slug
-	);
-	$install_action    = sprintf(
-		'<a href="%1$s" id=tsfem-tsf-install class="install-now button button-small button-primary" data-slug="%2$s" data-name="%3$s" aria-label="%4$s">%5$s</a>',
-		\esc_url( $install_nonce_url ),
-		\esc_attr( $plugin_slug ),
-		\esc_attr( $tsf_text ),
-		/* translators: %s: The SEO Framework */
-		\esc_attr( sprintf( \__( 'Install %s', 'the-seo-framework-extension-manager' ), $tsf_text ) ),
-		\esc_html__( 'Install Now', 'the-seo-framework-extension-manager' )
-	);
-
-	// phpcs:disable, WordPress.Security.EscapeOutput.OutputNotEscaped -- it is.
-	printf(
-		'<div class="notice notice-info"><p>%s</p></div>',
-		\is_rtl() ? $install_action . ' ' . $nag : $nag . ' ' . $install_action
-	);
-	// phpcs:enable, WordPress.Security.EscapeOutput.OutputNotEscaped
-}
 
 \add_action( 'admin_notices', __NAMESPACE__ . '\\_check_external_blocking' );
 /**
@@ -167,10 +39,16 @@ function _check_external_blocking() {
 	if ( \defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && true === WP_HTTP_BLOCK_EXTERNAL ) {
 
 		$parsed_url = \wp_parse_url( TSF_EXTENSION_MANAGER_DL_URI );
-		$host       = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
+		$host       = $parsed_url['host'] ?? '';
 
 		if ( ! \defined( 'WP_ACCESSIBLE_HOSTS' ) || false === stristr( WP_ACCESSIBLE_HOSTS, $host ) ) {
-			$notice = \the_seo_framework()->convert_markdown(
+
+			// TODO We rely on TSF here but it might not be available.
+			if ( ! \function_exists( '\\tsf' ) ) return;
+
+			$tsf = \tsf();
+
+			$notice = $tsf->convert_markdown(
 				sprintf(
 					/* translators: Markdown. %s = Update API URL */
 					\esc_html__(
@@ -181,7 +59,7 @@ function _check_external_blocking() {
 				),
 				[ 'code' ]
 			);
-			\the_seo_framework()->do_dismissible_notice( $notice, 'error', true, false );
+			$tsf->do_dismissible_notice( $notice, 'error', true, false );
 		}
 	}
 }
@@ -235,14 +113,24 @@ function _hook_plugins_api( $res, $action, $args ) {
 			\esc_url( TSF_EXTENSION_MANAGER_DL_URI ),
 			'https://theseoframework.com/contact/'
 		);
-		$res = new \WP_Error( 'plugins_api_failed',
+		$res = new \WP_Error(
+			'plugins_api_failed',
 			$error_message,
 			$request->get_error_message() // $data
 		);
 	} else {
-		$res = \maybe_unserialize( \wp_remote_retrieve_body( $request ) );
-		if ( ! \is_object( $res ) && ! \is_array( $res ) ) {
-			$res = new \WP_Error( 'plugins_api_failed',
+		// aka maybe_unserialize but then without class support.
+		$body = \wp_remote_retrieve_body( $request );
+
+		$res = \is_serialized( $body )
+			? unserialize( trim( $body ), [ 'allowed_classes' => [ 'stdClass' ] ] ) // phpcs:ignore -- it fine.
+			: $body;
+
+		if ( \is_array( $res ) ) {
+			$res = (object) $res;
+		} elseif ( ! \is_object( $res ) ) {
+			$res = new \WP_Error(
+				'plugins_api_failed',
 				sprintf(
 					/* translators: %s: support forums URL */
 					\__( 'An unexpected error occurred. Something may be wrong with TheSEOFramework.com or this server&#8217;s configuration. If you continue to have problems, please <a href="%s">contact us</a>.', 'the-seo-framework-extension-manager' ),
@@ -250,8 +138,6 @@ function _hook_plugins_api( $res, $action, $args ) {
 				),
 				\wp_remote_retrieve_body( $request )
 			);
-		} elseif ( \is_array( $res ) ) {
-			$res = (object) $res;
 		}
 	}
 
@@ -337,7 +223,7 @@ function _push_update( $value, $transient ) {
 			$translations = \wp_get_installed_translations( 'plugins' );
 
 			// This is set at the plugin's base PHP file plugin-header.
-			$text_domain = isset( $this_plugin['TextDomain'] ) ? $this_plugin['TextDomain'] : '';
+			$text_domain = $this_plugin['TextDomain'] ?? '';
 
 			if ( $text_domain && isset( $translations[ $text_domain ] ) ) {
 				$translations = array_intersect_key( $translations, array_flip( [ $text_domain ] ) );
@@ -346,7 +232,7 @@ function _push_update( $value, $transient ) {
 			}
 
 			$options    = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
-			$extensions = isset( $options['active_extensions'] ) ? $options['active_extensions'] : [];
+			$extensions = $options['active_extensions'] ?? [];
 
 			$http_args = [
 				'timeout'    => 7, // WordPress generously sets 30 seconds when doing cron to check all plugins, but we only check 1 plugin.
@@ -397,7 +283,7 @@ function _push_update( $value, $transient ) {
 		$runtimecache = $cache;
 	}
 
-	//? We're only checking this plugin. This type of merge needs expansion in a bulk-updater.
+	// We're only checking this plugin. This type of merge needs expansion in a bulk-updater.
 	$value->checked[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $this_plugin['Version'];
 	if ( isset( $cache['no_update'][ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] ) ) {
 		// TODO Core considers changing this. @see \wp_update_plugins().

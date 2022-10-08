@@ -43,21 +43,25 @@ final class AJAX extends Secure_Abstract {
 	 *
 	 * As such, we use this.
 	 *
+	 * @since 2.1.0
 	 * @var bool Whether the instance is validated.
 	 */
 	private static $_validated = false; // phpcs:ignore -- internal
 
 	/**
+	 * @since 2.1.0
 	 * @var null|AJAX The class instance.
 	 */
 	private static $instance;
 
 	/**
+	 * @since 2.1.0
 	 * @var null|object TSF class object.
 	 */
 	private static $tsf;
 
 	/**
+	 * @since 2.1.0
 	 * @var null|object TSF Extension Manager class object.
 	 */
 	private static $tsfem;
@@ -71,7 +75,7 @@ final class AJAX extends Secure_Abstract {
 	 * @param string $instance Required. The instance key. Passed by reference.
 	 * @param array  $bits     Required. The instance bits. Passed by reference.
 	 */
-	public static function initialize( $type = '', &$instance = '', &$bits = [] ) {
+	public static function initialize( $type, &$instance = '', &$bits = [] ) {
 
 		self::reset();
 
@@ -79,10 +83,10 @@ final class AJAX extends Secure_Abstract {
 		self::set( '_wpaction' );
 		self::set( '_type', 'generic' );
 
-		static::$tsfem = \tsf_extension_manager();
+		static::$tsfem = \tsfem();
 		static::$tsfem->_verify_instance( $instance, $bits[1] ) or die;
 
-		static::$tsf = \the_seo_framework();
+		static::$tsf = \tsf();
 
 		static::$_validated = true;
 		static::$instance   = new static;
@@ -94,11 +98,12 @@ final class AJAX extends Secure_Abstract {
 	 * Returns false, unused.
 	 *
 	 * @since 2.1.0
+	 * @ignore
 	 *
 	 * @param string $type Determines what to get.
 	 * @return bool false
 	 */
-	public static function get( $type = '' ) {
+	public static function get( $type ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis
 		return false;
 	}
 
@@ -145,17 +150,15 @@ final class AJAX extends Secure_Abstract {
 	public static function _wp_ajax_get_dismissible_notice() {
 
 		if ( ! static::$_validated ) return;
-		if (
-			! ( \TSF_Extension_Manager\can_do_manager_settings() || \TSF_Extension_Manager\can_do_extension_settings() )
-		) return;
+		if ( ! ( \TSF_Extension_Manager\can_do_manager_settings() || \TSF_Extension_Manager\can_do_extension_settings() ) )
+			return;
 
-		if ( \check_ajax_referer( 'tsfem-ajax-insecure-nonce', 'nonce', false ) ) {
+		if ( \check_ajax_referer( 'tsfem-ajax-insecure-nonce', 'nonce', false ) )
 			$notice_data = static::build_ajax_dismissible_notice();
-		}
 
 		static::$tsfem->send_json(
-			static::$tsfem->coalesce_var( $notice_data, [] ),
-			static::$tsfem->coalesce_var( $notice_data['type'], 'failure' )
+			$notice_data ?? [],
+			$notice_data['type'] ?? 'failure'
 		);
 		exit;
 	}
@@ -181,8 +184,8 @@ final class AJAX extends Secure_Abstract {
 		}
 
 		static::$tsfem->send_json(
-			static::$tsfem->coalesce_var( $notice_data, [] ),
-			static::$tsfem->coalesce_var( $notice_data['type'], 'failure' )
+			$notice_data ?? [],
+			$notice_data['type'] ?? 'failure'
 		);
 		exit;
 	}
@@ -276,7 +279,7 @@ final class AJAX extends Secure_Abstract {
 
 		$send = [];
 
-		//= Input gets forwarded to secure location. Sanitization happens externally.
+		// Input gets forwarded to secure location. Sanitization happens externally.
 		$input = isset( $_POST['input'] ) ? json_decode( \wp_unslash( $_POST['input'] ) ) : '';
 
 		if ( ! $input || ! \is_object( $input ) ) {
@@ -308,7 +311,7 @@ final class AJAX extends Secure_Abstract {
 					if ( ! $data ) {
 						$send['results'] = static::$instance->get_ajax_notice( false, 17003 );
 					} else {
-						static::$tsfem->coalesce_var( $data['status'] );
+						$data['status'] = $data['status'] ?? null;
 
 						if ( 'OK' !== $data['status'] ) {
 							switch ( $data['status'] ) :
@@ -328,33 +331,33 @@ final class AJAX extends Secure_Abstract {
 									break;
 
 								case 'INVALID_REQUEST':
-									//= Data is missing.
+									// Data is missing.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17007 );
 									break;
 
 								case 'UNKNOWN_ERROR':
-									//= Remote Geocoding API error. Try again...
+									// Remote Geocoding API error. Try again...
 									$send['results'] = static::$instance->get_ajax_notice( false, 17008 );
 									break;
 
 								case 'TIMEOUT':
-									//= Too many consecutive requests.
+									// Too many consecutive requests.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17009 );
 									break;
 
 								case 'RATE_LIMIT':
-									//= Too many requests in the last period.
+									// Too many requests in the last period.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17010 );
 									break;
 
 								case 'REQUEST_LIMIT_REACHED':
-									//= License request limit reached.
+									// License request limit reached.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17013 );
 									break;
 
 								case 'LICENSE_TOO_LOW':
 								default:
-									//= Undefined error.
+									// Undefined error.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17011 );
 									break;
 							endswitch;
@@ -368,7 +371,7 @@ final class AJAX extends Secure_Abstract {
 			}
 		}
 
-		static::$tsfem->send_json( $send, static::$tsfem->coalesce_var( $_type, 'failure' ) );
+		static::$tsfem->send_json( $send, $_type ?? 'failure' );
 		exit;
 	}
 
@@ -386,12 +389,12 @@ final class AJAX extends Secure_Abstract {
 		// phpcs:disable, WordPress.Security.NonceVerification -- Caller must check for this.
 		$data = [];
 
-		$data['key'] = (int) static::$tsfem->coalesce_var( $_POST['tsfem-notice-key'], false );
+		$data['key'] = (int) $_POST['tsfem-notice-key'] ?? false;
 		if ( $data['key'] ) {
 			$notice = static::$instance->get_error_notice( $data['key'] );
 
 			if ( \is_array( $notice ) ) {
-				//= If it has a custom message (already stored in browser), then don't output the notice message.
+				// If it has a custom message (already stored in browser), then don't output the notice message.
 				$msg = ! empty( $_POST['tsfem-notice-has-msg'] ) ? $notice['before'] : $notice['message'];
 
 				$data['notice'] = static::$tsf->generate_dismissible_notice( $msg, $notice['type'], true, false, true );
@@ -420,16 +423,21 @@ final class AJAX extends Secure_Abstract {
 
 		if ( ! static::$_validated ) return;
 
-		if ( ! \current_user_can( 'upload_files' ) )
+		\tsf()->clean_response_header();
+
+		if ( ! \current_user_can( 'upload_files' ) || ! isset( $_POST['id'], $_POST['context'], $_POST['cropDetails'] ) )
 			\wp_send_json_error();
 
 		if ( ! \check_ajax_referer( 'tsfem-media-nonce', 'nonce', false ) )
 			\wp_send_json_error();
 
-		$attachment_id = \absint( $_POST['id'] ); // phpcs:ignore -- Sanitization, input var OK.
+		$attachment_id = \absint( $_POST['id'] );
 
-		$context = str_replace( '_', '-', \sanitize_key( $_POST['context'] ) ); // phpcs:ignore -- Sanitization, input var OK.
-		$data    = array_map( 'absint', $_POST['cropDetails'] );                // phpcs:ignore -- Input var, input var OK.
+		if ( ! $attachment_id || 'attachment' !== \get_post_type( $attachment_id ) || ! \wp_attachment_is_image( $attachment_id ) )
+			\wp_send_json_error( [ 'message' => \esc_js( \__( 'Image could not be processed.', 'default' ) ) ] );
+
+		$context = str_replace( '_', '-', \sanitize_key( $_POST['context'] ) );
+		$data    = array_map( 'absint', $_POST['cropDetails'] );
 		$cropped = \wp_crop_image( $attachment_id, $data['x1'], $data['y1'], $data['width'], $data['height'], $data['dst_width'], $data['dst_height'] );
 
 		if ( ! $cropped || \is_wp_error( $cropped ) )
@@ -450,43 +458,63 @@ final class AJAX extends Secure_Abstract {
 				 */
 				\do_action( 'wp_ajax_crop_image_pre_save', $context, $attachment_id, $cropped );
 
-				/** This filter is documented in wp-admin/custom-header.php */
+				/** This filter is documented in wp-admin/includes/class-custom-image-header.php */
 				$cropped = \apply_filters( 'wp_create_file_in_uploads', $cropped, $attachment_id ); // For replication.
 
-				$parent_url = \wp_get_attachment_url( $attachment_id );
-				$url        = str_replace( basename( $parent_url ), basename( $cropped ), $parent_url );
+				$parent_url       = \wp_get_attachment_url( $attachment_id );
+				$parent_basename  = \wp_basename( $parent_url );
+				$cropped_basename = \wp_basename( $cropped );
+				$url              = str_replace( $parent_basename, $cropped_basename, $parent_url );
 
-				$size       = @getimagesize( $cropped );
-				$image_type = ( $size ) ? $size['mime'] : 'image/jpeg';
+				// phpcs:ignore, WordPress.PHP.NoSilencedErrors -- See https://core.trac.wordpress.org/ticket/42480
+				$size       = \function_exists( '\\wp_getimagesize' ) ? \wp_getimagesize( $cropped ) : @getimagesize( $cropped );
+				$image_type = $size ? $size['mime'] : 'image/jpeg';
 
-				$object = [
-					'post_title'     => basename( $cropped ),
-					'post_content'   => $url,
+				// Get the original image's post to pre-populate the cropped image.
+				$original_attachment  = \get_post( $attachment_id );
+				$sanitized_post_title = \sanitize_file_name( $original_attachment->post_title );
+				$use_original_title   = (
+					\strlen( trim( $original_attachment->post_title ) ) &&
+					/**
+					 * Check if the original image has a title other than the "filename" default,
+					 * meaning the image had a title when originally uploaded or its title was edited.
+					 */
+					( $parent_basename !== $sanitized_post_title ) &&
+					( pathinfo( $parent_basename, PATHINFO_FILENAME ) !== $sanitized_post_title )
+				);
+				$use_original_description = \strlen( trim( $original_attachment->post_content ) );
+
+				$attachment = [
+					'post_title'     => $use_original_title ? $original_attachment->post_title : $cropped_basename,
+					'post_content'   => $use_original_description ? $original_attachment->post_content : $url,
 					'post_mime_type' => $image_type,
 					'guid'           => $url,
 					'context'        => $context,
 				];
 
-				$attachment_id = \wp_insert_attachment( $object, $cropped );
+				// Copy the image caption attribute (post_excerpt field) from the original image.
+				if ( \strlen( trim( $original_attachment->post_excerpt ) ) )
+					$attachment['post_excerpt'] = $original_attachment->post_excerpt;
+
+				// Copy the image alt text attribute from the original image.
+				if ( \strlen( trim( $original_attachment->_wp_attachment_image_alt ) ) )
+					$attachment['meta_input'] = [
+						'_wp_attachment_image_alt' => \wp_slash( $original_attachment->_wp_attachment_image_alt ),
+					];
+
+				$attachment_id = \wp_insert_attachment( $attachment, $cropped );
 				$metadata      = \wp_generate_attachment_metadata( $attachment_id, $cropped );
 
 				/**
-				 * Filters the cropped image attachment metadata.
-				 *
 				 * @since 4.3.0 WordPress Core
-				 *
 				 * @see wp_generate_attachment_metadata()
-				 *
 				 * @param array $metadata Attachment metadata.
 				 */
 				$metadata = \apply_filters( 'wp_ajax_cropped_attachment_metadata', $metadata );
 				\wp_update_attachment_metadata( $attachment_id, $metadata );
 
 				/**
-				 * Filters the attachment ID for a cropped image.
-				 *
 				 * @since 4.3.0 WordPress Core
-				 *
 				 * @param int    $attachment_id The attachment ID of the cropped image.
 				 * @param string $context       The Customizer control requesting the cropped image.
 				 */

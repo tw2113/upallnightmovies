@@ -35,11 +35,8 @@ namespace TSF_Extension_Manager;
 trait Options {
 
 	/**
-	 * Determines whether the options have been killed.
-	 *
 	 * @since 1.1.0
-	 *
-	 * @var bool $killed_options
+	 * @var bool Whether the options have been killed.
 	 */
 	private $killed_options = false;
 
@@ -82,16 +79,11 @@ trait Options {
 			return null;
 
 		if ( $this->killed_options )
-			return [];
+			return null;
 
 		static $options_cache = [];
 
-		if ( isset( $options_cache[ $option ] ) )
-			return $options_cache[ $option ];
-
-		$options = $this->get_all_options();
-
-		return $options_cache[ $option ] = isset( $options[ $option ] ) ? $options[ $option ] : $default;
+		return $options_cache[ $option ] = $options_cache[ $option ] ?? $this->get_all_options()[ $option ] ?? $default;
 	}
 
 	/**
@@ -130,10 +122,10 @@ trait Options {
 		// Cache current options from loop. This is used for activation where _instance needs to be used.
 		static $options = [];
 
-		if ( empty( $options ) )
+		if ( ! $options )
 			$options = $_options;
 
-		// If option is unchanged, return true.
+		// If option is unchanged, return true. Don't merge the isset() check: $value may be null.
 		if ( isset( $options[ $option ] ) && $value === $options[ $option ] )
 			return true;
 
@@ -144,7 +136,7 @@ trait Options {
 
 		$this->initialize_option_update_instance( $type );
 
-		//? TODO add Ajax response? "Enable account -> open new tab, disable account in it -> load feed in first tab."
+		// TODO add Ajax response? "Enable account -> open new tab, disable account in it -> load feed in first tab."
 		if ( empty( $options['_instance'] ) && '_instance' !== $option ) {
 			\wp_die( 'Error 7008: Supply an instance key before updating other options.' );
 			return false;
@@ -183,11 +175,11 @@ trait Options {
 	 * @param bool   $kill Whether to kill the plugin on invalid instance.
 	 * @return bool True on success, false on failure or when options haven't changed.
 	 */
-	final protected function update_option_multi( array $options = [], $type = 'instance', $kill = false ) {
+	final protected function update_option_multi( $options = [], $type = 'instance', $kill = false ) {
 
 		static $run = false;
 
-		if ( empty( $options ) )
+		if ( ! $options )
 			return false;
 
 		if ( $this->killed_options )
@@ -201,13 +193,13 @@ trait Options {
 			return true;
 
 		if ( $run ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'You may only run this method once per request. Doing so multiple times will result in data loss.' );
+			\tsf()->_doing_it_wrong( __METHOD__, 'You may only run this method once per request. Doing so multiple times will result in data loss.' );
 			\wp_die();
 			return false;
 		}
 
 		if ( $this->has_run_update_option() ) {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, \esc_html( __CLASS__ . '::update_option() has already run in the current request. Running this function will lead to data loss.' ) );
+			\tsf()->_doing_it_wrong( __METHOD__, \esc_html( __CLASS__ . '::update_option() has already run in the current request. Running this function will lead to data loss.' ) );
 			\wp_die();
 			return false;
 		}

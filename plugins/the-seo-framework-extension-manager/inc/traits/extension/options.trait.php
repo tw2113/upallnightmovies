@@ -39,11 +39,8 @@ final class Extensions_Options_Cache {
 	use Construct_Core_Static_Final;
 
 	/**
-	 * Holds the extension options.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var array $options
+	 * @var array The extension options.
 	 */
 	private static $options;
 
@@ -119,11 +116,8 @@ final class Stale_Extensions_Options_Cache {
 	use Construct_Core_Static_Final;
 
 	/**
-	 * Holds the extension options.
-	 *
 	 * @since 1.3.0
-	 *
-	 * @var array $options
+	 * @var array The extension options.
 	 */
 	private static $options;
 
@@ -195,39 +189,30 @@ final class Stale_Extensions_Options_Cache {
 trait Extension_Options {
 
 	/**
-	 * Current Extension index field. Likely equal to extension slug.
-	 *
 	 * @NOTE: Always set this directly in the constructor of the class.
 	 *        Traits do not share class properties and thus properties hold their
 	 *        value as if it were its user's class.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string $o_index The current extension settings base index field.
+	 * @var string The current extension settings base index field.
+	 *             Likely equal to extension slug.
 	 */
 	protected $o_index = '';
 
 	/**
-	 * Current Extension default options.
-	 *
 	 * If option key's value is not null, it will fall back to set option when
 	 * $this->get_option()'s second parameter is not null either.
 	 *
 	 * @since 1.3.0
-	 *
-	 * @var array $o_defaults The default options.
+	 * @var array The current extension default options.
 	 */
 	protected $o_defaults = [];
 
 	/**
-	 * Stale Extension default options.
-	 *
 	 * If option key's value is not null, it will fall back to set option when
 	 * $this->get_option()'s second parameter is not null either.
 	 *
 	 * @since 1.3.0
-	 *
-	 * @var array $o_stale_defaults The default options.
+	 * @var array The current extension default stale options.
 	 */
 	protected $o_stale_defaults = [];
 
@@ -246,7 +231,7 @@ trait Extension_Options {
 		if ( isset( $options[ $this->o_index ] ) ) {
 			return $options[ $this->o_index ];
 		} else {
-			empty( $this->o_index ) and \the_seo_framework()->_doing_it_wrong( __METHOD__, 'You need to assign property \TSF_Extension_Manager\Extension_Options->o_index.' );
+			empty( $this->o_index ) and \tsf()->_doing_it_wrong( __METHOD__, 'You need to assign property \TSF_Extension_Manager\Extension_Options->o_index.' );
 		}
 
 		return [];
@@ -293,9 +278,9 @@ trait Extension_Options {
 	 *                       Defaults to the corrolated $this->o_defaults.
 	 * @return mixed The option value if exists. Otherwise $default.
 	 */
-	final protected function get_option_by_mda_key( array $keys, $default = null ) {
+	final protected function get_option_by_mda_key( $keys, $default = null ) {
 
-		//= If the array is sequential, convert it to a multidimensional array.
+		// If the array is sequential, convert it to a multidimensional array.
 		if ( array_values( $keys ) === $keys ) {
 			$keys = FormFieldParser::satoma( $keys );
 		}
@@ -440,7 +425,7 @@ trait Extension_Options {
 		if ( isset( $options[ $this->o_index ] ) ) {
 			return $options[ $this->o_index ];
 		} else {
-			empty( $this->o_index ) and \the_seo_framework()->_doing_it_wrong( __METHOD__, 'You need to assign property <code>\TSF_Extension_Manager\Extension_Options->o_index</code>.' );
+			empty( $this->o_index ) and \tsf()->_doing_it_wrong( __METHOD__, 'You need to assign property <code>\TSF_Extension_Manager\Extension_Options->o_index</code>.' );
 		}
 
 		return [];
@@ -484,9 +469,9 @@ trait Extension_Options {
 	 *                       Defaults to the corrolated $this->o_stale_defaults.
 	 * @return mixed The option value if exists. Otherwise $default.
 	 */
-	final protected function get_stale_option_by_mda_key( array $keys, $default = null ) {
+	final protected function get_stale_option_by_mda_key( $keys, $default = null ) {
 
-		//= If the array is sequential, convert it to a multidimensional array.
+		// If the array is sequential, convert it to a multidimensional array.
 		if ( array_values( $keys ) === $keys ) {
 			$keys = FormFieldParser::satoma( $keys );
 		}
@@ -511,7 +496,7 @@ trait Extension_Options {
 	 * @param array $options The Single Dimensional options array with key.
 	 * @return bool True on success or the stale option is unchanged, false on failure.
 	 */
-	final protected function update_stale_options_array_by_key( array $options ) {
+	final protected function update_stale_options_array_by_key( $options ) {
 
 		$k = key( $options );
 

@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
@@ -62,14 +61,14 @@ class Api extends Data {
 	 * @param array  $args Additional arguments to send.
 	 * @return array The response body. Or error notice on AJAX.
 	 */
-	protected function get_monitor_api_response( $type = '', $ajax = false, array $args = [] ) {
+	protected function get_monitor_api_response( $type = '', $ajax = false, $args = [] ) {
 
-		if ( empty( $type ) ) {
+		if ( ! $type ) {
 			$ajax or $this->set_error_notice( [ 1010201 => '' ] );
 			return $ajax ? $this->get_ajax_notice( false, 1010201 ) : false;
 		}
 
-		$tsfem = \tsf_extension_manager();
+		$tsfem = \tsfem();
 
 		/**
 		 * Request verification instances, variables are passed by reference :
@@ -93,7 +92,7 @@ class Api extends Data {
 						$args = array_merge(
 							$args,
 							[
-								'request'     => 'extension/monitor/' . $type,
+								'request'     => "extension/monitor/$type",
 								'email'       => $subscription['email'],
 								'licence_key' => $subscription['key'],
 							]
@@ -251,7 +250,7 @@ class Api extends Data {
 		}
 
 		if ( ! $this->can_request_next_crawl() ) {
-			//= AJAX shouldn't get this far.
+			// AJAX shouldn't get this far.
 			$ajax or $this->set_error_notice( [ 1010507 => $this->get_try_again_notice( $this->get_remote_crawl_timeout_remainder() ) ] );
 			return false;
 		}
@@ -326,7 +325,7 @@ class Api extends Data {
 		}
 
 		if ( ! $this->is_remote_data_expired() ) {
-			//= AJAX shouldn't get this far... But it does, after the page is just loaded whilst data is fetched.
+			// AJAX shouldn't get this far... But it does, after the page is just loaded whilst data is fetched.
 			$ajax or $this->set_error_notice( [ 1010607 => $this->get_try_again_notice( $this->get_remote_data_timeout_remainder() ) ] );
 			return $ajax ? $this->get_ajax_notice( false, 1010607 ) : false;
 		}
@@ -398,7 +397,7 @@ class Api extends Data {
 	 * @return bool|array False on invalid input or on activation failure. True otherwise.
 	 *         Array The status notice on AJAX.
 	 */
-	protected function api_update_remote_settings( array $settings, $ajax = false ) {
+	protected function api_update_remote_settings( $settings, $ajax = false ) {
 
 		if ( $this->get_option( 'site_marked_inactive' ) || $this->get_option( 'site_requires_fix' ) ) {
 			// Notified through Control Panel. AJAX will elaborate on this issue as it can be asynchronously updated.
@@ -413,7 +412,7 @@ class Api extends Data {
 			'uptime_setting'      => $this->get_option( 'uptime_setting', 0 ),
 			'performance_setting' => $this->get_option( 'performance_setting', 0 ),
 		];
-		//= Filters and merges old and new settings. Magic.
+		// Filters and merges old and new settings. Magic.
 		$settings = array_intersect_key(
 			array_merge( $old_settings, $settings ),
 			$old_settings

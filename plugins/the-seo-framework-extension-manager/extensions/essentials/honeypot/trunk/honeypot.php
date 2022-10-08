@@ -17,8 +17,7 @@ namespace TSF_Extension_Manager\Extension\Honeypot;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Honeypot extension for The SEO Framework
@@ -81,25 +80,25 @@ final class Core {
 
 	/**
 	 * @since 1.0.0
-	 * @var bool $setup Whether the class has been constructed.
+	 * @var bool Whether the class has been constructed.
 	 */
 	private $setup = false;
 
 	/**
 	 * @since 1.0.0
-	 * @var bool $hardcore Whether the spam validation is extremely vibrant and dynamic.
+	 * @var bool Whether the spam validation is extremely vibrant and dynamic.
 	 */
 	private $hardcore = false;
 
 	/**
 	 * @since 1.0.0
-	 * @var array $hp_properties Array of properties, like fields.
+	 * @var array Array of properties, like fields.
 	 */
 	private $hp_properties = [];
 
 	/**
 	 * @since 2.0.0
-	 * @var int $nonce_length Nonce length.
+	 * @var int Expected nonce length.
 	 */
 	private $nonce_length = 20;
 
@@ -379,7 +378,7 @@ JS;
 			JSON_FORCE_OBJECT
 		);
 
-		// Can we make this even smaller without losing functionality?
+		// Can we make this even smaller without losing functionality? Unpacked source: /timer.js
 		$script = <<<JS
 (a=>{let b,c,d=document.getElementsByName(a.n)[0],e=255*(1-Math.random()),f=f=>{void 0===b&&(b=f),c=f-b,c<1e3*(+a.t/+a.s)?(d.value=+a.t+e-c/1e3,g()):d.value=""},g=()=>setTimeout(()=>requestAnimationFrame(f),100+200*Math.random());d&&(d.value=+a.t+e,g())})($php_values);
 JS;
@@ -511,9 +510,8 @@ JS;
 			$_tick = 2;
 		endif;
 
-		if ( $_tick < 1 ) {
+		if ( $_tick < 1 )
 			$approved = 'spam';
-		}
 
 		// phpcs:enable, WordPress.Security.NonceVerification.Missing
 	}
@@ -532,9 +530,8 @@ JS;
 		// Perform same sanitization as displayed.
 		$_field = \sanitize_key( $this->hp_properties['timer_input_name'] );
 
-		if ( ! empty( $_POST[ $_field ] ) ) {
+		if ( ! empty( $_POST[ $_field ] ) )
 			$approved = 'spam';
-		}
 
 		// phpcs:enable, WordPress.Security.NonceVerification.Missing
 	}
@@ -546,7 +543,7 @@ JS;
 	 *
 	 * @param array $commentdata Required. The commentdata on POST.
 	 */
-	private function set_id( array $commentdata ) {
+	private function set_id( $commentdata ) {
 		$this->get_id( $commentdata );
 	}
 
@@ -560,11 +557,11 @@ JS;
 	 * @param array $commentdata Optional. The commentdata on POST.
 	 * @return int The post ID.
 	 */
-	private function get_id( array $commentdata = [] ) {
+	private function get_id( $commentdata = [] ) {
 
 		static $id;
 
-		return $id ?: $id = (int) ( isset( $commentdata['comment_post_ID'] ) ? $commentdata['comment_post_ID'] : \get_the_ID() );
+		return $id ?: $id = (int) ( $commentdata['comment_post_ID'] ?? \get_the_ID() );
 	}
 
 	/**
@@ -743,11 +740,12 @@ JS;
 	 */
 	private function get_rotated_hashed_field_name( $length = 24, $flip = false, $previous = false ) {
 
-		static $_hashes = [];
+		static $_hashes;
 
-		if ( empty( $_hashes ) ) {
+		if ( ! isset( $_hashes ) ) {
 
-			$uid = $this->get_id() . '+' . __METHOD__ . '+' . $GLOBALS['blog_id'];
+			$uid   = $this->get_id() . '+' . __METHOD__ . '+' . $GLOBALS['blog_id'];
+			$tsfem = \tsfem();
 
 			if ( $this->hardcore ) {
 				/**
@@ -763,11 +761,11 @@ JS;
 				$scale = (int) \apply_filters( 'the_seo_framework_honeypot_field_scale', 60 * MINUTE_IN_SECONDS );
 
 				$_hashes = [
-					'current'  => \tsf_extension_manager()->_get_timed_hash( $uid, $scale ),
-					'previous' => \tsf_extension_manager()->_get_timed_hash( $uid, $scale, time() - $scale ),
+					'current'  => $tsfem->_get_timed_hash( $uid, $scale ),
+					'previous' => $tsfem->_get_timed_hash( $uid, $scale, time() - $scale ),
 				];
 			} else {
-				$_hash   = \tsf_extension_manager()->_get_uid_hash( $uid );
+				$_hash   = $tsfem->_get_uid_hash( $uid );
 				$_hashes = [
 					'current'  => $_hash,
 					'previous' => $_hash,
@@ -798,7 +796,7 @@ JS;
 
 		if ( ! \strlen( $_hash ) ) {
 			$uid   = $this->get_id() . '+' . __METHOD__ . '+' . $GLOBALS['blog_id'];
-			$_hash = \tsf_extension_manager()->_get_uid_hash( $uid );
+			$_hash = \tsfem()->_get_uid_hash( $uid );
 			$_hash = $this->hex_to_62_trim( $_hash );
 		}
 
@@ -850,12 +848,14 @@ JS;
 			 */
 			$scale = (int) \apply_filters( 'the_seo_framework_honeypot_nonce_scale', $time, $this->hardcore );
 
+			$tsfem = \tsfem();
+
 			$_hashes = [
 				'current'  => $this->hex_to_36_trim(
-					\tsf_extension_manager()->_get_timed_hash( $uid, $scale )
+					$tsfem->_get_timed_hash( $uid, $scale )
 				),
 				'previous' => $this->hex_to_36_trim(
-					\tsf_extension_manager()->_get_timed_hash( $uid, $scale, time() - $scale )
+					$tsfem->_get_timed_hash( $uid, $scale, time() - $scale )
 				),
 			];
 		}
@@ -912,7 +912,7 @@ JS;
 			return $hash;
 
 		$table = range( 'a', 'z' );
-		//= We can't divide by 0.
+		// We can't divide by 0.
 		$first_char = $first_char ?: 10;
 
 		return $table[ round( \count( $table ) / $first_char ) - 1 ] . substr( $hash, 1 );

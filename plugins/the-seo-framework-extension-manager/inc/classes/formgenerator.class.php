@@ -27,6 +27,13 @@ namespace TSF_Extension_Manager;
 // phpcs:disable, Squiz.Commenting.VariableComment.DuplicateVar, PSR2.Classes.PropertyDeclaration.Multiple -- @TODO later. This class is too complex.
 
 /**
+ * Require extension settings trait.
+ *
+ * @since 2.6.0
+ */
+_load_trait( 'extension/options' );
+
+/**
  * Holds settings generator functions for package TSF_Extension_Manager\Extension.
  *
  * The class maintains static functions as well as a constructor. They go hand-in-hand.
@@ -55,57 +62,67 @@ final class FormGenerator {
 	use Extension_Options;
 
 	/**
-	 * Maintains the option key, and the boolean value thereof.
-	 *
 	 * @since 1.3.0
-	 *
-	 * @var string $o_key
-	 * @var bool   $has_o_key
-	 * @var bool   $use_stale
+	 * @var string The current option key.
 	 */
-	private $o_key     = '',
-			$has_o_key = false,
-			$use_stale = false;
+	private $o_key = '';
 
 	/**
-	 * Holds the bits and maximum iterations thereof.
-	 *
 	 * @since 1.3.0
-	 *
-	 * @var int $bits
-	 * @var int $max_it
+	 * @var bool Whether the option key is of stale options.
 	 */
-	private $bits,
-			$max_it;
+	private $use_stale = false;
 
 	/**
-	 * Maintains the reiteration level, the name thereof, and the iteration within.
-	 *
+	 * @since 1.3.0
+	 * @var int Maximum bits assignable ((64|32)/levels-requested).
+	 */
+	private $bits;
+
+	/**
+	 * @since 1.3.0
+	 * @var int Max iteration of bits for current OS (64/32 bits).
+	 */
+	private $max_it;
+
+	/**
 	 * NOTE: $it should not ever exceed $max_it.
 	 * JavaScript should enforce values. POST even more so, actually.
 	 *
 	 * @since 1.3.0
-	 *
-	 * @var int   $level
-	 * @var array $level_names
-	 * @var int   $it
+	 * @var int The current reiteration level.
 	 */
-	private $level       = 0,
-			$level_names = [],
-			$it          = 0;
+	private $level = 0;
 
 	/**
-	 * Holds AJAX calling settings.
-	 *
 	 * @since 1.3.0
-	 *
-	 * @var string $cur_ajax_caller
-	 * @var array  $ajax_it_fields
-	 * @var array  $ajax_it_args
+	 * @var array[string|int] Option level name. Can be string, can be numeric.
 	 */
-	private static $cur_ajax_caller = '',
-				   $ajax_it_fields  = [],
-				   $ajax_it_args    = [];
+	private $level_names = [];
+
+	/**
+	 * @since 1.3.0
+	 * @var int The current iteration of level.
+	 */
+	private $it = 0;
+
+	/**
+	 * @since 1.3.0
+	 * @var string Current AJAX caller.
+	 */
+	private static $cur_ajax_caller = '';
+
+	/**
+	 * @since 1.3.0
+	 * @var array Current AJAX fields iterated.
+	 */
+	private static $ajax_it_fields = [];
+
+	/**
+	 * @since 1.3.0
+	 * @var array AJAX request arguments.
+	 */
+	private static $ajax_it_args = [];
 
 	/**
 	 * Determines and initializes AJAX iteration listener.
@@ -165,7 +182,7 @@ final class FormGenerator {
 	 * @return bool True if matched, false otherwise.
 	 */
 	private static function is_ajax_callee( $caller ) {
-		//= Stripslashes is required, as `\WP_Scripts::localize` adds them.
+		// Stripslashes is required, as `\WP_Scripts::localize` adds them.
 		// phpcs:ignore, WordPress.Security.NonceVerification.Missing -- tsfem_form_prepare_ajax_iterations() is called before this, which performed user verification checks.
 		return isset( $_POST['args']['callee'] ) && stripslashes( $_POST['args']['callee'] ) === $caller;
 	}
@@ -197,8 +214,8 @@ final class FormGenerator {
 	 * @return int <unsigned> (R>0) $i The previous iteration value. 1 if $_POST value not set.
 	 */
 	private static function get_ajax_iteration_start() {
-		//= Careful, smart logic. Will return 1 if not set.
-		// phpcs:ignore, WordPress.Security.NonceVerification.Missing -- _wp_ajax_tsfemForm_iterate() is called hereafter, performing user verification checks.
+		// Careful, smart logic. Will return 1 if not set.
+		// phpcs:ignore, WordPress.Security.NonceVerification -- _wp_ajax_tsfemForm_iterate() is called hereafter, performing user verification checks.
 		return \absint( ! isset( $_POST['args']['previousIt'] ) ?: $_POST['args']['previousIt'] );
 	}
 
@@ -211,8 +228,8 @@ final class FormGenerator {
 	 * @return int <unsigned> (R>=0) $i The new iteration value. 0 if $_POST is not set.
 	 */
 	private static function get_ajax_iteration_amount() {
-		// phpcs:ignore, WordPress.Security.NonceVerification.Missing -- _wp_ajax_tsfemForm_iterate() is called hereafter, performing user verification checks.
-		return \absint( isset( $_POST['args']['newIt'] ) ? $_POST['args']['newIt'] : 0 );
+		// phpcs:ignore, WordPress.Security.NonceVerification -- _wp_ajax_tsfemForm_iterate() is called hereafter, performing user verification checks.
+		return \absint( $_POST['args']['newIt'] ?? 0 );
 	}
 
 	/**
@@ -241,12 +258,12 @@ final class FormGenerator {
 	 */
 	private function prepare_ajax_iteration() {
 
-		// phpcs:ignore, WordPress.Security.NonceVerification.Missing -- tsfem_form_prepare_ajax_iterations() is called before this, which performed user verification checks.
+		// phpcs:ignore, WordPress.Security.NonceVerification -- tsfem_form_prepare_ajax_iterations() is called before this, which performed user verification checks.
 		$caller = $_POST['args']['caller'];
 		$items  = preg_split( '/[\[\]]+/', $caller, -1, PREG_SPLIT_NO_EMPTY );
 
 		// Unset the option indexes.
-		$unset_count = $this->has_o_key ? 3 : 2;
+		$unset_count = $this->o_key ? 3 : 2;
 		while ( $unset_count-- ) {
 			array_shift( $items );
 		}
@@ -335,14 +352,12 @@ final class FormGenerator {
 		$this->o_index    = $args['o_index'];
 		$this->o_defaults = $args['o_defaults'];
 
-		$args['architecture'] = $args['architecture'] ?: ( \tsf_extension_manager()->is_64() ? 64 : 32 );
+		$args['architecture'] = $args['architecture'] ?: ( \tsfem()->is_64() ? 64 : 32 );
 
 		$this->bits   = floor( $args['architecture'] / $args['levels'] );
 		$this->max_it = 2 ** $this->bits;
 
 		$this->o_key     = $args['o_key'] = $this->sanitize_id( $args['o_key'] );
-		$this->has_o_key = (bool) $this->o_key;
-
 		$this->use_stale = (bool) $args['use_stale'];
 	}
 
@@ -404,7 +419,7 @@ final class FormGenerator {
 		switch ( $what ) :
 			case 'start':
 				return vsprintf(
-					'<form action="%s" method=post id="%s" enctype="multipart/form-data" class="tsfem-form%s">',
+					'<form action="%s" method=post id="%s" enctype="multipart/form-data" class="tsfem-form%s" autocomplete=off data-form-type=other>',
 					[
 						\esc_url( $url ),
 						$this->get_form_id(),
@@ -455,7 +470,7 @@ final class FormGenerator {
 		switch ( $what ) :
 			case 'submit':
 				return vsprintf(
-					'<button type=submit name="%1$s" form="%1$s" class="tsfem-button-primary tsfem-button-upload hide-if-no-js">%2$s</button>',
+					'<button type=submit name="%1$s" form="%1$s" class="tsfem-button-primary tsfem-button-upload hide-if-no-tsf-js">%2$s</button>',
 					[
 						$this->get_form_id(),
 						\esc_html( $name ),
@@ -476,7 +491,7 @@ final class FormGenerator {
 	 * @param string $type   Accepts 'get' and 'echo'.
 	 * @return string|void $_fields. Void if $type is echo.
 	 */
-	public function _fields( array $fields, $type = 'echo' ) {
+	public function _fields( $fields, $type = 'echo' ) {
 
 		if ( 'get' === $type )
 			return $this->get_fields( $fields );
@@ -551,7 +566,7 @@ final class FormGenerator {
 	 */
 	private function get_form_id() {
 
-		if ( $this->has_o_key ) {
+		if ( $this->o_key ) {
 			$k = sprintf( '%s[%s][%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index, $this->o_key );
 		} else {
 			$k = sprintf( '%s[%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index );
@@ -573,20 +588,20 @@ final class FormGenerator {
 	 */
 	private function get_field_id() {
 
-		if ( $this->has_o_key ) {
+		if ( $this->o_key ) {
 			$k = sprintf( '%s[%s][%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index, $this->o_key );
 		} else {
 			$k = sprintf( '%s[%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index );
 		}
 
-		//= Correct the length of bits, split them and put them in the right order.
+		// Correct the length of bits, split them and put them in the right order.
 		$_f     = sprintf( '%%0%db', ( $this->level * $this->bits ) );
 		$levels = array_reverse( str_split( sprintf( $_f, $this->it ), $this->bits ) );
 
 		$i = 0;
 		foreach ( $levels as $b ) {
 			$k = sprintf( '%s[%s]', $k, $this->sanitize_id( $this->level_names[ $i ] ) );
-			//= Only grab iterators, they start at 2 as the iteration caller is 1.
+			// Only grab iterators, they start at 2 as the iteration caller is 1.
 			if ( $b > 1 ) {
 				$k = sprintf( '%s[%d]', $k, bindec( $b ) - 1 );
 			}
@@ -619,17 +634,17 @@ final class FormGenerator {
 			$k[] = $this->o_index;
 		}
 
-		if ( $this->has_o_key )
+		if ( $this->o_key )
 			$k[] = $this->o_key;
 
-		//= Correct the length of bits, split them and put them in the right order.
+		// Correct the length of bits, split them and put them in the right order.
 		$_f     = sprintf( '%%0%db', ( $this->level * $this->bits ) );
 		$levels = array_reverse( str_split( sprintf( $_f, $this->it ), $this->bits ) );
 
 		$i = 0;
 		foreach ( $levels as $b ) {
 			$k[] = $this->sanitize_id( $this->level_names[ $i ] );
-			//= Only grab iterators, they start at 2 as the iteration caller is 1.
+			// Only grab iterators, they start at 2 as the iteration caller is 1.
 			if ( $b > 1 ) {
 				$k[] = bindec( $b ) - 1;
 			}
@@ -714,7 +729,7 @@ final class FormGenerator {
 
 		// 0 = base option index. 1 = extension index.
 		if ( 'full' !== $what ) {
-			$slice = $this->has_o_key ? 3 : 2;
+			$slice = $this->o_key ? 3 : 2;
 			$id    = \array_slice( $id, $slice );
 		}
 
@@ -733,9 +748,9 @@ final class FormGenerator {
 	 * @param array $fields The fields with sequence [ option => args ].
 	 * @yields Field based on input.
 	 */
-	private function generate_fields( array $fields ) {
+	private function generate_fields( $fields ) {
 
-		//= Store first key, to be caught later when iterating.
+		// Store first key, to be caught later when iterating.
 		$this->level_names[ $this->level ] = key( $fields );
 
 		/**
@@ -747,7 +762,7 @@ final class FormGenerator {
 		$this->level();
 
 		foreach ( $fields as $option => $_args ) {
-			//= Overwrite later keys, to be caught when generating IDs
+			// Overwrite later keys, to be caught when generating IDs
 			$this->level_names[ $this->level - 1 ] = $option;
 
 			yield $this->create_field( $_args );
@@ -782,7 +797,7 @@ final class FormGenerator {
 	 */
 	private function delevel() {
 		$this->it &= ~( ( 2 ** $this->bits - 1 ) << ( $this->bits * ( --$this->level ) ) );
-		//= Unset highest level.
+		// Unset highest level.
 		unset( $this->level_names[ $this->level + 1 ] );
 	}
 
@@ -843,7 +858,7 @@ final class FormGenerator {
 	 * @param string $id   The field ID.
 	 * @return string
 	 */
-	private function create_field_description( array $args, $id ) {
+	private function create_field_description( $args, $id ) {
 
 		// Not escaped.
 		$title = $args['_desc'][0];
@@ -879,7 +894,7 @@ final class FormGenerator {
 	 * @param array $args The field arguments.
 	 * @return mixed string the fields; empty string failure; bool true or false; void.
 	 */
-	private function create_field( array $args ) {
+	private function create_field( $args ) {
 
 		if ( empty( $args['_edit'] ) )
 			return '';
@@ -903,11 +918,11 @@ final class FormGenerator {
 				return $this->create_fields_multi_placeholder( $args );
 
 			case 'iterate_main':
-				//= Can only be used on main output field. Will echo. Will try to defer.
+				// Can only be used on main output field. Will echo. Will try to defer.
 				return $this->fields_iterator( $args, 'echo' );
 
 			case 'iterate_ajax':
-				//= Can only be used in AJAX. Will echo. Will try to defer.
+				// Can only be used in AJAX. Will echo. Will try to defer.
 				return $this->fields_iterator( $args, 'ajax' );
 
 			case 'iterate':
@@ -918,7 +933,7 @@ final class FormGenerator {
 				return $this->create_select_field( $args );
 
 			case 'selectmultia11y':
-				//= Select field, but then through checkboxes.
+				// Select field, but then through checkboxes.
 				return $this->create_select_multi_a11y_field( $args );
 
 			case 'text':
@@ -966,7 +981,7 @@ final class FormGenerator {
 	 * @param bool  $plain Whether to conver the fields to a plain wrap.
 	 * @return mixed string the fields; empty string failure; bool true or false; void.
 	 */
-	private function create_fields_multi( array $args, $plain = false ) {
+	private function create_fields_multi( $args, $plain = false ) {
 
 		$this->clean_desc_index( $args['_desc'] );
 		$title = $args['_desc'][0];
@@ -1029,7 +1044,7 @@ final class FormGenerator {
 	 * @param bool  $plain Whether to conver the fields to a plain wrap.
 	 * @return string
 	 */
-	private function create_fields_multi_dropdown( array $args, $plain = false ) {
+	private function create_fields_multi_dropdown( $args, $plain = false ) {
 
 		$this->clean_desc_index( $args['_desc'] );
 		$title = $args['_desc'][0];
@@ -1039,7 +1054,7 @@ final class FormGenerator {
 
 		$s_data = isset( $args['_data'] ) ? $this->get_fields_data( $args['_data'] ) : '';
 
-		//= Get wrap ID before iteration.
+		// Get wrap ID before iteration.
 		$wrap_id = $this->get_field_id();
 		$_fields = '';
 
@@ -1119,7 +1134,7 @@ final class FormGenerator {
 	 * @param array $args The field arguments.
 	 * @return mixed string the fields; empty string failure; bool true or false; void.
 	 */
-	private function create_fields_multi_placeholder( array $args ) {
+	private function create_fields_multi_placeholder( $args ) {
 		return $this->get_fields( $args['_fields'] );
 	}
 
@@ -1135,7 +1150,7 @@ final class FormGenerator {
 	 * @param string $type Determines whether to output, output for AJAX or return.
 	 * @return string HTML on return. Empty string on echo.
 	 */
-	private function fields_iterator( array $args, $type = 'echo' ) {
+	private function fields_iterator( $args, $type = 'echo' ) {
 
 		$o = '';
 
@@ -1181,9 +1196,9 @@ final class FormGenerator {
 	 *
 	 * @param array $args The fields iterator arguments.
 	 */
-	private function output_fields_iterator( array $args ) {
+	private function output_fields_iterator( $args ) {
 
-		echo '<div class="tsfem-form-iterator-setting">';
+		echo '<div class=tsfem-form-iterator-setting>';
 
 		$it_option_key = key( $args['_iterate_selector'] );
 		// Set maximum iterations based on option depth if left unassigned.
@@ -1201,10 +1216,10 @@ final class FormGenerator {
 		);
 
 		$_it_title_main = $args['_iterator_title'][0];
-		$_it_title      = isset( $args['_iterator_title'][1] ) ? $args['_iterator_title'][1] : $_it_title_main;
+		$_it_title      = $args['_iterator_title'][1] ?? $_it_title_main;
 
 		$defer = $count > 6;
-		//= Get wrap ID before iteration.
+		// Get wrap ID before iteration.
 		$wrap_id = $this->get_field_id();
 
 		$defer and printf(
@@ -1259,7 +1274,7 @@ final class FormGenerator {
 	 *
 	 * @param array $args The fields iterator arguments.
 	 */
-	private function output_ajax_fields_iterator( array $args ) {
+	private function output_ajax_fields_iterator( $args ) {
 
 		$it_option_key = key( $args['_iterate_selector'] );
 		// Set maximum iterations based on option depth if left unassigned.
@@ -1270,7 +1285,7 @@ final class FormGenerator {
 		// $count = $amount + $start - 1; // (that's nice, dear.)
 
 		$_it_title_main = $args['_iterator_title'][0];
-		$_it_title      = isset( $args['_iterator_title'][1] ) ? $args['_iterator_title'][1] : $_it_title_main;
+		$_it_title      = $args['_iterator_title'][1] ?? $_it_title_main;
 
 		$this->iterate( $start - 1 );
 
@@ -1304,7 +1319,7 @@ final class FormGenerator {
 	 * @param array $args The fields iterator arguments.
 	 * @return string
 	 */
-	private function get_fields_iterator( array $args ) {
+	private function get_fields_iterator( $args ) {
 
 		$it_option_key = key( $args['_iterate_selector'] );
 
@@ -1319,9 +1334,9 @@ final class FormGenerator {
 		);
 
 		$_it_title_main = $args['_iterator_title'][0];
-		$_it_title      = isset( $args['_iterator_title'][1] ) ? $args['_iterator_title'][1] : $_it_title_main;
+		$_it_title      = $args['_iterator_title'][1] ?? $_it_title_main;
 
-		//= Get wrap ID before iteration.
+		// Get wrap ID before iteration.
 		$wrap_id = $this->get_field_id();
 
 		$_fields = '';
@@ -1344,7 +1359,7 @@ final class FormGenerator {
 		}
 
 		return vsprintf(
-			'<div class="tsfem-form-iterator-setting">%s%s</div>',
+			'<div class=tsfem-form-iterator-setting>%s%s</div>',
 			[
 				sprintf(
 					'<div class="tsfem-form-iterator-selector-wrap tsfem-flex tsfem-flex-noshrink">%s</div>',
@@ -1368,14 +1383,14 @@ final class FormGenerator {
 	 * @param array  $args The collapse wrap arguments.
 	 * @return string
 	 */
-	private function get_collapse_wrap( $what, array $args = [] ) {
+	private function get_collapse_wrap( $what, $args = [] ) {
 
 		if ( 'start' === $what ) :
 
 			$s_id = $args['id'] ? sprintf( 'id="tsfem-form-collapse-%s"', $args['id'] ) : '';
 
 			$checkbox_id = sprintf( 'tsfem-form-collapse-checkbox-%s', $args['id'] );
-			$checkbox    = sprintf( '<input type=checkbox id="%s" class="tsfem-form-collapse-checkbox" checked>', $checkbox_id );
+			$checkbox    = sprintf( '<input type=checkbox id="%s" class=tsfem-form-collapse-checkbox checked>', $checkbox_id );
 
 			$args['dyn_title'] = (array) $args['dyn_title'];
 
@@ -1395,11 +1410,11 @@ final class FormGenerator {
 			);
 
 			$title = vsprintf(
-				'<h3 class="tsfem-form-collapse-title-wrap">%s%s</h3>',
+				'<h3 class=tsfem-form-collapse-title-wrap>%s%s</h3>',
 				[
 					'<span class="tsfem-form-title-icon tsfem-form-title-icon-unknown"></span>',
 					sprintf(
-						'<span class="tsfem-form-collapse-title">%s</span>',
+						'<span class=tsfem-form-collapse-title>%s</span>',
 						\esc_html( $args['title'] )
 					),
 				]
@@ -1416,9 +1431,9 @@ final class FormGenerator {
 				]
 			);
 
-			$content_start = '<div class="tsfem-form-collapse-content">';
+			$content_start = '<div class=tsfem-form-collapse-content>';
 
-			return sprintf( '<div class="tsfem-form-collapse" %s>%s%s%s', $s_id, $checkbox, $header, $content_start );
+			return sprintf( '<div class=tsfem-form-collapse %s>%s%s%s', $s_id, $checkbox, $header, $content_start );
 			; // phpcs:ignore -- Added to prevent breaking alternative if/elseif control. PHP bug?
 		elseif ( 'end' === $what ) :
 			// ok.
@@ -1460,8 +1475,8 @@ final class FormGenerator {
 
 		if ( is_scalar( $description ) ) {
 			return sprintf(
-				'<span class="tsfem-form-option-description">%s</span>',
-				$use_markdown ? \the_seo_framework()->convert_markdown( \esc_html( $description ) ) : \esc_html( $description )
+				'<span class=tsfem-form-option-description>%s</span>',
+				$use_markdown ? \tsf()->convert_markdown( \esc_html( $description ) ) : \esc_html( $description )
 			);
 		} else {
 			$ret = '';
@@ -1506,7 +1521,7 @@ final class FormGenerator {
 	 * @param mixed $default The default field value.
 	 * @return mixed The field value if set, $default otherwise.
 	 */
-	private function get_field_value_by_key( array $key, $default = null ) {
+	private function get_field_value_by_key( $key, $default = null ) {
 
 		if ( $this->use_stale )
 			return $this->get_stale_option_by_mda_key( $key, $default );
@@ -1523,9 +1538,9 @@ final class FormGenerator {
 	 *              Passed by reference.
 	 */
 	private function clean_desc_index( array &$desc ) {
-		$desc[0] = isset( $desc[0] ) ? $desc[0] : '';
-		$desc[1] = isset( $desc[1] ) ? $desc[1] : '';
-		$desc[2] = isset( $desc[2] ) ? $desc[2] : '';
+		$desc[0] = $desc[0] ?? '';
+		$desc[1] = $desc[1] ?? '';
+		$desc[2] = $desc[2] ?? '';
 	}
 
 	/**
@@ -1553,7 +1568,7 @@ final class FormGenerator {
 	 * @param array $data The field's data.
 	 * @return string The field's data.
 	 */
-	private function get_fields_data( array $data ) {
+	private function get_fields_data( $data ) {
 
 		$ret = [];
 
@@ -1613,7 +1628,7 @@ final class FormGenerator {
 	 * @param array $args The input field arguments.
 	 * @return string The input field.
 	 */
-	private function create_input_field_by_type( array $args ) {
+	private function create_input_field_by_type( $args ) {
 
 		switch ( $args['_type'] ) :
 			case 'date':
@@ -1654,12 +1669,12 @@ final class FormGenerator {
 				break;
 		endswitch;
 
-		//= s = Escaped.
+		// s = Escaped.
 		$s_type     = \esc_attr( $args['_type'] );
 		$s_name     = $s_id = $this->get_field_id();
 		$s_ph       = ! empty( $args['_ph'] ) ? sprintf( 'placeholder="%s"', \esc_attr( $args['_ph'] ) ) : '';
-		$s_range    = isset( $s_range ) ? $s_range : '';
-		$s_pattern  = isset( $s_pattern ) ? $s_pattern : '';
+		$s_range    = $s_range ?? '';
+		$s_pattern  = $s_pattern ?? '';
 		$s_required = $args['_req'] ? 'required' : '';
 
 		return vsprintf(
@@ -1696,9 +1711,9 @@ final class FormGenerator {
 	 * @param array $args The select field arguments.
 	 * @return string A select field.
 	 */
-	private function create_select_field( array $args ) {
+	private function create_select_field( $args ) {
 
-		//= s = Escaped.
+		// s = Escaped.
 		$s_name     = $s_id = $this->get_field_id();
 		$s_data     = isset( $args['_data'] ) ? $this->get_fields_data( $args['_data'] ) : '';
 		$s_required = $args['_req'] ? 'required' : '';
@@ -1708,7 +1723,7 @@ final class FormGenerator {
 		return vsprintf(
 			'<div class="tsfem-%s-field-wrapper tsfem-form-setting tsfem-flex">%s%s</div>',
 			[
-				$args['_type'], //= Doesn't need escaping.
+				$args['_type'], // Doesn't need escaping.
 				$this->create_field_description( $args, $s_id ),
 				sprintf(
 					'<div class="tsfem-form-setting-input tsfem-flex">%s</div>',
@@ -1739,7 +1754,7 @@ final class FormGenerator {
 	 * @param bool         $multiple Whether it's a multi-select field.
 	 * @return string The select options.
 	 */
-	private function get_select_options( array $select, $selected = '', $multiple = false ) {
+	private function get_select_options( $select, $selected = '', $multiple = false ) {
 
 		$_fields = '';
 
@@ -1767,13 +1782,13 @@ final class FormGenerator {
 	 * @param bool         $multiple Whether it's a multi-select field.
 	 * @yield The select option field.
 	 */
-	private function generate_select_fields( array $select, $selected = '', $multiple = false ) {
+	private function generate_select_fields( $select, $selected = '', $multiple = false ) {
 
 		static $_level = 0;
 
 		if ( null !== $selected && '' !== $selected && [] !== $selected ) :
 
-			//= Convert $selected to array.
+			// Convert $selected to array.
 			$a_selected = (array) $selected;
 
 			foreach ( $select as $args ) :
@@ -1785,7 +1800,7 @@ final class FormGenerator {
 				}
 
 				$s_selected = \in_array( $args[0], $a_selected, true ) ? ' selected' : '';
-				//= Prevent more lookups if found.
+				// Prevent more lookups if found.
 				$_next = $s_selected && ! $multiple ? '' : $selected;
 
 				if ( isset( $args[2] ) ) {
@@ -1837,12 +1852,12 @@ final class FormGenerator {
 	 * @param array $args The multi-select field arguments.
 	 * @return string An accessible option checkbox list acting as a multiselect field.
 	 */
-	private function create_select_multi_a11y_field( array $args ) {
+	private function create_select_multi_a11y_field( $args ) {
 
 		// Not escaped.
 		$title = $args['_desc'][0];
 
-		//= s = escaped
+		// s = escaped
 		$s_desc = $args['_desc'][1] ? $this->create_fields_description( $args['_desc'][1], ! empty( $args['_md'] ) ) : '';
 		$s_more = $args['_desc'][2] ? $this->create_fields_sub_description( $args['_desc'][2] ) : '';
 		$s_data = isset( $args['_data'] ) ? $this->get_fields_data( $args['_data'] ) : '';
@@ -1900,7 +1915,7 @@ final class FormGenerator {
 	 * @param bool  $reset    Determines whether to reset the iterations.
 	 * @return string An unordered list of checkboxes acting as multiselect.
 	 */
-	private function get_select_multi_a11y_options( array $select, array $selected = [], $reset = false ) {
+	private function get_select_multi_a11y_options( $select, $selected = [], $reset = false ) {
 
 		$_fields = '';
 
@@ -1931,9 +1946,9 @@ final class FormGenerator {
 	 * @param array $selected The default or currently selected fields.
 	 * @yield An unordered list of checkboxes acting as multiselect.
 	 */
-	private function generate_select_multi_a11y_fields( array $select, array $selected = [] ) {
+	private function generate_select_multi_a11y_fields( $select, $selected = [] ) {
 
-		yield '<ul class="tsfem-form-multi-a11y-wrap">';
+		yield '<ul class=tsfem-form-multi-a11y-wrap>';
 
 		foreach ( $select as $args ) :
 			$this->iterate();
@@ -1997,9 +2012,9 @@ final class FormGenerator {
 	 * @param array $args The field generation arguments.
 	 * @return string The image field input with buttons.
 	 */
-	private function create_image_field( array $args ) {
+	private function create_image_field( $args ) {
 
-		//= s = Escaped.
+		// s = Escaped.
 		$s_field_id = $this->get_field_id();
 		$s_url_name = $this->get_sub_field_id( 'url' );
 		$s_url_id   = "{$s_field_id}-url";
@@ -2020,8 +2035,6 @@ final class FormGenerator {
 			)
 		);
 
-		$s_remove_button = '';
-
 		$url_readonly = false;
 
 		if ( ! empty( $args['_readonly'] ) ) {
@@ -2032,26 +2045,15 @@ final class FormGenerator {
 		$s_required = $args['_req'] ? 'required' : '';
 		$s_data     = isset( $args['_data'] ) ? $this->get_fields_data( $args['_data'] ) : '';
 
-		if ( $s_id_value ) {
-			$url_readonly    = true;
-			$s_remove_button = vsprintf(
-				'<button type=button class="%1$s" title="%2$s" id="%3$s-remove" data-input-url="%3$s" data-input-id="%4$s">%5$s</button>',
-				[
-					'tsfem-remove-image-button tsfem-button-primary tsfem-button-small',
-					\esc_attr_x( 'Remove selected image', 'Button hover title', 'the-seo-framework-extension-manager' ),
-					$s_url_id,
-					$s_id_id,
-					\esc_html__( 'Remove Image', 'the-seo-framework-extension-manager' ),
-				]
-			);
-		}
+		if ( $s_id_value )
+			$url_readonly = true;
 
 		return vsprintf(
 			'<div class="tsfem-image-field-wrapper tsfem-form-setting tsfem-flex">%s%s</div>',
 			[
 				$this->create_field_description( $args, $s_url_id ),
 				vsprintf(
-					'<div class="tsfem-form-setting-input tsfem-flex">%s%s<div class="tsfem-form-image-buttons-wrap tsfem-flex tsfem-flex-row tsfem-flex-hide-if-no-js">%s</div></div>',
+					'<div class="tsfem-form-setting-input tsfem-flex">%s%s<div class="tsfem-form-image-buttons-wrap tsfem-flex tsfem-flex-row hide-if-no-tsf-js">%s</div></div>',
 					[
 						vsprintf(
 							'<input type=url id="%s" name=%s value="%s" %s %s%s%s>',
@@ -2089,9 +2091,9 @@ final class FormGenerator {
 	 * @param array $args The field generation arguments.
 	 * @return string The checkbox field.
 	 */
-	private function create_checkbox_field( array $args ) {
+	private function create_checkbox_field( $args ) {
 
-		//= s = Escaped.
+		// s = Escaped.
 		$s_name     = $s_id = $this->get_field_id();
 		$s_required = $args['_req'] ? 'required' : '';
 		$s_data     = isset( $args['_data'] ) ? $this->get_fields_data( $args['_data'] ) : '';
@@ -2128,7 +2130,7 @@ final class FormGenerator {
 	 * @return void
 	 */
 	// phpcs:disable
-	private function create_radio_field( array $args ) {}
-	private function create_textarea_field( array $args ) {}
+	private function create_radio_field( $args ) {}
+	private function create_textarea_field( $args ) {}
 	// phpcs:enable
 }

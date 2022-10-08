@@ -54,21 +54,18 @@ class Core {
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation nonce name.
 	 */
 	protected $nonce_name;
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation request name.
 	 */
 	protected $request_name = [];
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation nonce action.
 	 */
 	protected $nonce_action = [];
@@ -192,7 +189,7 @@ class Core {
 
 		Extensions::reset();
 
-		if ( empty( $extensions ) )
+		if ( ! $extensions )
 			return $loaded = false;
 
 		$this->get_verification_codes( $_instance, $bits );
@@ -250,21 +247,20 @@ class Core {
 	final public function _clean_response_header() {
 
 		$retval = 0;
-		// PHP 5.6+ //= $i = 0;
+		$i      = 0;
 
-		if ( $level = ob_get_level() ) { // phpcs:ignore, WordPress.CodeAnalysis.AssignmentInCondition -- this is fine.
-			while ( $level-- ) {
-				ob_end_clean();
-			}
-			$retval |= 1; //= 2 ** $i
+		$level = ob_get_level();
+		if ( $level ) {
+			while ( $level-- ) ob_end_clean();
+			$retval |= 2 ** $i;
 		}
 
-		// PHP 5.6+ //= $i++;
+		$i++;
 
 		// wp_ajax sets required headers early.
 		if ( ! headers_sent() ) {
 			header_remove();
-			$retval |= 2; //= 2 ** $i
+			$retval |= 2 ** $i;
 		}
 
 		return $retval;
@@ -303,6 +299,7 @@ class Core {
 	 * is actually JSON encoded. When it's 1, we can safely assume it's JSON.
 	 *
 	 * @since 1.2.0
+	 * @since 2.6.0 Now outputs boolean key 'success' if $type is of 'success'.
 	 * @TODO set a standard for $data, i.e. [ 'results'=>[],'html'=>"", etc. ];
 	 *
 	 * @param mixed  $data The data that needs to be send.
@@ -321,7 +318,9 @@ class Core {
 			$this->set_status_header( null, 'json' );
 		}
 
-		echo json_encode( compact( 'data', 'type', 'json' ) );
+		$success = 'success' === $type;
+
+		echo json_encode( compact( 'data', 'type', 'json', 'success' ) );
 		exit;
 	}
 
@@ -361,7 +360,7 @@ class Core {
 	 * @since 1.2.0
 	 * @since 2.4.0 Added nonce capability requirement, extra sanity for when the caller fails to do so.
 	 * @access private
-	 * @ignore unused. Leftover from the never-released Transporter
+	 * @ignore unused. Leftover from the dumped release of Transporter (old version).
 	 *
 	 * @param array $args - Required : {
 	 *    'options_key'   => string The extension options key,
@@ -374,7 +373,7 @@ class Core {
 	 * }
 	 * @return array|bool False on failure; array containing the jQuery.post object.
 	 */
-	final public function _get_ajax_post_object( array $args ) {
+	final public function _get_ajax_post_object( $args ) {
 
 		$required = [
 			'options_key',
@@ -390,7 +389,7 @@ class Core {
 		if ( ! $this->has_required_array_keys( $args, $required ) )
 			return false;
 
-		$url = $this->get_admin_page_url( $args['menu_slug'] );
+		$url = \menu_page_url( $args['menu_slug'], false );
 
 		if ( ! $url )
 			return false;
@@ -455,7 +454,7 @@ class Core {
 				if ( 1 === $i ) {
 					$output .= $index . $this->matosa( $item, $i, false );
 				} else {
-					$output .= '[' . $index . ']' . $this->matosa( $item, $i, false );
+					$output .= "[{$index}]" . $this->matosa( $item, $i, false );
 				}
 			}
 		} elseif ( 1 === $i ) {
@@ -481,8 +480,8 @@ class Core {
 	 * @param array $compare The keys to compare it to.
 	 * @return bool True on success, false if keys are missing.
 	 */
-	final public function has_required_array_keys( array $input, array $compare ) {
-		return empty( array_diff_key( array_flip( $compare ), $input ) );
+	final public function has_required_array_keys( $input, $compare ) {
+		return ! array_diff_key( array_flip( $compare ), $input );
 	}
 
 	/**
@@ -493,7 +492,7 @@ class Core {
 	 *
 	 * It will also return the value so it can be used in a return statement.
 	 *
-	 * Example: `$v ?? $f` becomes `coalesce_var( $v, $f )`
+	 * Example: `$v = $v ?? $f` becomes `coalesce_var( $v, $f )`
 	 * The fallback value must always be set, so performance benefits thereof aren't present.
 	 *
 	 * @link http://php.net/manual/en/migration70.new-features.php#migration70.new-features.null-coalesce-op
@@ -504,7 +503,7 @@ class Core {
 	 * @return mixed
 	 */
 	final public function coalesce_var( &$v = null, $f = null ) {
-		return isset( $v ) ? $v : $v = $f;
+		return $v ?? ( $v = $f );
 	}
 
 	/**
@@ -535,9 +534,9 @@ class Core {
 
 			if ( $message ) {
 				// Use debug_print_backtrace() to debug.
-				\the_seo_framework()->_doing_it_wrong( __CLASS__, 'Class execution stopped with message: <strong>' . \esc_html( $message ) . '</strong>' );
+				\tsf()->_doing_it_wrong( __CLASS__, 'Class execution stopped with message: <strong>' . \esc_html( $message ) . '</strong>' );
 			} else {
-				\the_seo_framework()->_doing_it_wrong( __CLASS__, 'Class execution stopped because of an error.' );
+				\tsf()->_doing_it_wrong( __CLASS__, 'Class execution stopped because of an error.' );
 			}
 		}
 
@@ -606,6 +605,28 @@ class Core {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Verifies extension loading instances. May clear the input through reference.
+	 * Kills extension load sequence on failure.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 *
+	 * @param string $instance The verification instance key. Passed by reference.
+	 * @param int    $bit      The verification instance bit. Passed by reference.
+	 * @return bool False when extension may be loaded. True otherwise.
+	 */
+	final public function _blocked_extension_file( &$instance, &$bit ) {
+
+		if ( $this->_has_died() )
+			return true;
+
+		if ( false === ( $this->_verify_instance( $instance, $bit ) or $this->_maybe_die() ) )
+			return true;
+
+		return false;
 	}
 
 	/**
@@ -692,7 +713,7 @@ class Core {
 
 		// Timing-attack safe.
 		if ( isset( $instance[ $n_bit ] ) ) {
-			//= Timing attack mitigated.
+			// Timing attack mitigated.
 
 			// Don't use hash_equals(). This is already safe.
 			if ( empty( $instance[ $bit ] ) || $instance[ $n_bit ] !== $instance[ $bit ] ) {
@@ -752,10 +773,11 @@ class Core {
 		 * Uses various primes to prevent overflow (which is heavy and can loop) on 32 bit architecture.
 		 * Time can never be 0, because it will then loop.
 		 */
-		set : {
+		set: {
 			$bit = $_bit = 0;
 
-			$this->coalesce_var( $_prime, 317539 );
+			// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis -- goto loop.
+			$_prime    = $_prime ?? 317539;
 			$_boundary = 10000;
 
 			$_time = time();
@@ -780,7 +802,7 @@ class Core {
 			goto set;
 		}
 
-		generate : {
+		generate: {
 			/**
 			 * Count to create an irregular bit verification.
 			 * This can jump multiple sequences while maintaining the previous.
@@ -865,9 +887,7 @@ class Core {
 
 		$now_x = floor( ( $_time - $_delta ) / $length );
 
-		$string = $uid . '\\' . $now_x . '\\' . $uid;
-
-		return $this->hash( $string, 'auth' );
+		return $this->hash( "$uid\\$now_x\\$uid", 'auth' );
 	}
 
 	/**
@@ -1029,10 +1049,7 @@ class Core {
 	 */
 	final public function _init_early_extension_autoloader( $path, $namespace, &$_instance, &$bits ) {
 
-		if ( $this->_has_died() )
-			return false;
-
-		if ( false === ( $this->_verify_instance( $_instance, $bits[1] ) or $this->_maybe_die() ) )
+		if ( $this->_blocked_extension_file( $_instance, $bits[1] ) )
 			return false;
 
 		return $this->register_extension_autoload_path( $path, $namespace );
@@ -1143,6 +1160,8 @@ class Core {
 	 * @since 1.2.0
 	 * @since 1.3.0 Now handles namespaces instead of class bases.
 	 * @since 2.5.1 Now supports mixed class case.
+	 * @since 2.6.0 1. Now supports branched path files.
+	 *              2. Now uses `hrtime()` instead of `microtime()`.
 	 *
 	 * @param string $class The extension classname.
 	 * @return bool False if file hasn't yet been included, otherwise true.
@@ -1167,7 +1186,7 @@ class Core {
 		static $_timenow = true;
 
 		if ( $_timenow ) {
-			$_bootstrap_timer = microtime( true );
+			$_bootstrap_timer = hrtime( true );
 			$_timenow         = false;
 		} else {
 			$_bootstrap_timer = 0;
@@ -1179,13 +1198,17 @@ class Core {
 		$_path = $this->get_extension_autload_path( $_ns );
 
 		if ( $_path ) {
-			$_file = str_replace( '_', '-', str_replace( $_ns . '\\', '', $_class ) );
+			$_file = str_replace(
+				[ "$_ns\\", '\\', '/', '_' ],
+				[ '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, '-' ],
+				$_class
+			);
 
 			$this->get_verification_codes( $_instance, $bits );
 
 			$loaded[ $class ] = require "{$_path}{$_file}.class.php";
 		} else {
-			\the_seo_framework()->_doing_it_wrong( __METHOD__, 'Class <code>' . \esc_html( $class ) . '</code> has not been registered.' );
+			\tsf()->_doing_it_wrong( __METHOD__, 'Class <code>' . \esc_html( $class ) . '</code> has not been registered.' );
 
 			// Prevent fatal errors.
 			$this->create_class_alias( $class );
@@ -1194,7 +1217,7 @@ class Core {
 		}
 
 		if ( $_bootstrap_timer ) {
-			$_t = microtime( true ) - $_bootstrap_timer;
+			$_t = ( hrtime( true ) - $_bootstrap_timer ) / 1e9; // ns to s
 			\The_SEO_Framework\_bootstrap_timer( $_t );
 			\TSF_Extension_Manager\_bootstrap_timer( $_t );
 			$_timenow = true;
@@ -1264,18 +1287,6 @@ class Core {
 	}
 
 	/**
-	 * Converts pixels to points.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int|string $px The pixels amount. Accepts 42 as well as '42px'.
-	 * @return int Points.
-	 */
-	final public function pixels_to_points( $px = 0 ) {
-		return \intval( $px ) * .75;
-	}
-
-	/**
 	 * Determines whether the plugin's activated. Either free or premium.
 	 *
 	 * @since 1.0.0
@@ -1332,12 +1343,7 @@ class Core {
 	 * @return array|boolean Current subscription status. False on failed instance verification.
 	 */
 	final public function _get_subscription_status( &$_instance, &$bits ) {
-
-		if ( $this->_verify_instance( $_instance, $bits[1] ) ) {
-			return $this->get_subscription_status();
-		}
-
-		return false;
+		return $this->_verify_instance( $_instance, $bits[1] ) ? $this->get_subscription_status() : false;
 	}
 
 	/**
@@ -1348,19 +1354,14 @@ class Core {
 	 * @return array Current subscription status.
 	 */
 	final protected function get_subscription_status() {
-
 		static $status;
-
-		if ( $status )
-			return $status;
-
-		return $status = [
+		return $status ?? ( $status = [
 			'key'    => $this->get_option( 'api_key' ),
 			'email'  => $this->get_option( 'activation_email' ),
 			'active' => $this->get_option( '_activated' ),
 			'level'  => $this->get_option( '_activation_level' ),
 			'data'   => $this->get_option( '_remote_subscription_status' ),
-		];
+		] );
 	}
 
 	/**
@@ -1375,7 +1376,7 @@ class Core {
 	 */
 	final public function get_font_file_location( $font = '', $url = false ) {
 		if ( $url ) {
-			return TSF_EXTENSION_MANAGER_DIR_URL . 'lib/fonts/' . $font;
+			return TSF_EXTENSION_MANAGER_DIR_URL . "lib/fonts/$font";
 		} else {
 			return TSF_EXTENSION_MANAGER_DIR_PATH . 'lib' . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . $font;
 		}
@@ -1392,7 +1393,7 @@ class Core {
 	 */
 	final public function get_image_file_location( $image = '', $url = false ) {
 		if ( $url ) {
-			return TSF_EXTENSION_MANAGER_DIR_URL . 'lib/images/' . $image;
+			return TSF_EXTENSION_MANAGER_DIR_URL . "lib/images/$image";
 		} else {
 			return TSF_EXTENSION_MANAGER_DIR_PATH . 'lib' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $image;
 		}
@@ -1438,8 +1439,9 @@ class Core {
 	 *
 	 * @param array $input The input with possible keys.
 	 * @param array $keys The wanted keys, e.g. ['key','key2']
+	 * @return array The $input array with only indexes from $keys.
 	 */
-	final public function filter_keys( array $input, array $keys ) {
+	final public function filter_keys( $input, $keys ) {
 		$expected_keys = array_fill_keys( $keys, '' );
 		return array_intersect_key( array_merge( $expected_keys, $input ), $expected_keys );
 	}
@@ -1466,7 +1468,7 @@ class Core {
 		if ( $secure ) {
 			// Don't load from $_GET request if secure.
 			if ( \did_action( 'current_screen' ) ) {
-				return $cache = \the_seo_framework()->is_menu_page( $this->seo_extensions_menu_page_hook );
+				return $cache = \tsf()->is_menu_page( $this->seo_extensions_menu_page_hook );
 			} else {
 				// current_screen isn't set up.
 				return false;
@@ -1476,7 +1478,7 @@ class Core {
 			if ( \wp_doing_ajax() ) {
 				return $this->ajax_is_tsf_extension_manager_page();
 			} else {
-				return \the_seo_framework()->is_menu_page( $this->seo_extensions_menu_page_hook, $this->seo_extensions_page_slug );
+				return \tsf()->is_menu_page( $this->seo_extensions_menu_page_hook, $this->seo_extensions_page_slug );
 			}
 		}
 	}

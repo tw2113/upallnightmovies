@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
  * Extension Name: Monitor
  * Extension URI: https://theseoframework.com/extensions/monitor/
  * Extension Description: The Monitor extension keeps track of your website's SEO optimizations and statistics.
- * Extension Version: 1.2.7
+ * Extension Version: 1.2.8
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -41,7 +41,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_MONITOR_VERSION', '1.2.7' );
+\define( 'TSFEM_E_MONITOR_VERSION', '1.2.8' );
 
 /**
  * The extension file, absolute unix path.
@@ -76,7 +76,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
  *
  * @since 1.0.0
  */
-if ( false === \tsf_extension_manager()->_init_early_extension_autoloader( TSFEM_E_MONITOR_PATH_CLASS, 'Monitor', $_instance, $bits ) )
+if ( false === \tsfem()->_init_early_extension_autoloader( TSFEM_E_MONITOR_PATH_CLASS, 'Monitor', $_instance, $bits ) )
 	return;
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\monitor_init', 11 );
@@ -104,19 +104,4 @@ function monitor_init() {
 	}
 
 	return $loaded = true;
-}
-
-/**
- * Returns the active base class.
- *
- * @since 1.0.0
- *
- * @return string The active class name.
- */
-function get_active_class() {
-	if ( \is_admin() ) {
-		return __NAMESPACE__ . '\\Admin';
-	} else {
-		return __NAMESPACE__ . '\\Front';
-	}
 }

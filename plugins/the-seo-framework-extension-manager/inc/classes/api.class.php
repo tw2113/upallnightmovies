@@ -162,7 +162,7 @@ class API extends Core {
 
 		$instance = $this->get_option( '_instance' );
 
-		if ( empty( $instance ) ) {
+		if ( ! $instance ) {
 			$instance = trim( \wp_generate_password( 32, false ) );
 
 			if ( $save_option )
@@ -273,7 +273,7 @@ class API extends Core {
 	 * @param int    $bits      The verification instance bit. Passed by reference.
 	 * @return string|boolean The escaped API URL with parameters. False on failed instance verification.
 	 */
-	final public function _get_api_response( array $args, &$_instance, &$bits ) {
+	final public function _get_api_response( $args, &$_instance, &$bits ) {
 
 		if ( $this->_verify_instance( $_instance, $bits[1] ) )
 			return $this->get_api_response( $args, false );
@@ -292,7 +292,7 @@ class API extends Core {
 	 * @param bool  $internal Whether the API call is for $this object.
 	 * @return string Response body. Empty string if no body or incorrect parameter given.
 	 */
-	final protected function get_api_response( array $args, $internal = true ) {
+	final protected function get_api_response( $args, $internal = true ) {
 
 		$defaults = [
 			'request'     => '',
@@ -357,9 +357,9 @@ class API extends Core {
 	 * @param bool   $explain  Whether to show additional info in error messages.
 	 * @return bool True on successful response, false on failure.
 	 */
-	final protected function handle_response( $args, $response = '', $explain = false ) {
+	final protected function handle_response( $args, $response, $explain = false ) {
 
-		if ( empty( $response ) ) {
+		if ( ! $response ) {
 			$this->set_error_notice( [ 301 => '' ] );
 			return false;
 		}
@@ -436,17 +436,11 @@ class API extends Core {
 	 * @param string $class     The class instance name.
 	 * @param string $_instance The verification instance. Passed by reference.
 	 * @param array  $bits      The verification bits. Passed by reference.
-	 * @return string The storage key.
+	 * @return string|false The storage key, false on failure.
 	 */
 	final public function _init_final_static_extension_api_access( $class, &$_instance, &$bits ) {
 
-		if ( $this->_has_died() )
-			return false;
-
-		if ( false === ( $this->_verify_instance( $_instance, $bits[1] ) or $this->_maybe_die() ) )
-			return false;
-
-		if ( false === $class )
+		if ( $this->_blocked_extension_file( $_instance, $bits[1] ) )
 			return false;
 
 		return $this->_create_protected_api_access_key( $class );
@@ -511,8 +505,9 @@ class API extends Core {
 	 * @return bool True if verified, false otherwise.
 	 */
 	private function _verify_api_access( $object, $key ) {
-		$keys = &$this->generate_api_access_key();
-		return $this->coalesce_var( $keys[ \get_class( $object ) ], null ) === (string) $key;
+		return (
+			$this->generate_api_access_key()[ \get_class( $object ) ] ?? null
+		) === (string) $key;
 	}
 
 	/**

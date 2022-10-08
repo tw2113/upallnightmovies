@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  * Extension Name: Articles
  * Extension URI: https://theseoframework.com/extensions/articles/
  * Extension Description: The Articles extension enhances your published posts by automatically adding important [Structured Data](https://developers.google.com/search/docs/advanced/structured-data/article). Great for bloggers, news publishers, and scientific pieces. It comes with a Google News sitemap, as well.
- * Extension Version: 2.2.0
+ * Extension Version: 2.2.1
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -41,15 +41,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_ARTICLES_VERSION', '2.2.0' );
-
-/**
- * The extension database version.
- *
- * @since ?.?.?
- * @ignore
- */
-// \define( 'TSFEM_E_ARTICLES_DB_VERSION', '1000' );
+\define( 'TSFEM_E_ARTICLES_VERSION', '2.2.1' );
 
 /**
  * The extension file, absolute unix path.
@@ -84,12 +76,8 @@ namespace TSF_Extension_Manager\Extension\Articles;
  *
  * @since 1.2.0
  */
-if ( false === \tsf_extension_manager()->_init_early_extension_autoloader( TSFEM_E_ARTICLES_PATH_CLASS, 'Articles', $_instance, $bits ) )
+if ( false === \tsfem()->_init_early_extension_autoloader( TSFEM_E_ARTICLES_PATH_CLASS, 'Articles', $_instance, $bits ) )
 	return;
-
-// if ( TSFEM_E_ARTICLES_DB_VERSION > \tsf_extension_manager_db_version( 'articles' ) ) {
-// 	require TSFEM_E_ARTICLES_DIR_PATH . 'upgrade.php';
-// }
 
 /**
  * Removes AMP articles if AMP extension is active.

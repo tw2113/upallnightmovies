@@ -14,8 +14,9 @@ namespace TSF_Extension_Manager\Extension\Focus;
  */
 \define(
 	'TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY',
-	\tsf_extension_manager()->_init_final_static_extension_api_access( __NAMESPACE__ . '\\Ajax', $_instance, $bits ) ?: false
+	\tsfem()->_init_final_static_extension_api_access( __NAMESPACE__ . '\\Ajax', $_instance, $bits ) ?: false
 );
+
 if ( false === TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY )
 	return;
 
@@ -94,11 +95,11 @@ final class Ajax {
 	 * @return bool|void True on success. Void and exit on failure.
 	 */
 	private function get_api_response( $type, $data ) {
-		return \tsf_extension_manager()->_get_protected_api_response(
+		return \tsfem()->_get_protected_api_response(
 			$this,
 			TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY,
 			[
-				'request' => 'extension/focus/' . $type,
+				'request' => "extension/focus/$type",
 				'data'    => $data,
 			]
 		);
@@ -113,7 +114,7 @@ final class Ajax {
 	 */
 	private function verify_api_access() {
 
-		$tsfem   = \tsf_extension_manager();
+		$tsfem   = \tsfem();
 		$post_id = filter_input( INPUT_POST, 'post_ID', FILTER_VALIDATE_INT );
 
 		if ( $post_id && \TSF_Extension_Manager\InpostGUI::current_user_can_edit_post( \absint( $post_id ) ) ) {
@@ -141,8 +142,8 @@ final class Ajax {
 		// phpcs:disable, WordPress.Security.NonceVerification -- this is the verification.
 		$this->verify_api_access();
 
-		$tsfem = \tsf_extension_manager();
-		$_args = ! empty( $_POST['args'] ) ? $_POST['args'] : [];
+		$tsfem = \tsfem();
+		$_args = ( $_POST['args'] ?? null ) ?: [];
 
 		$keyword  = isset( $_args['keyword'] ) ? $tsfem->s_ajax_string( $_args['keyword'] ) : '';
 		$language = isset( $_args['language'] ) ? $tsfem->s_ajax_string( $_args['language'] ) : '';
@@ -150,14 +151,14 @@ final class Ajax {
 		$send = [];
 
 		if ( ! \strlen( $keyword ) || ! $language ) {
-			//= How in the...
+			// How in the...
 			$send['results'] = $this->get_ajax_notice( false, 1100101 );
 		} else {
 			$response = $this->get_api_response( 'lexicalform', compact( 'keyword', 'language' ) );
 			$response = json_decode( $response );
 
 			if ( empty( $response->success ) ) {
-				switch ( isset( $response->data->error ) ? $response->data->error : '' ) :
+				switch ( $response->data->error ?? '' ) :
 					case 'WORD_NOT_FOUND':
 						$send['results'] = $this->get_ajax_notice( false, 1100102 );
 						break;
@@ -183,8 +184,11 @@ final class Ajax {
 				$_data = \is_string( $response->data ) ? json_decode( $response->data ) : (object) $response->data;
 
 				if ( isset( $_data->forms ) ) {
+
 					$type = 'success'; // The API responded as intended, although the data may not be useful.
+
 					$send['data']['forms'] = $_data->forms ?: [];
+
 					if ( ! $send['data']['forms'] ) {
 						$send['results'] = $this->get_ajax_notice( false, 1100105 );
 					} else {
@@ -199,7 +203,7 @@ final class Ajax {
 			}
 		}
 
-		$tsfem->send_json( $send, $tsfem->coalesce_var( $type, 'failure' ) );
+		$tsfem->send_json( $send, $type ?? 'failure' );
 
 		// phpcs:enable, WordPress.Security.NonceVerification
 	}
@@ -216,8 +220,8 @@ final class Ajax {
 		// phpcs:disable, WordPress.Security.NonceVerification -- this is the verification.
 		$this->verify_api_access();
 
-		$tsfem = \tsf_extension_manager();
-		$_args = ! empty( $_POST['args'] ) ? $_POST['args'] : [];
+		$tsfem = \tsfem();
+		$_args = ( $_POST['args'] ?? null ) ?: [];
 
 		$form_keys = [ 'category', 'value' ];
 
@@ -227,7 +231,7 @@ final class Ajax {
 		$send = [];
 
 		if ( ! $tsfem->has_required_array_keys( $form, $form_keys ) || ! $language ) {
-			//= How in the...
+			// How in the...
 			$send['results'] = $this->get_ajax_notice( false, 1100301 );
 		} else {
 			$keyword = $form['value'];
@@ -237,7 +241,7 @@ final class Ajax {
 			$response = json_decode( $response );
 
 			if ( empty( $response->success ) ) {
-				switch ( isset( $response->data->error ) ? $response->data->error : '' ) :
+				switch ( $response->data->error ?? '' ) :
 					case 'WORD_NOT_FOUND':
 						$send['results'] = $this->get_ajax_notice( false, 1100302 );
 						break;
@@ -285,7 +289,7 @@ final class Ajax {
 			}
 		}
 
-		$tsfem->send_json( $send, $tsfem->coalesce_var( $type, 'failure' ) );
+		$tsfem->send_json( $send, $type ?? 'failure' );
 
 		// phpcs:enable, WordPress.Security.NonceVerification
 	}
@@ -302,8 +306,8 @@ final class Ajax {
 		// phpcs:disable, WordPress.Security.NonceVerification -- this is the verification.
 		$this->verify_api_access();
 
-		$tsfem = \tsf_extension_manager();
-		$_args = ! empty( $_POST['args'] ) ? $_POST['args'] : [];
+		$tsfem = \tsfem();
+		$_args = ( $_POST['args'] ?? null ) ?: [];
 
 		$form_keys = [ 'category', 'value' ];
 
@@ -313,7 +317,7 @@ final class Ajax {
 		$send = [];
 
 		if ( ! $tsfem->has_required_array_keys( $form, $form_keys ) || ! $language ) {
-			//= How in the...
+			// How in the...
 			$send['results'] = $this->get_ajax_notice( false, 1100201 );
 		} else {
 			$form = json_encode( $tsfem->filter_keys( $form, $form_keys ) );
@@ -322,7 +326,7 @@ final class Ajax {
 			$response = json_decode( $response );
 
 			if ( empty( $response->success ) ) {
-				switch ( isset( $response->data->error ) ? $response->data->error : '' ) :
+				switch ( $response->data->error ?? '' ) :
 					case 'WORD_NOT_FOUND':
 						$send['results'] = $this->get_ajax_notice( false, 1100202 );
 						break;
@@ -349,7 +353,9 @@ final class Ajax {
 
 				if ( isset( $_data->synonyms ) ) {
 					$type = 'success'; // The API responded as intended, although the data may not be useful.
+
 					$send['data']['synonyms'] = $_data->synonyms ?: [];
+
 					if ( ! $send['data']['synonyms'] ) {
 						$send['results'] = $this->get_ajax_notice( false, 1100205 );
 					} else {
@@ -364,7 +370,7 @@ final class Ajax {
 			}
 		}
 
-		$tsfem->send_json( $send, $tsfem->coalesce_var( $type, 'failure' ) );
+		$tsfem->send_json( $send, $type ?? 'failure' );
 
 		// phpcs:enable, WordPress.Security.NonceVerification
 	}

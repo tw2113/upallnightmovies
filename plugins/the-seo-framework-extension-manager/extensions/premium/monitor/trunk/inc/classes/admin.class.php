@@ -7,8 +7,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsf_extension_manager()->_has_died() or false === ( \tsf_extension_manager()->_verify_instance( $_instance, $bits[1] ) or \tsf_extension_manager()->_maybe_die() ) )
-	return;
+if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
@@ -38,6 +37,13 @@ use \TSF_Extension_Manager\HTML as HTML;
  * @since 1.0.0
  */
 \TSF_Extension_Manager\_load_trait( 'core/ui' );
+
+/**
+ * Require extension views trait.
+ *
+ * @since 1.2.8
+ */
+\TSF_Extension_Manager\_load_trait( 'extension/views' );
 
 /**
  * Require extension options trait.
@@ -75,46 +81,38 @@ final class Admin extends Api {
 	use \TSF_Extension_Manager\Construct_Master_Once_Interface,
 		\TSF_Extension_Manager\Time,
 		\TSF_Extension_Manager\UI,
+		\TSF_Extension_Manager\Extension_Views,
 		\TSF_Extension_Manager\Extension_Options,
 		\TSF_Extension_Manager\Extension_Forms,
 		\TSF_Extension_Manager\Error;
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation nonce name.
 	 */
 	protected $nonce_name;
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation request name.
 	 */
 	protected $request_name = [];
 
 	/**
 	 * @since 1.0.0
-	 *
 	 * @var string The validation nonce action.
 	 */
 	protected $nonce_action = [];
 
 	/**
-	 * Name of the page hook when the menu is registered.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string Page hook.
+	 * @var string Page hook name.
 	 */
 	protected $monitor_menu_page_hook;
 
 	/**
-	 * The extension page ID/slug.
-	 *
 	 * @since 1.0.0
-	 *
-	 * @var string Page ID/Slug
+	 * @var string Page ID/Slug.
 	 */
 	protected $monitor_page_slug;
 
@@ -124,6 +122,11 @@ final class Admin extends Api {
 	 * @since 1.0.0
 	 */
 	private function construct() {
+
+		/**
+		 * @see trait TSF_Extension_Manager\Extension_Views
+		 */
+		$this->view_location_base = TSFEM_E_MONITOR_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
 
 		$this->nonce_name = 'tsfem_e_monitor_nonce_name';
 		// phpcs:disable, WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
@@ -190,7 +193,7 @@ final class Admin extends Api {
 		$this->o_index = 'monitor';
 
 		// Nothing to do here...
-		if ( \the_seo_framework()->is_headless['settings'] ) return;
+		if ( \tsf()->is_headless['settings'] ) return;
 
 		// Initialize menu links
 		\add_action( 'admin_menu', [ $this, '_init_menu' ] );
@@ -233,13 +236,13 @@ final class Admin extends Api {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Added TSF v3.1 compat.
-	 * @uses \the_seo_framework()->seo_settings_page_slug.
+	 * @uses \tsf()->seo_settings_page_slug.
 	 * @access private
 	 */
 	public function _add_menu_link() {
 
 		$menu = [
-			'parent_slug' => \the_seo_framework()->seo_settings_page_slug,
+			'parent_slug' => \tsf()->seo_settings_page_slug,
 			'page_title'  => 'Monitor',
 			'menu_title'  => 'Monitor',
 			'capability'  => TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
@@ -265,7 +268,7 @@ final class Admin extends Api {
 	 * @access private
 	 */
 	public function _load_monitor_admin_actions() {
-		\add_action( 'load-' . $this->monitor_menu_page_hook, [ $this, '_do_monitor_admin_actions' ] );
+		\add_action( "load-{$this->monitor_menu_page_hook}", [ $this, '_do_monitor_admin_actions' ] );
 	}
 
 	/**
@@ -299,8 +302,8 @@ final class Admin extends Api {
 		 */
 		$this->init_errors();
 
-		// Add something special for Vivaldi
-		\add_action( 'admin_head', [ $this, '_output_theme_color_meta' ], 0 );
+		// Add something special for Vivaldi & Android.
+		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 
 		return true;
 	}
@@ -356,7 +359,7 @@ final class Admin extends Api {
 		endswitch;
 
 		$args = WP_DEBUG ? [ 'did-' . $options['nonce-action'] => 'true' ] : [];
-		\the_seo_framework()->admin_redirect( $this->monitor_page_slug, $args );
+		\tsf()->admin_redirect( $this->monitor_page_slug, $args );
 		exit;
 
 		// phpcs:enable, WordPress.Security.NonceVerification
@@ -406,7 +409,7 @@ final class Admin extends Api {
 		if ( false === $result ) {
 			// Nonce failed. Set error notice and reload.
 			$this->set_error_notice( [ 1019001 => '' ] );
-			\the_seo_framework()->admin_redirect( $this->monitor_page_slug );
+			\tsf()->admin_redirect( $this->monitor_page_slug );
 			exit;
 		}
 
@@ -424,11 +427,11 @@ final class Admin extends Api {
 
 		if ( \wp_doing_ajax() ) :
 			if ( \TSF_Extension_Manager\can_do_extension_settings() ) :
-				$tsfem  = \tsf_extension_manager();
+				$tsfem  = \tsfem();
 				$option = '';
 				$send   = [];
 				if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
-					//= Option is cleaned and requires unpacking.
+					// Option is cleaned and requires unpacking.
 					$option = isset( $_POST['option'] ) ? $tsfem->s_ajax_string( $_POST['option'] ) : ''; // Sanitization, input var OK.
 					$value  = isset( $_POST['value'] ) ? \absint( $_POST['value'] ) : 0;                  // Input var OK.
 				} else {
@@ -436,7 +439,7 @@ final class Admin extends Api {
 				}
 
 				if ( $option ) {
-					//= Unpack option.
+					// Unpack option.
 					$_option = \TSF_Extension_Manager\FormFieldParser::get_last_value( \TSF_Extension_Manager\FormFieldParser::umatosa( $option ) );
 					$options = [
 						$_option => $value,
@@ -444,7 +447,7 @@ final class Admin extends Api {
 
 					$response = $this->api_update_remote_settings( $options, true );
 
-					//= Get new options, regardless of response.
+					// Get new options, regardless of response.
 					foreach ( [ 'uptime_setting', 'performance_setting' ] as $setting ) {
 						$send['settings'][ $setting ] = $this->get_option( $setting, 0 );
 					}
@@ -455,7 +458,7 @@ final class Admin extends Api {
 					$send['results'] = $this->get_ajax_notice( false, 1010702 );
 				}
 
-				$tsfem->send_json( $send, $tsfem->coalesce_var( $type, 'failure' ) );
+				$tsfem->send_json( $send, $type ?? 'failure' );
 			endif;
 		endif;
 
@@ -532,8 +535,8 @@ final class Admin extends Api {
 					$response = [
 						'status'   => $status,
 						'timeout'  => [
-							'old' => isset( $timeout ) ? $timeout : null,
-							'new' => isset( $current_timeout ) ? $current_timeout : null,
+							'old' => $timeout ?? null,
+							'new' => $current_timeout ?? null,
 						],
 						'response' => isset( $api ) ? [ 'response' => $api ] : [],
 					];
@@ -541,7 +544,7 @@ final class Admin extends Api {
 					$response = [ 'status' => $status ];
 				}
 
-				\tsf_extension_manager()->send_json( $response, null );
+				\tsfem()->send_json( $response, null );
 			endif;
 		endif;
 
@@ -616,8 +619,8 @@ final class Admin extends Api {
 					$response = [
 						'status'   => $status,
 						'timeout'  => [
-							'old' => isset( $timeout ) ? $timeout : null,
-							'new' => isset( $current_timeout ) ? $current_timeout : null,
+							'old' => $timeout ?? null,
+							'new' => $current_timeout ?? null,
 						],
 						'response' => isset( $api ) ? [ 'response' => $api ] : [],
 					];
@@ -625,7 +628,7 @@ final class Admin extends Api {
 					$response = [ 'status' => $status ];
 				}
 
-				\tsf_extension_manager()->send_json( $response, null );
+				\tsfem()->send_json( $response, null );
 			endif;
 		endif;
 
@@ -648,13 +651,13 @@ final class Admin extends Api {
 
 				if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
 					// Initialize menu hooks.
-					\the_seo_framework()->add_menu_link();
+					\tsf()->add_menu_link();
 					$this->_add_menu_link();
 
 					$send['html'] = $this->get_site_fix_fields();
 				}
 
-				\tsf_extension_manager()->send_json( $send, null );
+				\tsfem()->send_json( $send, null );
 			}
 		}
 
@@ -735,9 +738,8 @@ final class Admin extends Api {
 	 * @return bool
 	 */
 	public function is_monitor_page() {
-		static $cache;
 		// Don't load from $_GET request.
-		return isset( $cache ) ? $cache : $cache = \the_seo_framework()->is_menu_page( $this->monitor_menu_page_hook );
+		return \The_SEO_Framework\memo( \tsf()->is_menu_page( $this->monitor_menu_page_hook ) );
 	}
 
 	/**
@@ -800,17 +802,6 @@ final class Admin extends Api {
 	}
 
 	/**
-	 * Outputs theme color meta tag for Vivaldi and mobile browsers.
-	 * Does not always work. So many browser bugs... It's just fancy.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 */
-	public function _output_theme_color_meta() {
-		$this->get_view( 'layout/pages/meta' );
-	}
-
-	/**
 	 * Creates issues overview for the issues pane.
 	 *
 	 * @since 1.0.0
@@ -823,13 +814,12 @@ final class Admin extends Api {
 		$output = '';
 		$issues = $this->get_data( 'issues', [] );
 
-		if ( ! empty( $issues ) ) {
-			$output = Output::get_instance()->_get_data( $issues, 'issues' );
-		}
+		if ( $issues )
+			$output = Output::get_instance()->_build_pane_html( $issues, 'issues' );
 
 		if ( ! $output ) {
 			$output = sprintf(
-				'<div class="tsfem-e-monitor-issues-wrap-line"><h4 class="tsfem-status-title">%s</h4></div>',
+				'<div class=tsfem-e-monitor-issues-wrap-line><h4 class=tsfem-status-title>%s</h4></div>',
 				$this->get_string_no_data_found()
 			);
 		}
@@ -852,14 +842,13 @@ final class Admin extends Api {
 		$issues = $this->get_data( 'issues', [] );
 		$found  = true;
 
-		if ( ! empty( $issues ) ) {
-			$data = Output::get_instance()->_ajax_get_pane_data( $issues, 'issues' );
-		}
+		if ( $issues )
+			$data = Output::get_instance()->_ajax_build_pane_html( $issues, 'issues' );
 
 		if ( empty( $data['info'] ) ) {
 			$found = false;
 			$data  = sprintf(
-				'<div class="tsfem-e-monitor-issues-wrap-line"><h4 class="tsfem-status-title">%s</h4></div>',
+				'<div class=tsfem-e-monitor-issues-wrap-line><h4 class=tsfem-status-title>%s</h4></div>',
 				$this->get_string_no_data_found()
 			);
 		}
@@ -891,7 +880,10 @@ final class Admin extends Api {
 	protected function get_cp_output() {
 		return sprintf(
 			'<div class="tsfem-e-monitor-cp tsfem-flex">%s</div>',
-			$this->get_account_information() . $this->get_site_actions_view() . $this->get_site_settings_view() . $this->get_disconnect_site_view()
+			$this->get_account_information()
+				. $this->get_site_actions_view()
+				. $this->get_site_settings_view()
+				. $this->get_disconnect_site_view()
 		);
 	}
 
@@ -904,7 +896,7 @@ final class Admin extends Api {
 	 */
 	protected function get_site_actions_view() {
 
-		$title   = sprintf( '<h4 class="tsfem-cp-title">%s</h4>', \esc_html__( 'Actions', 'the-seo-framework-extension-manager' ) );
+		$title   = sprintf( '<h4 class=tsfem-cp-title>%s</h4>', \esc_html__( 'Actions', 'the-seo-framework-extension-manager' ) );
 		$content = '';
 
 		$buttons = [
@@ -912,7 +904,7 @@ final class Admin extends Api {
 			$this->get_crawl_button(),
 		];
 		foreach ( $buttons as $button ) {
-			$content .= sprintf( '<div class="tsfem-cp-buttons">%s</div>', $button );
+			$content .= sprintf( '<div class=tsfem-cp-buttons>%s</div>', $button );
 		}
 
 		return sprintf( '<div class="tsfem-e-monitor-cp-actions tsfem-pane-section">%s%s</div>', $title, $content );
@@ -927,7 +919,7 @@ final class Admin extends Api {
 	 */
 	protected function get_site_settings_view() {
 
-		$title = sprintf( '<h4 class="tsfem-cp-title">%s</h4>', \esc_html__( 'Settings', 'the-seo-framework-extension-manager' ) );
+		$title = sprintf( '<h4 class=tsfem-cp-title>%s</h4>', \esc_html__( 'Settings', 'the-seo-framework-extension-manager' ) );
 
 		$content = '';
 		$form_id = 'tsfem-e-monitor-update-settings';
@@ -937,118 +929,112 @@ final class Admin extends Api {
 			\esc_html__( 'These settings are in development. Enable these to participate in the beta tests.', 'the-seo-framework-extension-manager' )
 		);
 
-		fields: {
-			$_disabled_i18n = \__( 'Disabled', 'the-seo-framework-extension-manager' );
-			$time_settings  = [
-				'uptime_setting'      => [
-					'title'   => \__( 'Uptime monitoring:', 'the-seo-framework-extension-manager' ),
-					'help'    => \__( 'Set how often you want Monitor to test your website for availability.', 'the-seo-framework-extension-manager' ),
-					'option'  => 'uptime_setting',
-					'value'   => $this->get_option( 'uptime_setting', 0 ),
-					'options' => [
-						'values'   => [ 0, 5, 10, 30 ],
-						'in'       => 'minutes',
-						'scale'    => 0,
-						'if-empty' => $_disabled_i18n,
-					],
+		$_disabled_i18n = \__( 'Disabled', 'the-seo-framework-extension-manager' );
+		$time_settings  = [
+			'uptime_setting'      => [
+				'title'   => \__( 'Uptime monitoring:', 'the-seo-framework-extension-manager' ),
+				'help'    => \__( 'Set how often you want Monitor to test your website for availability.', 'the-seo-framework-extension-manager' ),
+				'option'  => 'uptime_setting',
+				'value'   => $this->get_option( 'uptime_setting', 0 ),
+				'options' => [
+					'values'   => [ 0, 5, 10, 30 ],
+					'in'       => 'minutes',
+					'scale'    => 0,
+					'if-empty' => $_disabled_i18n,
 				],
-				'performance_setting' => [
-					'title'   => \__( 'Performance monitoring:', 'the-seo-framework-extension-manager' ),
-					'help'    => \__( 'Set how often you want Monitor to test your website for performance.', 'the-seo-framework-extension-manager' ),
-					'option'  => 'performance_setting',
-					'value'   => $this->get_option( 'performance_setting', 0 ),
-					'options' => [
-						'values'   => [ 0, 60, 180, 720, 1440 ],
-						'in'       => 'minutes',
-						'scale'    => 1,
-						'if-empty' => $_disabled_i18n,
-					],
+			],
+			'performance_setting' => [
+				'title'   => \__( 'Performance monitoring:', 'the-seo-framework-extension-manager' ),
+				'help'    => \__( 'Set how often you want Monitor to test your website for performance.', 'the-seo-framework-extension-manager' ),
+				'option'  => 'performance_setting',
+				'value'   => $this->get_option( 'performance_setting', 0 ),
+				'options' => [
+					'values'   => [ 0, 60, 180, 720, 1440 ],
+					'in'       => 'minutes',
+					'scale'    => 1,
+					'if-empty' => $_disabled_i18n,
 				],
-			];
+			],
+		];
 
-			$options = [];
-			foreach ( $time_settings as $id => $args ) :
-				$_options = [];
-				foreach ( $args['options']['values'] as $_value ) {
-					$_options[] = vsprintf(
-						'<option value="%s" %s>%s</option>',
-						[
-							$_value,
-							$args['value'] === $_value ? 'selected' : '',
-							\esc_html( $_value
-								? static::scale_time( $_value, $args['options']['in'], $args['options']['scale'], false )
-								: $args['options']['if-empty']
-							),
-						]
-					);
-				}
-
-				$_field_id = ! empty( $args['id'] ) ? $args['id'] : $this->_get_field_id( $args['option'] );
-
-				$options[ $id ] = [
-					'edit' => vsprintf(
-						'<select form=%s id=%s name=%s class="hide-if-js">%s</select>',
-						[
-							$form_id,
-							\esc_attr( $_field_id ),
-							$this->_get_field_name( $args['option'] ),
-							implode( '', $_options ),
-						]
-					),
-					'js'   => vsprintf(
-						'<span class="hide-if-no-js tsfem-e-monitor-edit tsfem-dashicon tsfem-edit" data-for=%s tabindex=0>%s</span>',
-						[
-							\esc_attr( $_field_id ),
-							\esc_html( $args['value']
-								? static::scale_time( $args['value'], $args['options']['in'], $args['options']['scale'], false )
-								: $args['options']['if-empty']
-							),
-						]
-					),
-				];
-			endforeach;
-		}
-
-		rows: {
-			$_rows = '';
-			foreach ( $options as $id => $_fields ) :
-				$_rows .= \TSF_Extension_Manager\Layout::wrap_row_content(
-					HTML::wrap_inline_tooltip( HTML::make_inline_tooltip(
-						\esc_html( $time_settings[ $id ]['title'] ),
-						\esc_attr( $time_settings[ $id ]['help'] )
-					) ),
-					vsprintf(
-						'<div class="tsfem-e-monitor-settings-holder" data-option-id=%1$s id=%1$s>%2$s</div>',
-						[
-							\esc_attr( $id ),
-							$_fields['edit'] . $_fields['js'],
-						]
-					),
-					false
+		$options = [];
+		foreach ( $time_settings as $id => $args ) :
+			$_options = [];
+			foreach ( $args['options']['values'] as $_value ) {
+				$_options[] = vsprintf(
+					'<option value="%s" %s>%s</option>',
+					[
+						$_value,
+						$args['value'] === $_value ? 'selected' : '',
+						\esc_html( $_value
+							? static::scale_time( $_value, $args['options']['in'], $args['options']['scale'], false )
+							: $args['options']['if-empty']
+						),
+					]
 				);
-			endforeach;
+			}
 
-			$content .= sprintf( '<div class="tsfem-flex-account-setting-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $_rows );
-		}
+			$_field_id = ! empty( $args['id'] ) ? $args['id'] : $this->_get_field_id( $args['option'] );
 
-		form: {
-			$nonce_action = $this->_get_nonce_action_field( 'update' );
-			$nonce        = $this->_get_nonce_field( 'update' );
+			$options[ $id ] = [
+				'edit' => vsprintf(
+					'<select form=%s id=%s name=%s class=hide-if-tsf-js>%s</select>',
+					[
+						$form_id,
+						\esc_attr( $_field_id ),
+						$this->_get_field_name( $args['option'] ),
+						implode( '', $_options ),
+					]
+				),
+				'js'   => vsprintf(
+					'<span class="hide-if-no-tsf-js tsfem-e-monitor-edit tsfem-dashicon tsfem-edit" data-for=%s tabindex=0>%s</span>',
+					[
+						\esc_attr( $_field_id ),
+						\esc_html( $args['value']
+							? static::scale_time( $args['value'], $args['options']['in'], $args['options']['scale'], false )
+							: $args['options']['if-empty']
+						),
+					]
+				),
+			];
+		endforeach;
 
-			$submit = $this->_get_submit_button(
-				\__( 'Update Settings', 'the-seo-framework-extension-manager' ),
-				'',
-				'tsfem-button-primary tsfem-button-cloud'
+		$_rows = '';
+		foreach ( $options as $id => $_fields ) :
+			$_rows .= \TSF_Extension_Manager\Layout::wrap_row_content(
+				HTML::wrap_inline_tooltip( HTML::make_inline_tooltip(
+					\esc_html( $time_settings[ $id ]['title'] ),
+					\esc_attr( $time_settings[ $id ]['help'] )
+				) ),
+				vsprintf(
+					'<div class=tsfem-e-monitor-settings-holder data-option-id=%1$s id=%1$s>%2$s</div>',
+					[
+						\esc_attr( $id ),
+						$_fields['edit'] . $_fields['js'],
+					]
+				),
+				false
 			);
+		endforeach;
 
-			$content .= sprintf(
-				'<form action=%s method=post id=%s class="%s">%s</form>',
-				\esc_url( \tsf_extension_manager()->get_admin_page_url( $this->monitor_page_slug ), [ 'https', 'http' ] ),
-				$form_id,
-				'hide-if-js',
-				$nonce_action . $nonce . $submit
-			);
-		}
+		$content .= sprintf( '<div class="tsfem-flex-account-setting-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $_rows );
+
+		$nonce_action = $this->_get_nonce_action_field( 'update' );
+		$nonce        = $this->_get_nonce_field( 'update' );
+
+		$submit = $this->_get_submit_button(
+			\__( 'Update Settings', 'the-seo-framework-extension-manager' ),
+			'',
+			'tsfem-button-primary tsfem-button-cloud'
+		);
+
+		$content .= sprintf(
+			'<form action=%s method=post id=%s class="%s" autocomplete=off data-form-type=other>%s</form>',
+			\menu_page_url( $this->monitor_page_slug, false ),
+			$form_id,
+			'hide-if-tsf-js',
+			$nonce_action . $nonce . $submit
+		);
 
 		return sprintf( '<div class="tsfem-e-monitor-cp-settings tsfem-pane-section">%s%s</div>', $title, $content );
 	}
@@ -1083,7 +1069,7 @@ final class Admin extends Api {
 		];
 
 		return $this->_get_action_button(
-			\tsf_extension_manager()->get_admin_page_url( $this->monitor_page_slug ),
+			\menu_page_url( $this->monitor_page_slug, false ),
 			$args
 		) . \TSF_Extension_Manager\HTML::make_inline_question_tooltip( $question_title );
 	}
@@ -1117,7 +1103,7 @@ final class Admin extends Api {
 		];
 
 		return $this->_get_action_button(
-			\tsf_extension_manager()->get_admin_page_url( $this->monitor_page_slug ),
+			\menu_page_url( $this->monitor_page_slug, false ),
 			$args
 		) . \TSF_Extension_Manager\HTML::make_inline_question_tooltip( $question_title );
 	}
@@ -1144,33 +1130,30 @@ final class Admin extends Api {
 	 */
 	protected function get_account_data_fields() {
 
-		$title   = sprintf( '<h4 class="tsfem-info-title">%s</h4>', \esc_html__( 'Overview', 'the-seo-framework-extension-manager' ) );
+		$title   = sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Overview', 'the-seo-framework-extension-manager' ) );
 		$content = '';
 
-		domain : {
-			$domain  = str_ireplace( [ 'https://', 'http://' ], '', \esc_url( \get_home_url(), [ 'https', 'http' ] ) );
-			$_domain = $this->get_expected_domain();
-			$class   = $_domain === $domain ? 'tsfem-success' : 'tsfem-error';
-			$domain  = sprintf( '<span class="tsfem-dashicon %s">%s</span>', \esc_attr( $class ), \esc_html( $_domain ) );
+		$domain  = str_ireplace( [ 'https://', 'http://' ], '', \esc_url( \get_home_url(), [ 'https', 'http' ] ) );
+		$_domain = $this->get_expected_domain();
+		$class   = $_domain === $domain ? 'tsfem-success' : 'tsfem-error';
+		$domain  = sprintf( '<span class="tsfem-dashicon %s">%s</span>', \esc_attr( $class ), \esc_html( $_domain ) );
 
-			$content .= \TSF_Extension_Manager\Layout::wrap_row_content(
-				\esc_html__( 'Connected site:', 'the-seo-framework-extension-manager' ),
-				$domain,
-				false
-			);
-		}
+		$content .= \TSF_Extension_Manager\Layout::wrap_row_content(
+			\esc_html__( 'Connected site:', 'the-seo-framework-extension-manager' ),
+			$domain,
+			false
+		);
+		$content .= \TSF_Extension_Manager\Layout::wrap_row_content(
+			\esc_html__( 'Last crawled:', 'the-seo-framework-extension-manager' ),
+			HTML::wrap_inline_tooltip( $this->get_last_crawled_field() ),
+			false
+		);
 
-		lc : {
-			$content .= \TSF_Extension_Manager\Layout::wrap_row_content(
-				\esc_html__( 'Last crawled:', 'the-seo-framework-extension-manager' ),
-				HTML::wrap_inline_tooltip( $this->get_last_crawled_field() ),
-				false
-			);
-		}
-
-		$content = sprintf( '<div class="tsfem-flex-account-info-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $content );
-
-		return sprintf( '<div class="tsfem-account-info tsfem-pane-section">%s%s</div>', $title, $content );
+		return sprintf(
+			'<div class="tsfem-account-info tsfem-pane-section">%s%s</div>',
+			$title,
+			sprintf( '<div class="tsfem-flex-account-info-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $content )
+		);
 	}
 
 	/**
@@ -1220,10 +1203,10 @@ final class Admin extends Api {
 				$description = \esc_html__( 'The instance ID of your site does not match the remote server.', 'the-seo-framework-extension-manager' );
 			}
 
-			$title = sprintf( '<h4 class="tsfem-info-title">%s</h4>', $title );
+			$title = sprintf( '<h4 class=tsfem-info-title>%s</h4>', $title );
 
 			$output  = '';
-			$output .= sprintf( '<p class="tsfem-description">%s</p>', $description );
+			$output .= sprintf( '<p class=tsfem-description>%s</p>', $description );
 			$output .= $this->get_fix_button();
 
 			return sprintf( '<div class="tsfem-account-fix tsfem-pane-section">%s%s</div>', $title, $output );
@@ -1257,7 +1240,10 @@ final class Admin extends Api {
 			'ajax'  => false,
 		];
 
-		return $this->_get_action_button( \tsf_extension_manager()->get_admin_page_url( $this->monitor_page_slug ), $args );
+		return $this->_get_action_button(
+			\menu_page_url( $this->monitor_page_slug, false ),
+			$args
+		);
 	}
 
 	/**
@@ -1280,7 +1266,7 @@ final class Admin extends Api {
 			'da_ays'     => \__( 'Disconnect site?', 'the-seo-framework-extension-manager' ),
 		];
 
-		$switcher = '<div class="tsfem-switch-button-container-wrap"><div class="tsfem-switch-button-container">'
+		$switcher = '<div class=tsfem-switch-button-container-wrap><div class=tsfem-switch-button-container>'
 						. sprintf(
 							'<input type=checkbox id="%s-action" value=1 />',
 							$s_field_id
@@ -1303,12 +1289,12 @@ final class Admin extends Api {
 					. '</div></div>';
 
 		$button = sprintf(
-			'<form name=deactivate action="%s" method=post id="tsfem-e-monitor-disconnect-form">%s</form>',
-			\esc_url( \tsf_extension_manager()->get_admin_page_url( $this->monitor_page_slug ), [ 'https', 'http' ] ),
+			'<form name=deactivate action="%s" method=post id=tsfem-e-monitor-disconnect-form autocomplete=off data-form-type=other>%s</form>',
+			\menu_page_url( $this->monitor_page_slug, false ),
 			$nonce_action . $nonce . $switcher
 		);
 
-		$title = sprintf( '<h4 class="tsfem-info-title">%s</h4>', \esc_html__( 'Disconnect site', 'the-seo-framework-extension-manager' ) );
+		$title = sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Disconnect site', 'the-seo-framework-extension-manager' ) );
 
 		return sprintf( '<div class="tsfem-account-disconnect tsfem-pane-section">%s%s</div>', $title, $button );
 	}
@@ -1335,27 +1321,5 @@ final class Admin extends Api {
 	 */
 	protected function get_string_coming_soon() {
 		return \esc_html__( 'Coming soon!', 'the-seo-framework-extension-manager' );
-	}
-
-	/**
-	 * Fetches files based on input to reduce memory overhead.
-	 * Passes on input vars.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $view The file name.
-	 * @param array  $args The arguments to be supplied within the file name.
-	 *                     Each array key is converted to a variable with its value attached.
-	 */
-	protected function get_view( $view, array $args = [] ) {
-
-		foreach ( $args as $__k => $__v ) {
-			$$__k = $__v;
-		}
-		unset( $__k, $__v );
-
-		$file = TSFEM_E_MONITOR_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . $view . '.php';
-
-		include $file;
 	}
 }

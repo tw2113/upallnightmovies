@@ -9,15 +9,14 @@
 
 defined( 'THE_SEO_FRAMEWORK_PRESENT' ) and The_SEO_Framework\Builders\Scripts::verify( $_secret ) or die;
 
-$tsf   = the_seo_framework();
-$tsfem = tsf_extension_manager();
-
 $message_5xx = esc_html__( 'An informative notice should have been placed here for the error code, but the server experienced an error.', 'the-seo-framework-extension-manager' );
 
 $a11y   = true;
 $escape = false;
 $inline = true;
 
+$tsf   = tsf();
+$tsfem = tsfem();
 ?>
 <script type=text/html id=tmpl-tsfem-inpost-notice-5xx>
 	<?php
@@ -34,7 +33,7 @@ $inline = true;
 
 foreach ( [ 'updated', 'warning', 'error' ] as $type ) :
 	?>
-<script type=text/html id=tmpl-tsfem-inpost-notice-<?php echo esc_attr( $type ); ?>>
+<script type=text/html id=tmpl-tsfem-inpost-notice-<?= esc_attr( $type ) ?>>
 	<?php
 	$tsf->do_dismissible_notice(
 		$tsfem->format_error_notice( '{{data.code}}', [ 'type' => $type ] )['before'] . ' {{{data.msg}}}',

@@ -1,5 +1,5 @@
 /**
- * This worker file holds Focus' code for interpreting contents.
+ * This worker file holds Focus's code for interpreting contents.
  * Serve JavaScript as an addition, not as an ends or means.
  * Alas, there's no other way here.
  *
@@ -178,7 +178,7 @@ const escapeStr = ( str, noquotes ) => {
  * @param {function}                 cb       The callback function returning a Promise.
  * @param {number|undefined}         timeout  The iteration timeout. Optional. Defaults to 0.
  * @param {number|undefined}         stopAt   The iteration anti-lag blocker. Optional. Defaults to 2000 ms.
- * @return {jQuery.Deferred|Promise} The promise object.
+ * @return {Promise} The promise object.
  */
 const promiseLoop = ( iterable, cb, timeout = 0, stopAt = 2000 ) => new Promise( ( resolve, reject ) => {
 	let its = iterable.length;
@@ -201,9 +201,9 @@ const promiseLoop = ( iterable, cb, timeout = 0, stopAt = 2000 ) => new Promise(
 			}, stopAt );
 		}
 
-		looper = setTimeout( () => new Promise( ( _resolve, _reject ) => {
+		looper = setTimeout( () => new Promise( async ( _resolve, _reject ) => {
 			try {
-				cb( iterable[ it ] );
+				await cb( iterable[ it ] );
 				_resolve();
 			} catch ( e ) {
 				_reject();
@@ -253,7 +253,7 @@ const countWords = ( word, contentMatch ) => {
 	// If nothing comes from sanitization, return 0 (nothing found).
 	if ( ! sWord ) return 0;
 
-	//= Iterate over multiple regex scripts.
+	// Iterate over multiple regex scripts.
 	for ( let i = 0; i < regex.length; i++ ) {
 		// Split Regex's flags from the expression.
 		pReg = /\/(.*)\/(.*)/.exec( regex[ i ] );
@@ -263,21 +263,21 @@ const countWords = ( word, contentMatch ) => {
 			pReg[2]                                  // flag.
 		) );
 
-		//= Stop if there's no content, or when this is the last iteration.
+		// Stop if there's no content, or when this is the last iteration.
 		if ( ! contentMatch || i === regex.length - 1 ) break;
 
-		//= Join content as this is a recursive regexp.
+		// Join content as this is a recursive regexp.
 		contentMatch = contentMatch.join( ' ' );
 	}
 	// Return the number of matches found.
-	return contentMatch && contentMatch.length || 0;
+	return contentMatch?.length || 0;
 }
 const stripWord = ( word, str ) => str.replace(
 	new RegExp(
 		escapeRegex( escapeStr( word, true ) ),
 		'gi'
 	),
-	'/' //? A filler that doesn't break XML tag attribute closures (<|>|"|'|\s).
+	'/' // A filler that doesn't break XML tag attribute closures (<|>|"|'|\s).
 );
 
 const countCharacters = ( content ) => new Promise( ( resolve, reject ) => {
@@ -329,7 +329,7 @@ onmessage = message => {
 	if ( ! content ) {
 		postMessage( void 0 );
 	} else {
-		// todo use allSettled? Will lead to faux data--let catch handle it.
+		// TODO use allSettled? Will lead to faux data--let catch handle it.
 		Promise.all( [
 			data.assess.getCharCount && countCharacters( content ),
 			countInflections( content ), // FIXME we should reuse content (stripWord)... at the expense of performance and delay...
@@ -342,7 +342,7 @@ onmessage = message => {
 				synonymCharCount,
 				contentCharCount,
 			} );
-		} ).catch( ( error ) => {
+		} ).catch( error => {
 			postMessage( { workerId, error } );
 		} );
 	}
