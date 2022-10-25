@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8941376a965af00e30f33b5c9bf1928",
+    "content-hash": "aa0bc8e6cde67983be91a0e08c581a66",
     "packages": [
         {
             "name": "composer/installers",
@@ -369,15 +369,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.22.3",
+            "version": "2.23.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.22.3"
+                "reference": "tags/2.23.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.22.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.23.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -423,15 +423,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.2.8",
+            "version": "4.2.9",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.2.8"
+                "reference": "tags/4.2.9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.2.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.2.9.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
