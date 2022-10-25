@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa0bc8e6cde67983be91a0e08c581a66",
+    "content-hash": "a649768a6d22351004e08b3f5eebcc31",
     "packages": [
         {
             "name": "composer/installers",
@@ -315,15 +315,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.4.16",
+            "version": "5.4.17",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.4.16"
+                "reference": "tags/5.4.17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.16.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.4.17.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
