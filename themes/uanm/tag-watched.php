@@ -9,18 +9,26 @@
 		        echo '</div>';
 	        endif;
         ?>
+
+		<?php
+			$years = [];
+			$terms = get_terms( [
+				'taxonomy' => 'release_year',
+			] );
+			if ( ! empty( $terms ) && is_array( $terms ) ) {
+				foreach ( $terms as $term ) {
+					$years[] = sprintf(
+						'<a href="%s">%s</a>',
+						get_term_link( $term->term_id ),
+						$term->name
+					);
+				}
+			}
+			echo '<p>Browse by Year: ' . implode( ', ', $years ) . '</p>';
+		?>
+
         <div class="watched-flex">
-        <?php
-	        if ( is_post_type_archive() ) {
-		        ?>
-                <div class="archive-description">
-			        <?php echo get_the_post_type_description(); ?>
-                </div>
-		        <?php
-	        }
 
-
-        ?>
 		<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 			<article role="article" <?php post_class( 'h-entry' ); ?>>
                 <a href="<?php the_permalink(); ?>">
