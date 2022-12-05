@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "859d7dd89820377e7de800fa3c2b14da",
+    "content-hash": "0ad22f2bdb369f69ea89b38754e43973",
     "packages": [
         {
             "name": "composer/installers",
@@ -279,15 +279,15 @@
         },
         {
             "name": "wpackagist-plugin/custom-post-type-ui",
-            "version": "1.13.1",
+            "version": "1.13.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/custom-post-type-ui/",
-                "reference": "tags/1.13.1"
+                "reference": "tags/1.13.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.13.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.13.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -315,15 +315,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.5.0",
+            "version": "5.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.5.0"
+                "reference": "tags/5.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.5.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.5.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -423,15 +423,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.3.7",
+            "version": "4.3.8",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.3.7"
+                "reference": "tags/4.3.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.3.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.3.8.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -459,15 +459,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress",
-            "version": "3.9.0",
+            "version": "3.10.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress/",
-                "reference": "tags/3.9.0"
+                "reference": "tags/3.10.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress.3.9.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress.3.10.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -567,15 +567,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.12.2",
+            "version": "1.13.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.12.2"
+                "reference": "tags/1.13.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.12.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.13.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
