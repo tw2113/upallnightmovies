@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Cord extension for The SEO Framework
- * Copyright (C) 2019-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -82,8 +82,6 @@ final class Admin extends Core {
 					\__( 'Connect your site with various third-party analytical platforms. Cord takes care of the rest.', 'the-seo-framework-extension-manager' ),
 				],
 				'_md'                     => true,
-				'_dropdown_title_dynamic' => '',
-				'_dropdown_title_checked' => '',
 				'_fields'                 => [
 					'google_analytics' => [
 						'_default' => null,

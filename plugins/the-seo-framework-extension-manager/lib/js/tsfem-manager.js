@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -58,7 +58,7 @@ window.tsfem_manager = function( $ ) {
 	 * @param {jQuery.event} event
 	 * @return {undefined}
 	 */
-	const _updateFeed = ( event ) => {
+	const _updateFeed = event => {
 
 		let disabledClass = 'tsfem-button-disabled',
 			$button       = $( event.target ),
@@ -94,7 +94,7 @@ window.tsfem_manager = function( $ ) {
 			},
 			timeout: 12000,
 			async: true,
-		} ).done( ( response ) => {
+		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
 
@@ -203,7 +203,7 @@ window.tsfem_manager = function( $ ) {
 		// Disable all buttons
 
 		let allButtons = tsfem.getNodeArray( '.tsfem-button-extension-activate, .tsfem-button-extension-deactivate', disabledClass );
-		allButtons.forEach( ( _button ) => {
+		allButtons.forEach( _button => {
 			_button.classList.add( disabledClass );
 			_button.disabled = true;
 		} );
@@ -227,7 +227,7 @@ window.tsfem_manager = function( $ ) {
 			},
 			timeout: 10000,
 			async: true,
-		} ).done( ( response ) => {
+		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
 
@@ -254,6 +254,7 @@ window.tsfem_manager = function( $ ) {
 						case 10007: // No slug set.
 						case 10013: // Forced inactive...
 						case 10014: // Hidden... User didn't log out when this was imposed.
+						case 10015: // Domain mismatch.
 							status        = 0;
 							topNoticeCode = rCode;
 							break;
@@ -336,7 +337,7 @@ window.tsfem_manager = function( $ ) {
 		} ).always( () => {
 			tsfem.updatedResponse( loader, status, loaderText );
 
-			allButtons.forEach( ( _button ) => {
+			allButtons.forEach( _button => {
 				_button.classList.remove( disabledClass );
 				_button.disabled = false;
 			} );
@@ -372,7 +373,7 @@ window.tsfem_manager = function( $ ) {
 			},
 			timeout: 7000,
 			async: true,
-		} ).done( ( response ) => {
+		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
 

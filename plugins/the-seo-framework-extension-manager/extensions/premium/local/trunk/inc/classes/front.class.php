@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -198,7 +198,7 @@ final class Front extends Core {
 
 		// Empty JSON is only 2 characters long.
 		if ( $json && \strlen( $json ) > 2 )
-			return sprintf( '<script type="application/ld+json">%s</script>', $json ) . PHP_EOL;
+			return sprintf( '<script type="application/ld+json">%s</script>', $json ) . "\n"; // Keep XHTML Valid!
 
 		return '';
 	}

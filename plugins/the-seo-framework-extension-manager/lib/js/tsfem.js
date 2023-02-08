@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -91,7 +91,7 @@ window.tsfem = function( $ ) {
 	 * @param {(jQuery.element|Element|string)} arg1
 	 * @return {undefined}
 	 */
-	const setAjaxLoader = ( target ) => {
+	const setAjaxLoader = target => {
 		$( target ).toggleClass( 'tsfem-loading' );
 	}
 
@@ -245,7 +245,7 @@ window.tsfem = function( $ ) {
 	 */
 	const matosa = value => {
 
-		var last = null,
+		var last   = null,
 			output = '';
 
 		(function _matosa( _value, _i ) {
@@ -288,16 +288,7 @@ window.tsfem = function( $ ) {
 	 * @function
 	 * @return {undefined}
 	 */
-	const _doReady = () => {
-		// Disable semi-disabled buttons.
-		$( '.tsfem-button-disabled' ).on( 'click', event => {
-			event.preventDefault();
-			event.stopPropagation();
-		} );
-
-		// Execute this ASAP, to prevent late layout shifting. Use same anchor as core--so to prevent subsequent movement.
-		$( 'div.updated, div.error, div.notice, .notice-error, .notice-warning, .notice-info' ).appendTo( '#tsfem-notice-wrap' );
-	}
+	const _doReady = () => { }
 
 	return Object.assign( {
 		/**

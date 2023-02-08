@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -104,9 +104,8 @@ trait Extensions_Layout {
 
 		$output = '';
 
-		if ( 'overview' === self::get_property( '_type' ) ) {
+		if ( 'overview' === self::get_property( '_type' ) )
 			$output = static::get_extensions_list();
-		}
 
 		return $output;
 	}
@@ -133,7 +132,7 @@ trait Extensions_Layout {
 			if ( \in_array( $extension['slug'], (array) TSF_EXTENSION_MANAGER_HIDDEN_EXTENSIONS, true ) )
 				continue;
 
-			if ( false === static::get_extension_header( $extension['slug'] ) )
+			if ( ! static::get_extension_header( $extension['slug'] ) )
 				continue;
 
 			$wrap  = '<div class="tsfem-extension-icon-wrap tsfem-flex-nogrowshrink">' . static::make_extension_list_icon( $extension ) . '</div>';
@@ -161,7 +160,6 @@ trait Extensions_Layout {
 	 * @since 1.0.0
 	 * @since 2.2.0 1. Changed the default size from 120 to 100.
 	 *              2. Now returns a href, instead of the actual file output.
-	 * @TODO see if xlink:href can be exchanged for just href.
 	 *
 	 * @param array $extension The extension to make icon from.
 	 * @param array $size The icon height and width.
@@ -171,13 +169,13 @@ trait Extensions_Layout {
 
 		if ( ! empty( $extension['slug'] ) ) {
 			$icon = sprintf(
-				'<svg class=tsfem-extension-entry-icon alt="extension icon" width=%1$s height=%1$s><use xlink:href=#tsfem-logo-%2$s></use></svg>',
+				'<svg class=tsfem-extension-entry-icon alt="extension icon" width=%1$s height=%1$s><use href=#tsfem-logo-%2$s></use></svg>',
 				\esc_attr( $size ),
 				\esc_attr( $extension['slug'] )
 			);
 		} else {
 			$icon = sprintf(
-				'<image xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%1$s" width="%2$s" height="%2$s" alt="extension fallback icon"></image>',
+				'<image href="%1$s" width="%2$s" height="%2$s" alt="extension fallback icon" />',
 				\esc_url( \tsfem()->get_image_file_location( 'exticon-fallback.svg', true ), [ 'https', 'http' ] ),
 				\esc_attr( $size )
 			);
@@ -196,23 +194,7 @@ trait Extensions_Layout {
 	 */
 	private static function make_extension_list_about( $extension ) {
 
-		$header    = static::make_extension_header( $extension );
-		$subheader = static::make_extension_subheader( $extension );
-		$buttons   = static::make_extension_buttons( $extension );
-
-		return $header . $subheader . $buttons;
-	}
-
-	/**
-	 * Makes extension header.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $extension The extension to make header from.
-	 * @return string HTML extension header.
-	 */
-	private static function make_extension_header( $extension ) {
-		return sprintf(
+		$header = sprintf(
 			'<div class="tsfem-extension-header tsfem-flex tsfem-flex-row tsfem-flex-space tsfem-flex-noshrink">%s</div>',
 			sprintf(
 				'<h4 class=tsfem-extension-title>%s</h4>',
@@ -223,18 +205,8 @@ trait Extensions_Layout {
 			),
 			'<h5 class=tsfem-extension-type>' . \esc_html( static::get_i18n( $extension['type'] ) ) . '</h5>'
 		);
-	}
 
-	/**
-	 * Makes extension subheader.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $extension The extension to make subheader from.
-	 * @return string HTML extension subheader.
-	 */
-	private static function make_extension_subheader( $extension ) {
-		return sprintf(
+		$subheader = sprintf(
 			'<div class="tsfem-extension-subheader tsfem-flex tsfem-flex-row tsfem-flex-noshrink">%s%s</div>',
 			sprintf(
 				'<span class="tsfem-extension-party %s" title="%s"></span>',
@@ -243,54 +215,39 @@ trait Extensions_Layout {
 			),
 			'<span class=tsfem-extension-author>' . \esc_html( static::get_extension_header( $extension['slug'] )['Author'] ) . '</span>'
 		);
-	}
 
-	/**
-	 * Builds extension activation/update/deactivate buttons based on extension and
-	 * account type. Also initializes nonces for those buttons.
-	 *
-	 * @since 1.0.0
-	 * @since 1.5.1 Now checks for options validity.
-	 * @uses trait TSF_Extension_Manager\Extensions_I18n
-	 * @uses trait TSF_Extension_Manager\Extensions_Actions
-	 * @uses object tsfem()
-	 *
-	 * @param array $extension The extension to make button from.
-	 * @return string HTML extension button with nonce.
-	 */
-	private static function make_extension_buttons( $extension ) {
-
-		$buttons = [];
-
-		$disabled = ! \tsfem()->are_options_valid();
+		$buttons          = [];
+		$buttons_disabled = ! \tsfem()->are_options_valid();
 
 		if ( static::is_extension_active( $extension ) ) {
 			$buttons[] = [
 				'type'     => 'deactivate',
-				'disabled' => $disabled,
+				'disabled' => $buttons_disabled,
 			];
 		} else {
 			// Disable if: Extension is not compatible || User isn't premium/connected and extension is.
-			$disabled = $disabled
+			$buttons_disabled = $buttons_disabled
 				|| ! static::is_extension_compatible( $extension )
 				|| ( ! self::is_premium_user() && static::is_extension_premium( $extension ) )
 				|| ( ! self::is_connected_user() && static::is_extension_essentials( $extension ) );
 
 			$buttons[] = [
 				'type'     => 'activate',
-				'disabled' => $disabled,
+				'disabled' => $buttons_disabled,
 			];
 		}
 
-		$output = '';
+		$buttons_output = '';
 
 		foreach ( $buttons as $button )
-			$output .= static::get_extension_button_form( $extension['slug'], $button['type'], $button['disabled'] );
+			$buttons_output .= static::get_extension_button_form( $extension['slug'], $button['type'], $button['disabled'] );
 
-		return sprintf(
+		$buttons_output = sprintf(
 			'<div class="tsfem-extension-actions-wrap tsfem-flex tsfem-flex-row tsfem-flex-nogrowshrink">%s</div>',
-			$output
+			$buttons_output
 		);
+
+		return $header . $subheader . $buttons_output;
 	}
 
 	/**

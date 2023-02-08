@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -76,7 +76,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  *
  * @since 1.2.0
  */
-if ( false === \tsfem()->_init_early_extension_autoloader( TSFEM_E_ARTICLES_PATH_CLASS, 'Articles', $_instance, $bits ) )
+if ( ! \tsfem()->_init_early_extension_autoloader( TSFEM_E_ARTICLES_PATH_CLASS, 'Articles', $_instance, $bits ) )
 	return;
 
 /**

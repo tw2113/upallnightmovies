@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2019-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -288,10 +288,10 @@ final class AJAX extends Secure_Abstract {
 			$account = self::get_property( 'account' );
 
 			$args = [
-				'request'     => 'geocoding/get',
-				'email'       => $account['email'],
-				'licence_key' => $account['key'],
-				'data'        => [
+				'request' => 'geocoding/get',
+				'email'   => $account['email'],
+				'api_key' => $account['key'],
+				'data'    => [
 					'geodata' => json_encode( $input ),
 					'locale'  => \get_user_locale(),
 				],
@@ -356,6 +356,9 @@ final class AJAX extends Secure_Abstract {
 									break;
 
 								case 'LICENSE_TOO_LOW':
+									$send['results'] = static::$instance->get_ajax_notice( false, 17011 );
+									break;
+
 								default:
 									// Undefined error.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17011 );
@@ -468,7 +471,7 @@ final class AJAX extends Secure_Abstract {
 
 				// phpcs:ignore, WordPress.PHP.NoSilencedErrors -- See https://core.trac.wordpress.org/ticket/42480
 				$size       = \function_exists( '\\wp_getimagesize' ) ? \wp_getimagesize( $cropped ) : @getimagesize( $cropped );
-				$image_type = $size ? $size['mime'] : 'image/jpeg';
+				$image_type = $size['mime'] ?? 'image/jpeg';
 
 				// Get the original image's post to pre-populate the cropped image.
 				$original_attachment  = \get_post( $attachment_id );

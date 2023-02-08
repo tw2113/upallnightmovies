@@ -64,12 +64,10 @@ window.tsfinstaller = function( $, wp ) {
 			} )
 			.text( 'plugins-network' === pagenow ? __( 'Network Activate' ) : __( 'Activate' ) );
 
-		let $successButton = $button.clone()[0].outerHTML;
-
 		wp.updates.addAdminNotice( {
 			id:        'install-success',
 			className: 'notice-success is-dismissible',
-			message:   __( 'Installation completed successfully.' ) + ' ' + $successButton,
+			message:   __( 'Installation completed successfully.' ) + ' ' + $button.clone()[0].outerHTML,
 		} );
 
 		wp.a11y.speak( __( 'Installation completed successfully.' ) );
@@ -142,7 +140,7 @@ window.tsfinstaller = function( $, wp ) {
 	 * @function
 	 * @param {event} event
 	 */
-	const onReady = ( event ) => {
+	const onReady = event => {
 
 		if ( ! wp || ! wp.updates ) return;
 
@@ -172,9 +170,8 @@ window.tsfinstaller = function( $, wp ) {
 
 			$.support.postMessage = !! window.postMessage;
 
-			if ( false === $.support.postMessage || null === target ) {
+			if ( false === $.support.postMessage || null === target )
 				return;
-			}
 
 			event.preventDefault();
 
@@ -229,9 +226,10 @@ window.tsfinstaller = function( $, wp ) {
 				} catch ( e ) {
 					return;
 				}
-				if ( ! message || 'undefined' === typeof message.action ) {
+
+				if ( ! message || 'undefined' === typeof message.action )
 					return;
-				}
+
 				if ( message.action === 'install-plugin' ) {
 					// Fail safe.
 					canReset = false;

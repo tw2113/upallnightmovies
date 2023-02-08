@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -260,7 +260,7 @@ final class Front extends Core {
 			$options |= JSON_UNESCAPED_SLASHES;
 			$options |= static::$tsf->script_debug ? JSON_PRETTY_PRINT : 0;
 
-			return sprintf( '<script type="application/ld+json">%s</script>', json_encode( $data, $options ) ) . PHP_EOL;
+			return sprintf( '<script type="application/ld+json">%s</script>', json_encode( $data, $options ) ) . "\n";
 		}
 
 		return '';

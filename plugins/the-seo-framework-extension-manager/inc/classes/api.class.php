@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -59,10 +59,11 @@ class API extends Core {
 	 * Fetches status API request and returns response data.
 	 *
 	 * @since 1.0.0
+	 * @since 2.6.1 Renamed to more accurately describe the function.
 	 *
 	 * @param string $type The request type.
 	 * @param array  $args : {
-	 *    'licence_key'      => string The license key.
+	 *    'api_key'          => string The license key.
 	 *    'activation_email' => string The activation email.
 	 * }
 	 * @return bool|array {
@@ -71,9 +72,9 @@ class API extends Core {
 	 *    Activation/Status: Reponse data.
 	 * }
 	 */
-	final protected function handle_request( $type = 'status', $args = [] ) {
+	final protected function handle_activation_request( $type = 'status', $args = [] ) {
 
-		if ( empty( $args['licence_key'] ) ) {
+		if ( empty( $args['api_key'] ) ) {
 			$this->set_error_notice( [ 101 => '' ] );
 			return false;
 		}
@@ -89,15 +90,15 @@ class API extends Core {
 				break;
 
 			case 'deactivation':
-				if ( false === $this->is_plugin_activated() ) {
+				if ( ! $this->is_plugin_activated() ) {
 					$this->kill_options();
 					$this->set_error_notice( [ 103 => '' ] );
 					return false;
 				}
 
-				if ( false === $this->is_connected_user() ) {
+				if ( ! $this->is_connected_user() )
 					return $this->do_free_deactivation();
-				}
+
 				// Premium/Essential deactivation propagates through API, so nothing happens here.
 				break;
 
@@ -106,19 +107,19 @@ class API extends Core {
 				return false;
 		endswitch;
 
-		$key   = trim( $args['licence_key'] );
+		$key   = trim( $args['api_key'] );
 		$email = \sanitize_email( $args['activation_email'] );
 
-		$response = $this->handle_response(
+		$response = $this->handle_activation_response(
 			[
 				'request'          => $type,
-				'licence_key'      => $key,
+				'api_key'          => $key,
 				'activation_email' => $email,
 			],
 			$this->get_api_response( [
-				'request'     => $type,
-				'licence_key' => $key,
-				'email'       => $email,
+				'request' => $type,
+				'api_key' => $key,
+				'email'   => $email,
 			] ),
 			WP_DEBUG
 		);
@@ -127,7 +128,8 @@ class API extends Core {
 	}
 
 	/**
-	 * Returns domain host of plugin holder.
+	 * Returns registered domain host of plugin holder.
+	 *
 	 * Some web hosts have security policies that block the : (colon) and // (slashes) in http://,
 	 * so only the host portion of the URL can be sent. For example the host portion might be
 	 * www.example.com or example.com. http://www.example.com includes the scheme http,
@@ -135,41 +137,30 @@ class API extends Core {
 	 * Sending only the host also eliminates issues when a client site changes from http to https,
 	 * but their activation still uses the original scheme.
 	 *
-	 * @since 1.0.0
-	 * @since 2.0.0 Now uses the site URL instead of the home URL.
+	 * @since 2.6.1
 	 *
 	 * @return string Domain Host.
 	 */
-	final protected function get_activation_site_domain() {
-		return str_ireplace( [ 'https://', 'http://' ], '', \esc_url( \get_home_url(), [ 'https', 'http' ] ) );
+	final public function get_expected_site_domain() {
+		return $this->get_option( 'activation_domain' );
 	}
 
 	/**
-	 * Returns website's instance key from option. Generates one if non-existent.
+	 * Returns domain host of plugin holder.
 	 *
-	 * @since 1.0.0
+	 * Some web hosts have security policies that block the : (colon) and // (slashes) in http://,
+	 * so only the host portion of the URL can be sent. For example the host portion might be
+	 * www.example.com or example.com. http://www.example.com includes the scheme http,
+	 * and the host www.example.com.
+	 * Sending only the host also eliminates issues when a client site changes from http to https,
+	 * but their activation still uses the original scheme.
 	 *
-	 * @param bool $save_option Whether to save the instance in an option. Useful
-	 *             for when you're going to save it later.
-	 * @return string Instance key.
+	 * @since 2.6.1
+	 *
+	 * @return string Domain Host.
 	 */
-	final protected function get_activation_instance( $save_option = true ) {
-
-		static $instance;
-
-		if ( isset( $instance ) )
-			return $instance;
-
-		$instance = $this->get_option( '_instance' );
-
-		if ( ! $instance ) {
-			$instance = trim( \wp_generate_password( 32, false ) );
-
-			if ( $save_option )
-				$this->update_option( '_instance', $instance );
-		}
-
-		return $instance;
+	final public function get_current_site_domain() {
+		return str_ireplace( [ 'https://', 'http://' ], '', \esc_url( \get_home_url(), [ 'https', 'http' ] ) );
 	}
 
 	/**
@@ -206,7 +197,6 @@ class API extends Core {
 	 */
 	final protected function set_api_endpoint_type( $type = null ) {
 
-		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- parser doesn't recognize reference funcs.
 		$endpoint = &$this->get_api_endpoint_type();
 
 		if ( $type ) {
@@ -286,7 +276,7 @@ class API extends Core {
 	 *
 	 * @since 1.0.0
 	 * @since 2.1.0 Now listens to the `TSF_EXTENSION_MANAGER_API_VERSION` and `TSF_EXTENSION_MANAGER_DEV_API` constants.
-	 * @see $this->handle_request() The request validation wrapper.
+	 * @see $this->handle_activation_request() The request validation wrapper.
 	 *
 	 * @param array $args     The API query parameters.
 	 * @param bool  $internal Whether the API call is for $this object.
@@ -295,12 +285,12 @@ class API extends Core {
 	final protected function get_api_response( $args, $internal = true ) {
 
 		$defaults = [
-			'request'     => '',
-			'email'       => '',
-			'licence_key' => '',
-			'instance'    => $this->get_activation_instance( false ),
-			'platform'    => $this->get_activation_site_domain(),
-			'version'     => TSF_EXTENSION_MANAGER_API_VERSION,
+			'request'  => '',
+			'email'    => '',
+			'api_key'  => '',
+			'instance' => $this->get_options_instance_key(),
+			'platform' => $this->get_current_site_domain(),
+			'version'  => TSF_EXTENSION_MANAGER_API_VERSION,
 		];
 
 		if ( TSF_EXTENSION_MANAGER_DEV_API )
@@ -313,7 +303,7 @@ class API extends Core {
 			return false;
 		}
 
-		$this->set_api_endpoint_type( $this->get_key_endpoint_origin( $args['licence_key'] ) );
+		$this->set_api_endpoint_type( $this->get_key_endpoint_origin( $args['api_key'] ) );
 
 		$target_url = $this->get_api_url( $args );
 
@@ -346,18 +336,19 @@ class API extends Core {
 	 * Handles AME response and sets options.
 	 *
 	 * @since 1.0.0
-	 * @see $this->handle_request() The request validation wrapper.
+	 * @since 2.6.1 Renamed to more accurately describe the function.
+	 * @see $this->handle_activation_request() The request validation wrapper.
 	 *
 	 * @param array  $args : {
 	 *    'request'          => string The request type.
-	 *    'licence_key'      => string The license key used.
+	 *    'api_key'          => string The license key used.
 	 *    'activation_email' => string The activation email used.
 	 * }
 	 * @param string $response The obtained response body.
 	 * @param bool   $explain  Whether to show additional info in error messages.
 	 * @return bool True on successful response, false on failure.
 	 */
-	final protected function handle_response( $args, $response, $explain = false ) {
+	final protected function handle_activation_response( $args, $response, $explain = false ) {
 
 		if ( ! $response ) {
 			$this->set_error_notice( [ 301 => '' ] );
@@ -370,7 +361,7 @@ class API extends Core {
 		$additional_info = '';
 
 		// If the user's already using a free account, don't deactivate.
-		$registered_free = $this->is_plugin_activated() && false === $this->is_connected_user();
+		$registered_free = $this->is_plugin_activated() && ! $this->is_connected_user();
 
 		if ( 'status' !== $args['request'] ) {
 			if ( 'activation' === $args['request'] ) :
@@ -487,8 +478,8 @@ class API extends Core {
 		$args = array_merge(
 			$args,
 			[
-				'email'       => $subscription['email'],
-				'licence_key' => $subscription['key'],
+				'email'   => $subscription['email'],
+				'api_key' => $subscription['key'],
 			]
 		);
 

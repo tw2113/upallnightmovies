@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -91,6 +91,7 @@ class Core {
 			'activate-external' => 'activate-external',
 			'activate-free'     => 'activate-free',
 			'deactivate'        => 'deactivate',
+			'transfer-domain'   => 'transfer-domain',
 			'enable-feed'       => 'enable-feed',
 
 			// Extensions.
@@ -106,6 +107,7 @@ class Core {
 			'activate-key'      => 'tsfem_nonce_action_key_account',
 			'activate-external' => 'tsfem_nonce_action_external_account',
 			'deactivate'        => 'tsfem_nonce_action_deactivate_account',
+			'transfer-domain'   => 'tsfem_nonce_action_transfer_domain',
 			'enable-feed'       => 'tsfem_nonce_action_feed',
 
 			// Extensions.
@@ -146,10 +148,10 @@ class Core {
 		if ( isset( $loaded ) )
 			return $loaded;
 
-		if ( \wp_installing() || false === $this->is_plugin_activated() )
+		if ( \wp_installing() || ! $this->is_plugin_activated() )
 			return $loaded = false;
 
-		if ( false === $this->are_options_valid() ) {
+		if ( ! $this->are_options_valid() ) {
 			// Failed options instance checksum.
 			$this->set_error_notice( [ 2001 => '' ] );
 			return $loaded = false;
@@ -206,22 +208,47 @@ class Core {
 	}
 
 	/**
+	 * Returns website's instance key from option. Generates one if non-existent.
+	 *
+	 * @since 1.0.0
+	 * @since 2.6.1 1. Now generates numerics at the end, to reduce potential offensive content.
+	 *              2. Renamed from `get_activation_instance()` and moved to Core to allow front-end tests.
+	 *
+	 * @return string Instance key.
+	 */
+	final protected function get_options_instance_key() {
+		static $instance;
+		return $instance ?? (
+			$instance = $this->get_option( '_instance' )
+				?: \wp_generate_password( 29, false )
+					. mt_rand( 12, 98 )
+					. mt_rand( 1, 9 ) // Remove likelihood of leading zeros.
+		);
+	}
+
+	/**
 	 * Verifies integrity of the options.
 	 *
 	 * @since 1.0.0
 	 * @since 1.5.0 Now is public.
+	 * @since 2.6.1 Now handles pre-activation.
 	 *
 	 * @return bool True if options are valid, false if not.
 	 */
 	final public function are_options_valid() {
 
-		static $cache;
+		static $memo;
+		if ( isset( $memo ) ) return $memo;
 
-		if ( isset( $cache ) )
-			return $cache;
+		$options = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
 
-		// phpcs:ignore -- No objects are inserted, nor is this ever unserialized.
-		return $cache = $this->verify_options_hash( serialize( $this->get_all_options() ) );
+		// There's nothing to verify yet during setup.
+		if ( ! $options ) return $memo = true;
+
+		return $memo = hash_equals(
+			$this->hash_options( $options ),
+			(string) \get_option( "tsfem_i_{$this->get_options_instance_key()}" )
+		);
 	}
 
 	/**
@@ -528,7 +555,7 @@ class Core {
 		}
 
 		// Don't spam error log.
-		if ( false === $this->_has_died() ) {
+		if ( ! $this->_has_died() ) {
 
 			$this->_has_died( true );
 
@@ -623,7 +650,7 @@ class Core {
 		if ( $this->_has_died() )
 			return true;
 
-		if ( false === ( $this->_verify_instance( $instance, $bit ) or $this->_maybe_die() ) )
+		if ( ! ( $this->_verify_instance( $instance, $bit ) or $this->_maybe_die() ) )
 			return true;
 
 		return false;
@@ -809,7 +836,7 @@ class Core {
 			 * It traverses in three (actually two, but get_verification_instance makes it
 			 * three) dimensions: up (positive), down (negative) and right (new sequence).
 			 *
-			 * Because it either goes up or down based on integer, it's timing attack secure.
+			 * Because it always moves based on arbitrary last input, it's timing attack secure.
 			 */
 			    $bit  = $_bit <= 0 ? ~$bit | ~$_bit-- : ~$bit | ~$_bit++
 			and $bit  = $bit++ & $_bit--
@@ -836,16 +863,15 @@ class Core {
 	}
 
 	/**
-	 * Generates static hash based on $uid.
-	 *
-	 * Caution: This function does not generate cryptographically secure values.
+	 * Generates static hash based on a unique ID.
+	 * Prescrambles the input.
 	 *
 	 * @since 1.2.0
 	 * @access private
 	 *
 	 * @param string $uid The unique ID for the hash.
 	 *                    A good choice would be the page ID + concatentated blog name.
-	 * @return string The timed hash that will always return the same.
+	 * @return string A hash from scrambled UID input.
 	 */
 	final public function _get_uid_hash( $uid ) {
 
@@ -854,9 +880,8 @@ class Core {
 		$len = \strlen( $a );
 		$r   = '';
 
-		for ( $i = 0; $i < $len; $i++ ) {
+		for ( $i = 0; $i < $len; $i++ )
 			$r .= \ord( $a[ $i ] ) . $b[ $i ];
-		}
 
 		return $this->hash( $r, 'auth' );
 	}
@@ -897,8 +922,11 @@ class Core {
 	 *
 	 * @link https://developer.wordpress.org/reference/functions/wp_salt/
 	 * @since 1.0.0
+	 * @since 2.6.1 Added an options salt, formed from static entries on the site.
+	 *              Annoyingly, this affects staging on WP Engine unlike it previously didn't.
 	 *
-	 * @param string $scheme Authentication scheme. ( 'instance', 'auth', 'secure_auth', 'nonce' ).
+	 * @param string $scheme Authentication scheme, accepts 'instance', 'auth', 'secure_auth',
+	 *                       'nonce', and 'options'.
 	 *                       Default 'instance'.
 	 * @return string Salt value.
 	 */
@@ -914,39 +942,40 @@ class Core {
 			'salt' => '',
 		];
 
-		$schemes = [ 'auth', 'secure_auth', 'logged_in', 'nonce' ];
-
-		// 'instance' picks a random key.
-		static $instance_scheme;
-		if ( null === $instance_scheme ) {
-			$_key            = mt_rand( 0, \count( $schemes ) - 1 );
-			$instance_scheme = $schemes[ $_key ];
-		}
-		$_scheme = 'instance' === $scheme ? $instance_scheme : $scheme;
-
-		if ( \in_array( $_scheme, $schemes, true ) ) {
-			foreach ( [ 'key', 'salt' ] as $type ) :
-				$const = strtoupper( "{$_scheme}_{$type}" );
-				if ( \defined( $const ) && \constant( $const ) ) {
-					$values[ $type ] = \constant( $const );
-				} elseif ( empty( $values[ $type ] ) ) {
-					$values[ $type ] = \get_site_option( "{$_scheme}_{$type}" );
-					if ( ! $values[ $type ] ) {
-						/**
-						 * Hash keys not defined in wp-config.php nor in database.
-						 * Let wp_salt() handle this. This should run at most once per site per scheme.
-						 */
-						$values[ $type ] = \wp_salt( $_scheme );
-					}
-				}
-			endforeach;
+		if ( 'options' === $scheme ) {
+			// A combobulation of various static yet unique values.
+			$values = [
+				'key'  => 'k' . ( \get_option( 'initial_db_version' ) + 1493641 ) . '+++42===',
+				'salt' => 's' . md5( \dirname( TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE ) )
+					. \get_option( 'the_seo_framework_initial_db_version' ) . '+++69---',
+			];
 		} else {
-			\wp_die( 'Invalid scheme supplied for <code>' . __METHOD__ . '</code>.' );
+			$schemes = [ 'auth', 'secure_auth', 'logged_in', 'nonce' ];
+			// 'instance' picks a random key. Store in other variable so we can cache this result.
+			$_scheme = 'instance' === $scheme ? $schemes[ mt_rand( 0, \count( $schemes ) - 1 ) ] : $scheme;
+
+			if ( \in_array( $_scheme, $schemes, true ) ) {
+				foreach ( [ 'key', 'salt' ] as $type ) :
+					$const = strtoupper( "{$_scheme}_{$type}" );
+					if ( \defined( $const ) && \constant( $const ) ) {
+						$values[ $type ] = \constant( $const );
+					} elseif ( empty( $values[ $type ] ) ) {
+						$values[ $type ] = \get_site_option( "{$_scheme}_{$type}" );
+						if ( ! $values[ $type ] ) {
+							/**
+							 * Hash keys not defined in wp-config.php nor in database.
+							 * Let wp_salt() handle this. This should run at most once per site per scheme.
+							 */
+							$values[ $type ] = \wp_salt( $_scheme );
+						}
+					}
+				endforeach;
+			} else {
+				\wp_die( 'Invalid scheme supplied for <code>' . __METHOD__ . '</code>.' );
+			}
 		}
 
-		$cached_salts[ $scheme ] = $values['key'] . $values['salt'];
-
-		return $cached_salts[ $scheme ];
+		return $cached_salts[ $scheme ] = "{$values['key']}{$values['salt']}";
 	}
 
 	/**
@@ -1002,41 +1031,6 @@ class Core {
 	}
 
 	/**
-	 * Grants a class access to the verification instance and bits of this object.
-	 * by returning the $_instance and $bits parameters.
-	 * Once.
-	 *
-	 * @since 1.0.0
-	 * @NOTE Expensive operation. TODO set secret instead?
-	 * @see $this->_yield_verification_instance() for faster looping instances.
-	 * @access private
-	 *
-	 * @param object $object    The class object. Passed by reference.
-	 * @param string $_instance The verification instance. Passed by reference.
-	 * @param array  $bits      The verification instance bits. Passed by reference.
-	 * @return bool True on success, false on failure.
-	 */
-	final public function _request_premium_extension_verification_instance( &$object, &$_instance, &$bits ) {
-
-		if ( false === $this->is_premium_user() || false === $this->are_options_valid() )
-			goto failure;
-
-		$allowed_classes = [
-			'TSF_Extension_Manager\\Extension\\Monitor\\Admin',
-		];
-
-		if ( \in_array( \get_class( $object ), $allowed_classes, true ) ) {
-			$this->get_verification_codes( $_instance, $bits );
-			return true;
-		}
-
-		failure:;
-
-		$this->_verify_instance( $_instance, $bits );
-		return false;
-	}
-
-	/**
 	 * Initializes class autoloader and verifies integrity.
 	 *
 	 * @since 1.3.0
@@ -1075,7 +1069,7 @@ class Core {
 	 */
 	final protected function register_extension_autoload_path( $path, $namespace ) {
 
-		if ( false === $this->are_options_valid() )
+		if ( ! $this->are_options_valid() )
 			return false;
 
 		$this->register_extension_autoloader();
@@ -1232,14 +1226,12 @@ class Core {
 	 * @since 1.0.0
 	 *
 	 * @param array $checksum The extensions checksum.
-	 * @return int|bool, Negative int on failure, true on success.
+	 * @return int|bool Negative int on failure, true on success.
 	 */
 	final protected function validate_extensions_checksum( $checksum ) {
 
-		$required = [ 'hash', 'matches', 'type' ];
-
 		// If the required keys aren't found, bail.
-		if ( ! $this->has_required_array_keys( $checksum, $required ) ) {
+		if ( ! $this->has_required_array_keys( $checksum, [ 'hash', 'matches', 'type' ] ) ) {
 			return -1;
 		} elseif ( ! hash_equals( $checksum['matches'][ $checksum['type'] ], $checksum['hash'] ) ) {
 			return -2;
@@ -1266,9 +1258,8 @@ class Core {
 
 		$last = 0;
 
-		foreach ( Extensions::get( 'extensions_list' ) as $slug => $data ) {
+		foreach ( Extensions::get( 'extensions_list' ) as $slug => $data )
 			$order[ $slug ] = ( $last = $last + 10 );
-		}
 
 		Extensions::reset();
 
@@ -1438,7 +1429,7 @@ class Core {
 	 * @since 1.5.0
 	 *
 	 * @param array $input The input with possible keys.
-	 * @param array $keys The wanted keys, e.g. ['key','key2']
+	 * @param array $keys The desired keys, e.g. ['key','key2']
 	 * @return array The $input array with only indexes from $keys.
 	 */
 	final public function filter_keys( $input, $keys ) {
@@ -1462,7 +1453,7 @@ class Core {
 		if ( isset( $cache ) )
 			return $cache;
 
-		if ( false === \is_admin() )
+		if ( ! \is_admin() )
 			return $cache = false;
 
 		if ( $secure ) {

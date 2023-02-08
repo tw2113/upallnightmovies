@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -68,62 +68,21 @@ class Api extends Data {
 			return $ajax ? $this->get_ajax_notice( false, 1010201 ) : false;
 		}
 
-		$tsfem = \tsfem();
-
-		/**
-		 * Request verification instances, variables are passed by reference :
-		 * 0. Request by class. Pass to yield.
-		 * 1. Yield first loop, get options.
-		 * 2. Yield second loop. Use options to build API link.
-		 */
-		$tsfem->_request_premium_extension_verification_instance( $this, $_instance, $bits );
-		$count = 1;
-		foreach ( $tsfem->_yield_verification_instance( 2, $_instance, $bits ) as $verification ) :
-			$bits      = $verification['bits'];
-			$_instance = $verification['instance'];
-
-			switch ( $count ) :
-				case 1:
-					$subscription = $tsfem->_get_subscription_status( $_instance, $bits );
-					break;
-
-				case 2:
-					if ( \is_array( $subscription ) ) {
-						$args = array_merge(
-							$args,
-							[
-								'request'     => "extension/monitor/$type",
-								'email'       => $subscription['email'],
-								'licence_key' => $subscription['key'],
-							]
-						);
-
-						$response = $tsfem->_get_api_response( $args, $_instance, $bits );
-					} else {
-						$tsfem->_verify_instance( $_instance, $bits );
-
-						$ajax or $this->set_error_notice( [ 1010202 => '' ] );
-						return $ajax ? $this->get_ajax_notice( false, 1010202 ) : false;
-					}
-					break;
-
-				default:
-					$tsfem->_verify_instance( $_instance, $bits );
-					break;
-			endswitch;
-			$count++;
-		endforeach;
-
+		$response = \tsfem()->_get_protected_api_response(
+			$this,
+			TSFEM_E_MONITOR_API_ACCESS_KEY,
+			array_merge(
+				$args,
+				[
+					'request' => "extension/monitor/$type",
+				]
+			)
+		);
 		$response = json_decode( $response );
 
 		if ( isset( $response->status_check ) && 'inactive' === $response->status_check ) {
 			$this->update_option( 'site_marked_inactive', true );
 			$this->delete_data();
-		}
-
-		if ( empty( $response->success ) ) {
-			$ajax or $this->set_error_notice( [ 1010203 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010203 ) : false;
 		}
 
 		if ( ! isset( $response->data ) ) {
@@ -134,7 +93,7 @@ class Api extends Data {
 		$data = \is_string( $response->data ) ? json_decode( $response->data, true ) : (array) $response->data;
 
 		return [
-			'success' => true,
+			'success' => $response->success ?? false,
 			'data'    => $data,
 		];
 	}
@@ -143,6 +102,7 @@ class Api extends Data {
 	 * Requests Monitor to register or fix the site's instance.
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.9 Added check & error 1010306, 1010307.
 	 * @see trait TSF_Extension_Manager\Error
 	 *
 	 * @param bool $delete Whether to remove the site from the server on failure.
@@ -154,20 +114,32 @@ class Api extends Data {
 
 		$response = $this->get_monitor_api_response( 'register_site' );
 
-		if ( empty( $response['success'] ) ) {
+		if ( empty( $response ) ) {
 			// Notice has already been set. No AJAX conformation here.
 			return false;
 		}
 
 		$response = $response['data'];
 
-		if ( 'failure' === $response['status'] ) {
-			$this->set_error_notice( [ 1010301 => '' ] );
-			return false;
+		switch ( $response['status'] ) {
+			case 'REQUEST_LIMIT_REACHED':
+				$this->set_error_notice( [ 1010306 => '' ] );
+				return false;
+
+			case 'LICENSE_TOO_LOW':
+				$this->set_error_notice( [ 1010307 => '' ] );
+				return false;
+
+			case 'failure':
+				$this->set_error_notice( [ 1010301 => '' ] );
+				return false;
 		}
 
 		$success   = [];
-		$success[] = $this->update_option( 'monitor_expected_domain', str_ireplace( [ 'https://', 'http://' ], '', \esc_url( \get_home_url(), [ 'https', 'http' ] ) ) );
+		$success[] = $this->update_option(
+			'monitor_expected_domain',
+			\tsfem()->get_current_site_domain()
+		);
 		$success[] = $this->update_option( 'connected', 'yes' );
 
 		if ( \in_array( false, $success, true ) ) {
@@ -195,6 +167,7 @@ class Api extends Data {
 	 * Requests Monitor to remove the site.
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.9 Added check & error 1010404, 1010405.
 	 * @see trait TSF_Extension_Manager\Error
 	 *
 	 * @return bool False on invalid input or on deactivation failure. True otherwise.
@@ -203,21 +176,33 @@ class Api extends Data {
 
 		$response = $this->get_monitor_api_response( 'remove_site' );
 
-		if ( empty( $response['success'] ) ) {
+		if ( empty( $response ) ) {
 			// Notice has already been set. No AJAX conformation here.
 			return false;
 		}
 
 		$response = $response['data'];
 
-		if ( 'failure' === $response['status'] ) {
-			$this->set_error_notice( [ 1010401 => '' ], true );
-			return false;
+		// NOTE: Do not delete data on failure -- the user won't get new data anyway;
+		// this bypasses timeouts for "instant data" and lags their site.
+		switch ( $response['status'] ) {
+			case 'REQUEST_LIMIT_REACHED':
+				$this->set_error_notice( [ 1010404 => '' ] );
+				return false;
+
+			case 'LICENSE_TOO_LOW':
+				$this->set_error_notice( [ 1010405 => '' ] );
+				return false;
+
+			case 'failure':
+				$this->set_error_notice( [ 1010401 => '' ] );
+				return false;
 		}
 
+		// Still delete the option index.
 		$success = $this->delete_option_index();
 
-		if ( false === $success ) {
+		if ( ! $success ) {
 			$this->set_error_notice( [ 1010402 => '' ], true );
 			return false;
 		}
@@ -232,6 +217,7 @@ class Api extends Data {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.0 Added check & error 1010507.
+	 * @since 1.2.9 Added check & error 1010508, 1010509.
 	 * @see trait TSF_Extension_Manager\Error
 	 *
 	 * @param bool $ajax Whether to request is done through AJAX.
@@ -257,41 +243,46 @@ class Api extends Data {
 
 		$response = $this->get_monitor_api_response( 'request_crawl', $ajax );
 
-		if ( empty( $response['success'] ) ) {
-			// Notice has already been set.
+		if ( empty( $response ) ) {
+			// Notice has already been set for ajax.
 			return $ajax ? $response : false;
 		}
 
 		$response = $response['data'];
 
-		if ( 'REQUEST_LIMIT_REACHED' === $response['status'] ) {
-			$this->set_remote_crawl_timeout();
-			$ajax or $this->set_error_notice( [ 1010509 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010508 ) : false;
-		}
-		if ( \in_array( $response['status'], [ 'failure', 'LICENSE_TOO_LOW' ], true ) ) {
-			$ajax or $this->set_error_notice( [ 1010501 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010501 ) : false;
-		}
-		if ( 'site expired' === $response['status'] ) {
-			$this->update_option( 'site_requires_fix', true );
-			$ajax or $this->set_error_notice( [ 1010502 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010502 ) : false;
-		}
-		if ( 'site inactive' === $response['status'] ) {
-			$this->update_option( 'site_marked_inactive', true );
-			$ajax or $this->set_error_notice( [ 1010503 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010503 ) : false;
-		}
-		if ( 'queued' === $response['status'] ) {
-			$this->set_remote_crawl_timeout();
-			$ajax or $this->set_error_notice( [ 1010504 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010504 ) : false;
+		switch ( $response['status'] ) {
+			case 'REQUEST_LIMIT_REACHED':
+				$this->set_remote_crawl_timeout();
+				$ajax or $this->set_error_notice( [ 1010508 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010508 ) : false;
+
+			case 'LICENSE_TOO_LOW':
+				$ajax or $this->set_error_notice( [ 1010509 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010509 ) : false;
+
+			case 'failure':
+				$ajax or $this->set_error_notice( [ 1010501 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010501 ) : false;
+
+			case 'site expired':
+				$this->update_option( 'site_requires_fix', true );
+				$ajax or $this->set_error_notice( [ 1010502 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010502 ) : false;
+
+			case 'site inactive':
+				$this->update_option( 'site_marked_inactive', true );
+				$ajax or $this->set_error_notice( [ 1010503 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010503 ) : false;
+
+			case 'queued':
+				$this->set_remote_crawl_timeout();
+				$ajax or $this->set_error_notice( [ 1010504 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010504 ) : false;
 		}
 
 		$success = $this->set_remote_crawl_timeout();
 
-		if ( false === $success ) {
+		if ( ! $success ) {
 			$ajax or $this->set_error_notice( [ 1010505 => '' ] );
 			return $ajax ? $this->get_ajax_notice( false, 1010505 ) : false;
 		}
@@ -307,6 +298,7 @@ class Api extends Data {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.0 Added check & error 1010607.
+	 * @since 1.2.9 Added check & error 1010608, 1010609.
 	 * @see trait TSF_Extension_Manager\Error
 	 *
 	 * @param bool $ajax Whether this request is done through AJAX.
@@ -332,26 +324,36 @@ class Api extends Data {
 
 		$response = $this->get_monitor_api_response( 'get_data', $ajax );
 
-		if ( empty( $response['success'] ) ) {
-			// Notice has already been set.
+		if ( empty( $response ) ) {
+			// Notice has already been set for ajax.
 			return $ajax ? $response : false;
 		}
 
 		$response = $response['data'];
 
-		if ( 'failure' === $response['status'] ) {
-			$ajax or $this->set_error_notice( [ 1010601 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010601 ) : false;
-		}
-		if ( 'site expired' === $response['status'] ) {
-			$this->update_option( 'site_requires_fix', true );
-			$ajax or $this->set_error_notice( [ 1010602 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010602 ) : false;
-		}
-		if ( 'site inactive' === $response['status'] ) {
-			$this->update_option( 'site_marked_inactive', true );
-			$ajax or $this->set_error_notice( [ 1010603 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010603 ) : false;
+		switch ( $response['status'] ) {
+			case 'REQUEST_LIMIT_REACHED':
+				$this->set_remote_crawl_timeout();
+				$ajax or $this->set_error_notice( [ 1010608 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010608 ) : false;
+
+			case 'LICENSE_TOO_LOW':
+				$ajax or $this->set_error_notice( [ 1010609 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010609 ) : false;
+
+			case 'failure':
+				$ajax or $this->set_error_notice( [ 1010601 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010601 ) : false;
+
+			case 'site expired':
+				$this->update_option( 'site_requires_fix', true );
+				$ajax or $this->set_error_notice( [ 1010602 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010602 ) : false;
+
+			case 'site inactive':
+				$this->update_option( 'site_marked_inactive', true );
+				$ajax or $this->set_error_notice( [ 1010603 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010603 ) : false;
 		}
 
 		/**
@@ -361,7 +363,7 @@ class Api extends Data {
 		 */
 		$success = $this->set_remote_data_timeout();
 
-		if ( false === $success ) {
+		if ( ! $success ) {
 			$ajax or $this->set_error_notice( [ 1010604 => '' ] );
 			return $ajax ? $this->get_ajax_notice( false, 1010604 ) : false;
 		}
@@ -390,6 +392,7 @@ class Api extends Data {
 	 * Updates monitor site settings.
 	 *
 	 * @since 1.1.0
+	 * @since 1.2.9 Added check & error 1010806, 1010807.
 	 * @see trait TSF_Extension_Manager\Error
 	 *
 	 * @param array $settings The new settings.
@@ -420,38 +423,47 @@ class Api extends Data {
 
 		$response = $this->get_monitor_api_response( 'update_site', $ajax, compact( 'settings' ) );
 
-		if ( empty( $response['success'] ) ) {
-			// Notice has already been set in response.
+		if ( empty( $response ) ) {
+			// Notice has already been set for ajax.
 			return $ajax ? $response : false;
 		}
 
 		$response = $response['data'];
 
-		if ( 'failure' === $response['status'] ) {
-			$ajax or $this->set_error_notice( [ 1010801 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010801 ) : false;
-		}
-		if ( 'site expired' === $response['status'] ) {
-			$this->update_option( 'site_requires_fix', true );
-			$ajax or $this->set_error_notice( [ 1010802 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010802 ) : false;
-		}
-		if ( 'site inactive' === $response['status'] ) {
-			$this->update_option( 'site_marked_inactive', true );
-			$ajax or $this->set_error_notice( [ 1010803 => '' ] );
-			return $ajax ? $this->get_ajax_notice( false, 1010803 ) : false;
+		switch ( $response['status'] ) {
+			case 'REQUEST_LIMIT_REACHED':
+				$this->set_remote_crawl_timeout();
+				$ajax or $this->set_error_notice( [ 1010806 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010806 ) : false;
+
+			case 'LICENSE_TOO_LOW':
+				$ajax or $this->set_error_notice( [ 1010807 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010807 ) : false;
+
+			case 'failure':
+				$ajax or $this->set_error_notice( [ 1010801 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010801 ) : false;
+
+			case 'site expired':
+				$this->update_option( 'site_requires_fix', true );
+				$ajax or $this->set_error_notice( [ 1010802 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010802 ) : false;
+
+			case 'site inactive':
+				$this->update_option( 'site_marked_inactive', true );
+				$ajax or $this->set_error_notice( [ 1010803 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010803 ) : false;
 		}
 
 		$success = [];
-		foreach ( $response as $type => $values ) {
-			if ( \in_array( $type, [ 'uptime_setting', 'performance_setting' ], true ) ) {
+		foreach ( [ 'uptime_setting', 'performance_setting' ] as $type ) {
+			if ( isset( $response[ $type ] ) ) {
 				/**
 				 * @see trait TSF_Extension_Manager\Extension_Options
 				 */
-				$success[] = $this->update_option( $type, $values );
+				$success[] = $this->update_option( $type, $response[ $type ] );
 			}
 		}
-
 		if ( \in_array( false, $success, true ) ) {
 			$ajax or $this->set_error_notice( [ 1010804 => '' ] );
 			return $ajax ? $this->get_ajax_notice( false, 1010804 ) : false;

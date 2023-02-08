@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2019-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -304,6 +304,7 @@ final class ExtensionSettings {
 		foreach ( $store as $slug => $data ) {
 			$this->o_index = $slug;
 			foreach ( $data as $key => $value ) {
+				// Yea, update the same index over and over again. @TODO fixme -> update_option_multi?
 				$success[ $slug ] = $this->update_option( $key, $value );
 
 				// Break this loop on failure. Continue to next extension.
@@ -490,7 +491,6 @@ final class ExtensionSettings {
 	 */
 	private function get_save_all_button() {
 		return '';
-		// TODO
 		// phpcs:disable
 		return sprintf(
 			'<button type=submit name=tsf-extension-manager-extension-settings form=tsf-extension-manager-extension-settings class="tsfem-button-primary tsfem-button-primary-bright tsfem-button-upload" onclick="tsfemForm.saveAll()">%s</button>',

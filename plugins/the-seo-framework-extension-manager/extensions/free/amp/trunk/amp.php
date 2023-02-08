@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\AMP;
  * Extension Name: AMP
  * Extension URI: https://theseoframework.com/extensions/amp/
  * Extension Description: The AMP extension binds The SEO Framework to the [AMP plugin](https://wordpress.org/plugins/amp/) for [AMP](https://www.ampproject.org/) supported articles and pages.
- * Extension Version: 1.2.0
+ * Extension Version: 1.2.1
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -21,7 +21,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * AMP extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -42,7 +42,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
  * @since 1.0.0
  * @param string
  */
-\define( 'TSFEM_E_AMP_VERSION', '1.1.0' );
+\define( 'TSFEM_E_AMP_VERSION', '1.2.1' );
 
 \add_action( 'wp', __NAMESPACE__ . '\\_amp_init', 11 );
 /**
@@ -116,25 +116,8 @@ final class Front {
 
 		\do_action( 'the_seo_framework_do_before_amp_output' );
 
-		$output_start = hrtime( true );
-
-		$output = '';
-
-		$output .= $this->get_general_metadata();
-		$output .= $this->get_social_metadata();
-		$output .= $this->get_structured_metadata();
-
-		$tsf = \tsf();
-
-		$output = $tsf->get_plugin_indicator( 'before' )
-				. $output
-				. $tsf->get_plugin_indicator(
-					'after',
-					( $output_start - hrtime( true ) ) / 1e9
-				);
-
-		// phpcs:ignore, WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped.
-		echo PHP_EOL . $output . PHP_EOL;
+		// phpcs:ignore -- All callbacks escape their output.
+		echo "\n", $this->get_general_metadata(), $this->get_social_metadata(), $this->get_structured_metadata(), "\n";
 
 		\do_action( 'the_seo_framework_do_after_amp_output' );
 	}
@@ -145,7 +128,7 @@ final class Front {
 	 * @since 1.0.0
 	 */
 	protected function remove_amp_articles() {
-		\add_filter( 'amp_post_template_metadata', '\\__return_empty_array', 10 );
+		\add_filter( 'amp_post_template_metadata', '__return_empty_array', 10 );
 	}
 
 	/**

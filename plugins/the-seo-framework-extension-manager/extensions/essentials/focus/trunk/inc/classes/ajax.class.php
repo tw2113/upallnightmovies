@@ -22,7 +22,7 @@ if ( false === TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY )
 
 /**
  * Focus extension for The SEO Framework
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -171,8 +171,11 @@ final class Ajax {
 						$send['results'] = $this->get_ajax_notice( false, 1100109 );
 						break;
 
-					default:
 					case 'LICENSE_TOO_LOW':
+						$send['results'] = $this->get_ajax_notice( false, 1100110 );
+						break;
+
+					default:
 					case 'REMOTE_API_BODY_ERROR':
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100103 );
@@ -254,8 +257,11 @@ final class Ajax {
 						$send['results'] = $this->get_ajax_notice( false, 1100309 );
 						break;
 
-					default:
 					case 'LICENSE_TOO_LOW':
+						$send['results'] = $this->get_ajax_notice( false, 1100310 );
+						break;
+
+					default:
 					case 'REMOTE_API_BODY_ERROR':
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100304 );
@@ -339,8 +345,11 @@ final class Ajax {
 						$send['results'] = $this->get_ajax_notice( false, 1100209 );
 						break;
 
-					default:
 					case 'LICENSE_TOO_LOW':
+						$send['results'] = $this->get_ajax_notice( false, 1100210 );
+						break;
+
+					default:
 					case 'REMOTE_API_BODY_ERROR':
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100203 );

@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -110,6 +110,12 @@ abstract class Secure_Abstract implements Secure_Static_Abstracts {
 	protected static $account = [];
 
 	/**
+	 * @since 2.6.1
+	 * @var array Various data.
+	 */
+	protected static $misc = [];
+
+	/**
 	 * @since 2.1.0
 	 * @var string Holds the secret API key, bound to the parent's instance.
 	 */
@@ -143,6 +149,7 @@ abstract class Secure_Abstract implements Secure_Static_Abstracts {
 	 * Sets class variables.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param string $type  Required. The property you wish to set.
 	 * @param mixed  $value Required|Optional. The value the property needs to be set.
 	 */
@@ -159,6 +166,7 @@ abstract class Secure_Abstract implements Secure_Static_Abstracts {
 			case 'nonce_action':
 			case 'account':
 			case 'secret_api_key':
+			case 'misc':
 				self::$$type = $value;
 				break;
 
@@ -172,6 +180,7 @@ abstract class Secure_Abstract implements Secure_Static_Abstracts {
 	 * Sets parent class nonce variables.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param string $type  Required. The property you wish to set.
 	 * @param mixed  $value Required|Optional. The value the property needs to be set.
 	 */
@@ -193,9 +202,10 @@ abstract class Secure_Abstract implements Secure_Static_Abstracts {
 	}
 
 	/**
-	 * Sets parent class nonce variables.
+	 * Sets parent class account variables.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $account Required. The user's account.
 	 */
 	final public static function set_account( $account ) {
@@ -203,6 +213,20 @@ abstract class Secure_Abstract implements Secure_Static_Abstracts {
 		if ( ! self::verify_instance() ) return;
 
 		self::set( 'account', $account );
+	}
+
+	/**
+	 * Sets parent class misc variables.
+	 *
+	 * @since 2.6.1
+	 *
+	 * @param array $misc Various data.
+	 */
+	final public static function set_misc( $misc ) {
+
+		if ( ! self::verify_instance() ) return;
+
+		self::set( 'misc', $misc );
 	}
 
 	/**

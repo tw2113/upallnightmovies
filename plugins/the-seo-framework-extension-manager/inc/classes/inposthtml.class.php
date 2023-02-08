@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -103,7 +103,7 @@ final class InpostHTML {
 	 * @param string $id       The wrap ID.
 	 */
 	public static function contruct_flex_wrap_multi( $what, $contents, $id = '' ) {
-		return static::construct_flex_wrap( $what, implode( PHP_EOL, $contents ), $id );
+		return static::construct_flex_wrap( $what, implode( "\n", $contents ), $id );
 	}
 
 	/**

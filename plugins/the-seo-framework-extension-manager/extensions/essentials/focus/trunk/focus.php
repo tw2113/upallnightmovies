@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
  * Extension Name: Focus
  * Extension URI: https://theseoframework.com/extensions/focus/
  * Extension Description: The Focus extension guides you through the process of writing targeted content that ranks with focus keywords, and for Premium users also their inflections and synonyms.
- * Extension Version: 1.5.1
+ * Extension Version: 1.5.3
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -19,7 +19,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
 
 /**
  * Focus extension for The SEO Framework
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -40,7 +40,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_FOCUS_VERSION', '1.5.2' );
+\define( 'TSFEM_E_FOCUS_VERSION', '1.5.3' );
 
 /**
  * The extension file, absolute unix path.
@@ -75,7 +75,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
  *
  * @since 1.0.0
  */
-if ( false === \tsfem()->_init_early_extension_autoloader( TSFEM_E_FOCUS_PATH_CLASS, 'Focus', $_instance, $bits ) )
+if ( ! \tsfem()->_init_early_extension_autoloader( TSFEM_E_FOCUS_PATH_CLASS, 'Focus', $_instance, $bits ) )
 	return;
 
 \add_action( 'admin_init', __NAMESPACE__ . '\\_focus_init', 10 );

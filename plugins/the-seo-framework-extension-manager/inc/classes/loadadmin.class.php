@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -67,11 +67,9 @@ final class LoadAdmin extends AdminPages {
 	 */
 	public function _check_constant_activation() {
 
-		// Store in $var for PHP<7 compiling compat.
-		$data = TSF_EXTENSION_MANAGER_API_INFORMATION;
 		$data = [
-			'email' => \sanitize_email( $data['email'] ),
-			'key'   => trim( $data['key'] ),
+			'email' => \sanitize_email( TSF_EXTENSION_MANAGER_API_INFORMATION['email'] ),
+			'key'   => trim( TSF_EXTENSION_MANAGER_API_INFORMATION['key'] ),
 		];
 
 		if ( $this->is_connected_user() ) {
@@ -82,9 +80,9 @@ final class LoadAdmin extends AdminPages {
 
 			$args = [
 				'activation_email' => $current['email'],
-				'licence_key'      => $current['key'],
+				'api_key'          => $current['key'],
 			];
-			$this->handle_request( 'deactivation', $args );
+			$this->handle_activation_request( 'deactivation', $args );
 
 			if ( $this->is_tsf_extension_manager_page( false ) ) {
 				// Reload dashboard.
@@ -98,9 +96,9 @@ final class LoadAdmin extends AdminPages {
 
 			$args = [
 				'activation_email' => $data['email'],
-				'licence_key'      => $data['key'],
+				'api_key'          => $data['key'],
 			];
-			$this->handle_request( 'activation', $args );
+			$this->handle_activation_request( 'activation', $args );
 
 			if ( $this->is_tsf_extension_manager_page( false ) ) {
 				// Reload dashboard.
@@ -204,18 +202,18 @@ final class LoadAdmin extends AdminPages {
 		$options = $_POST[ TSF_EXTENSION_MANAGER_SITE_OPTIONS ];
 
 		// Options exist. There's no need to check again them.
-		if ( false === $this->handle_update_nonce( $options['nonce-action'], false ) )
+		if ( ! $this->handle_update_nonce( $options['nonce-action'], false ) )
 			return;
 
 		switch ( $options['nonce-action'] ) :
 			case $this->request_name['activate-key']:
 				if ( $this->is_auto_activated() ) break;
 				$args = [
-					'licence_key'      => trim( $options['key'] ),
+					'api_key'          => trim( $options['key'] ),
 					'activation_email' => \sanitize_email( $options['email'] ),
 				];
 
-				$this->handle_request( 'activation', $args );
+				$this->handle_activation_request( 'activation', $args );
 				break;
 
 			case $this->request_name['activate-free']:
@@ -227,29 +225,52 @@ final class LoadAdmin extends AdminPages {
 				$this->get_remote_activation_listener_response();
 				break;
 
+			case $this->request_name['transfer-domain']:
+				$this->delete_option( '_requires_domain_transfer' );
+
+				// We store the API server's known domain in this value.
+				$this->delete_option( '_remote_subscription_status' );
+
+				if ( $this->is_auto_activated() ) {
+					$args = [
+						'api_key'          => trim( TSF_EXTENSION_MANAGER_API_INFORMATION['key'] ),
+						'activation_email' => \sanitize_email( TSF_EXTENSION_MANAGER_API_INFORMATION['email'] ),
+					];
+				} else {
+					$args = [
+						'api_key'          => trim( $this->get_option( 'api_key' ) ),
+						'activation_email' => \sanitize_email( $this->get_option( 'activation_email' ) ),
+					];
+				}
+
+				// At our API, we remerge on instance or domain match.
+				if ( $this->handle_activation_request( 'activation', $args ) )
+					$this->revalidate_subscription(); // Get new domain data JIT.
+				break;
+
 			case $this->request_name['deactivate']:
 				if ( $this->is_auto_activated() ) break;
-				if ( false === $this->is_plugin_activated() ) {
+				if ( ! $this->is_plugin_activated() ) {
 					$this->set_error_notice( [ 701 => '' ] );
 					break;
-				} elseif ( false === $this->is_connected_user() || false === $this->are_options_valid() ) {
+				} elseif ( ! $this->is_connected_user() || ! $this->are_options_valid() ) {
 					$this->do_free_deactivation();
 					break;
 				}
 
 				$args = [
-					'licence_key'      => trim( $this->get_option( 'api_key' ) ),
+					'api_key'          => trim( $this->get_option( 'api_key' ) ),
 					'activation_email' => \sanitize_email( $this->get_option( 'activation_email' ) ),
 				];
 
-				if ( ! $this->handle_request( 'deactivation', $args ) ) {
+				if ( ! $this->handle_activation_request( 'deactivation', $args ) ) {
 					// Deactivate regardless, without requesting.
 					$this->kill_options();
 				}
 				break;
 
 			case $this->request_name['enable-feed']:
-				$success = $this->update_option( '_enable_feed', true, 'regular', false );
+				$success = $this->update_option( '_enable_feed', true );
 				$this->set_error_notice( [ $success ? 702 : 703 => '' ] );
 				break;
 
@@ -319,10 +340,10 @@ final class LoadAdmin extends AdminPages {
 		}
 
 		$result = isset( $_POST[ $this->nonce_name ] )
-				? \wp_verify_nonce( \wp_unslash( $_POST[ $this->nonce_name ] ), $this->nonce_action[ $key ] )
-				: false;
+			? \wp_verify_nonce( $_POST[ $this->nonce_name ], $this->nonce_action[ $key ] )
+			: false;
 
-		if ( false === $result ) {
+		if ( ! $result ) {
 			// Nonce failed. Set error notice and reload.
 			$this->set_error_notice( [ 9001 => '' ] );
 			\tsf()->admin_redirect( $this->seo_extensions_page_slug );
@@ -366,10 +387,13 @@ final class LoadAdmin extends AdminPages {
 	 * @return string Admin Page URL.
 	 */
 	public function get_admin_page_url( $page = '', $args = [] ) {
-
-		$page = $page ? $page : $this->seo_extensions_page_slug;
-
-		return \add_query_arg( $args, \menu_page_url( $page, false ) );
+		return \add_query_arg(
+			$args,
+			\menu_page_url(
+				$page ?: $this->seo_extensions_page_slug,
+				false
+			)
+		);
 	}
 
 	/**
@@ -641,7 +665,7 @@ final class LoadAdmin extends AdminPages {
 		static $parent_set = false;
 		static $set        = [];
 
-		if ( false === $parent_set ) {
+		if ( ! $parent_set ) {
 			// Set parent slug.
 			\tsf()->add_menu_link();
 			$parent_set = true;
@@ -657,7 +681,7 @@ final class LoadAdmin extends AdminPages {
 			'menu_title'  => '1',
 			'capability'  => $capability,
 			'menu_slug'   => $slug,
-			'callback'    => '\\__return_empty_string',
+			'callback'    => '__return_empty_string',
 		];
 
 		return $set[ $slug ] = (bool) \add_submenu_page(
@@ -681,9 +705,9 @@ final class LoadAdmin extends AdminPages {
 	 */
 	protected function ajax_is_tsf_extension_manager_page( $set = false ) {
 
-		static $cache = false;
+		static $memo = false;
 
-		return $set ? $cache = true : $cache;
+		return $set ? $memo = true : $memo;
 	}
 
 	/**
@@ -748,11 +772,24 @@ final class LoadAdmin extends AdminPages {
 		Extensions::reset();
 
 		if ( $status['success'] ) :
-			if ( 2 === $status['case'] ) {
-				if ( 0 === $this->validate_remote_subscription_license() ) {
-					$ajax or $this->set_error_notice( [ 10004 => '' ] );
-					return $ajax ? $this->get_ajax_notice( false, 10004 ) : false;
-				}
+			if ( 2 === $status['case'] ) { // Extension and license == Premium/Essentials OK.
+				switch ( $this->validate_remote_subscription_license() ) :
+					case 6: // Enterprise.
+					case 5: // Premium.
+					case 4: // Essentials.
+						break;
+
+					case 3: // Domain mismatch.
+						$ajax or $this->set_error_notice( [ 10015 => '' ] );
+						return $ajax ? $this->get_ajax_notice( false, 10015 ) : false;
+
+					case 2: // Disconnected from API.
+					case 1: // Connected user, but verification failed.
+					case 0: // Free user.
+					default: // ???
+						$ajax or $this->set_error_notice( [ 10004 => '' ] );
+						return $ajax ? $this->get_ajax_notice( false, 10004 ) : false;
+				endswitch;
 			}
 
 			$test = $this->test_extension( $slug, $ajax );
@@ -977,13 +1014,13 @@ final class LoadAdmin extends AdminPages {
 	 */
 	protected function update_extension( $slug, $enable = false ) {
 
-		$extensions = $this->get_option( 'active_extensions', [] );
+		$extensions = $this->get_option( 'active_extensions' ) ?: [];
 
 		$extensions[ $slug ] = (bool) $enable;
 
 		// Kill options on failure when enabling.
 		$kill = $enable;
 
-		return $this->update_option( 'active_extensions', $extensions, 'regular', $kill );
+		return $this->update_option( 'active_extensions', $extensions, $kill );
 	}
 }

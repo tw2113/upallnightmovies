@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -600,10 +600,8 @@ final class Admin extends Core {
 
 		\TSF_Extension_Manager\ListEdit::activate_quick_section( 'structure' );
 
-		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- forwarded to include...
 		$pm_index = $this->pm_index;
 
-		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- forwarded to include...
 		$post_meta = [
 			'type' => [
 				'label'   => \__( 'Article Type', 'the-seo-framework-extension-manager' ),
@@ -641,10 +639,8 @@ final class Admin extends Core {
 
 		\TSF_Extension_Manager\ListEdit::activate_bulk_section( 'structure' );
 
-		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- forwarded to include...
 		$pm_index = $this->pm_index;
 
-		// phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- forwarded to include...
 		$post_meta = [
 			'type' => [
 				'label'   => \__( 'Article Type', 'the-seo-framework-extension-manager' ),

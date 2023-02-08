@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -83,11 +83,11 @@ trait Extensions_Properties {
 				'area'         => 'audit, content, keywords',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1664262329',
+				'last_updated' => '1674791061',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'articles'  => [
 				'slug'         => 'articles',
@@ -98,9 +98,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1664262329',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'transport' => [
 				'slug'         => 'transport',
@@ -109,11 +109,11 @@ trait Extensions_Properties {
 				'area'         => 'setup',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1664387758',
+				'last_updated' => '1675059167',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'honeypot'  => [
 				'slug'         => 'honeypot',
@@ -124,9 +124,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1664173453',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'cord'      => [
 				'slug'         => 'cord',
@@ -137,9 +137,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1664173453',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'local'     => [
 				'slug'         => 'local',
@@ -148,11 +148,11 @@ trait Extensions_Properties {
 				'area'         => 'business',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1664262329',
+				'last_updated' => '1675716878',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'amp'       => [
 				'slug'         => 'amp',
@@ -163,9 +163,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1565627638',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'monitor'   => [
 				'slug'         => 'monitor',
@@ -174,11 +174,11 @@ trait Extensions_Properties {
 				'area'         => 'syntax',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1664262329',
+				'last_updated' => '1674790889',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'incognito' => [
 				'slug'         => 'incognito',
@@ -189,9 +189,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1515109560',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'origin'    => [
 				'slug'         => 'origin',
@@ -202,9 +202,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1541601833',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 			'title-fix' => [
 				'slug'         => 'title-fix',
@@ -215,9 +215,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1572496812',
 				'requires'     => '5.5',
-				'tested'       => '6.0',
+				'tested'       => '6.1',
 				'requires_tsf' => '4.2.0',
-				'tested_tsf'   => '4.2.0',
+				'tested_tsf'   => '4.2.8',
 			],
 		];
 	}
@@ -235,9 +235,9 @@ trait Extensions_Properties {
 	 */
 	private static function get_external_extensions_checksum() {
 		return [
-			'sha256' => '907f04cfdbeace844e88793fd61bf1c48871ce230791103d0753a6fb9165c96b',
-			'sha1'   => '9345a800ec49536295ecd15fe998cd71544b71ec',
-			'md5'    => 'd586cf0a78a6228c9d97af72b4c831e4',
+			'sha256' => 'cc282deafdc1f79e6f54a4728b9ac8e8e5f6e10fa20240cb11b39f5de09d0566',
+			'sha1'   => 'fd7b79808e2955a8c0f158e4f237a07dd0297220',
+			'md5'    => '03b131aa42c18dee2edc9a779c4d007e',
 		];
 	}
 
@@ -265,10 +265,6 @@ trait Extensions_Properties {
 				// The user can't remove this notice without disconnecting the account. TODO Purge it? --> Not here!
 				// TODO run $this->disable_extension( $slug ) and register a notice: "${slug} no longer exists"
 				// TODO Forward this to the upgrader for whenever an extension's removed.
-				// \tsf()->_doing_it_wrong(
-				// 	__CLASS__ . '::' . __FUNCTION__,
-				// 	sprintf( 'You must specify an existing extension slug. <code>%s</code> does not exist.', \esc_html( $slug ) )
-				// );
 				return [];
 			}
 		} else {
@@ -404,7 +400,7 @@ trait Extensions_Properties {
 		// phpcs:ignore, TSF.Performance.Functions.PHP -- file_exists is required.
 		return $data[ $slug ] = file_exists( $file )
 			? \get_file_data( $file, $default_headers, 'tsfem-extension' )
-			: false;
+			: [];
 	}
 }
 
@@ -531,15 +527,21 @@ trait Extensions_Actions {
 	 *
 	 * @return array : {
 	 *    'success' => bool Whether the activation can proceed.
-	 *    'case'    => int The status key.
+	 *    'case'    => int The status key. {
+	 *       0: Invalid instance.
+	 *       1: Invalid extension.
+	 *       2: Premium/Essentials OK.
+	 *       3: Not enough privileges.
+	 *       4: Free OK.
+	 *       5: Race condition on activation (send OK for "activated").
+	 *    }
 	 * }
 	 */
 	public static function validate_extension_activation() {
 		// phpcs:disable, WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- condensed code
 
-		if ( ! self::verify_instance() ) {
+		if ( ! self::verify_instance() )
 			return [ 'success' => false, 'case' => 0 ];
-		}
 
 		if ( 'activation' !== self::get_property( '_type' ) ) {
 			self::reset();
@@ -1001,9 +1003,9 @@ trait Extensions_Actions {
 
 		if ( 0 === $val ) {
 			// Also disable WP_DEBUG functions used by The SEO Framework.
-			\add_action( 'doing_it_wrong_trigger_error', '\\__return_false' );
-			\add_action( 'deprecated_function_trigger_error', '\\__return_false' );
-			\add_action( 'the_seo_framework_inaccessible_p_or_m_trigger_error', '\\__return_false' );
+			\add_filter( 'doing_it_wrong_trigger_error', '__return_false' );
+			\add_filter( 'deprecated_function_trigger_error', '__return_false' );
+			\add_filter( 'the_seo_framework_inaccessible_p_or_m_trigger_error', '__return_false' );
 		}
 
 		// phpcs:enable, WordPress.PHP.DevelopmentFunctions, WordPress.PHP.DiscouragedPHPFunctions

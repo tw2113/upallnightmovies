@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport;
  * Extension Name: Transport *&beta;eta*
  * Extension URI: https://theseoframework.com/extensions/transport/
  * Extension Description: The Transport extension migrates SEO metadata from other plugins to The SEO Framework.
- * Extension Version: 1.0.0
+ * Extension Version: 1.1.0
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Transport;
 
 /**
  * Transport extension for The SEO Framework
- * Copyright (C) 2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -41,7 +41,7 @@ namespace TSF_Extension_Manager\Extension\Transport;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_TRANSPORT_VERSION', '1.0.0' );
+\define( 'TSFEM_E_TRANSPORT_VERSION', '1.1.0' );
 
 /**
  * The extension file, absolute unix path.
@@ -83,7 +83,7 @@ namespace TSF_Extension_Manager\Extension\Transport;
  *
  * @since 1.0.0
  */
-if ( false === \tsfem()->_init_early_extension_autoloader( TSFEM_E_TRANSPORT_PATH_CLASS, 'Transport', $_instance, $bits ) )
+if ( ! \tsfem()->_init_early_extension_autoloader( TSFEM_E_TRANSPORT_PATH_CLASS, 'Transport', $_instance, $bits ) )
 	return;
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\transport_init', 11 );

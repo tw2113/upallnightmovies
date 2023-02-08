@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -29,6 +29,9 @@ namespace TSF_Extension_Manager;
  * Checks whether the WP installation blocks external requests.
  * Shows notice if external requests are blocked through the WP_HTTP_BLOCK_EXTERNAL constant
  *
+ * If you must, you can disable this notice by implementing this snippet:
+ * `remove_action( 'admin_notices', 'TSF_Extension_Manager\\_check_external_blocking' );`
+ *
  * @since 2.0.0
  * @access private
  */
@@ -43,7 +46,7 @@ function _check_external_blocking() {
 
 		if ( ! \defined( 'WP_ACCESSIBLE_HOSTS' ) || false === stristr( WP_ACCESSIBLE_HOSTS, $host ) ) {
 
-			// TODO We rely on TSF here but it might not be available.
+			// We rely on TSF here but it might not be available. Still, not outputting this notice does not harm.
 			if ( ! \function_exists( '\\tsf' ) ) return;
 
 			$tsf = \tsf();
@@ -79,10 +82,8 @@ function _check_external_blocking() {
  */
 function _hook_plugins_api( $res, $action, $args ) {
 
-	if ( 'plugin_information' !== $action
-	|| empty( $args->slug )
-	|| TSF_EXTENSION_MANAGER_PLUGIN_SLUG !== $args->slug
-	) return $res;
+	if ( 'plugin_information' !== $action || TSF_EXTENSION_MANAGER_PLUGIN_SLUG !== ( $args->slug ?? '' ) )
+		return $res;
 
 	if ( ! \wp_http_supports( [ 'ssl' ] ) ) {
 		return new \WP_Error(
@@ -236,12 +237,12 @@ function _push_update( $value, $transient ) {
 
 			$http_args = [
 				'timeout'    => 7, // WordPress generously sets 30 seconds when doing cron to check all plugins, but we only check 1 plugin.
-				'user-agent' => "WordPress/$wp_version; " . PHP_VERSION_ID . '; ' . \home_url( '/' ),
+				'user-agent' => "WordPress/$wp_version; " . PHP_VERSION_ID . '; ' . \home_url( '/' ), // phpcs:ignore, VariableAnalysis
 				'body'       => [
-					'plugins'      => \wp_json_encode( $plugins ),
-					'translations' => \wp_json_encode( $translations ),
-					'locales'      => \wp_json_encode( $locales ),
-					'extensions'   => \wp_json_encode( array_keys( array_filter( $extensions ) ) ),
+					'plugins'      => json_encode( $plugins ),
+					'translations' => json_encode( $translations ),
+					'locales'      => json_encode( $locales ),
+					'extensions'   => json_encode( $extensions ),
 				],
 			];
 

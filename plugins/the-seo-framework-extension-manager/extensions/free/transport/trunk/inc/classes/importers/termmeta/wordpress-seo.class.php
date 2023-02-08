@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Importers\TermMeta;
 
 /**
  * Transport extension for The SEO Framework
- * Copyright (C) 2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -231,10 +231,8 @@ final class WordPress_SEO extends Base {
 			}
 
 			if ( isset( $data['to_data']['sanitizers'][ $from ] ) ) {
-				$_pre_sanitize_value = $_set_value;
-
-				$_set_value = \call_user_func( $data['to_data']['sanitizers'][ $from ], $_set_value );
-
+				$_pre_sanitize_value   = $_set_value;
+				$_set_value            = \call_user_func( $data['to_data']['sanitizers'][ $from ], $_set_value );
 				$results['sanitized'] += (int) ( $_pre_sanitize_value !== $set_value );
 			}
 
@@ -261,7 +259,7 @@ final class WordPress_SEO extends Base {
 			[ $from_table, $from_index ], // Should be [ null, null ]
 			[ $to_table, $to_index ],
 			$actions,
-			$results,
+			$results
 		);
 
 		yield 'transmutedResults' => [ $results, $actions ];

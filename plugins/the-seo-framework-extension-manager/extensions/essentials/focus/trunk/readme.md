@@ -242,11 +242,14 @@ Here you can find the available filters for Focus.
 ```php
 add_filter( 'the_seo_framework_focus_elements', function( $elements ) {
 
-	// Add an overriding (dominating) check for pageTitle.
-	$elements['pageTitle'] = [ '#my-element > input' => 'dominate' ];
+	// Add an overriding (dominating) element for pageTitle.
+	$elements['pageTitle'] += [ '#my-element > input' => 'dominate' ];
 
-	// Add an extra (appending) pageContent for parsing.
-	$elements['pageContent'] = [ '#my-element > input' => 'append' ];
+	// Add an extra (appending) pageContent element for parsing.
+	$elements['pageContent'] += [ '#my-element > input' => 'append' ];
+
+	// Prepend an extra (appending) pageContent element for parsing.
+	$elements['pageContent'] = [ '#my-element > input' => 'append' ] + $elements['pageContent'];
 
 	return $elements;
 } );
@@ -258,7 +261,7 @@ _Note: When you set this value lower than 5000, the auto-parser will be disabled
 
 ```php
 add_filter( 'the_seo_framework_focus_auto_interval', function( $interval ) {
-	return 10000; // Set to 10 seconds. Default is 45000 (ms).
+	return 10000; // Set to 10 seconds. Default is 45000 (ms, equals 45s).
 } );
 ```
 
@@ -307,6 +310,12 @@ document.addEventListener( 'tsfem-focus-gutenberg-content-store-setup', () => {
 ```
 
 ## Changelog
+
+### 1.5.3
+
+[tsfep-release time="February 7th, 2023"]
+
+* **Improved:** Made status notices about lexical information less homogenous.
 
 ### 1.5.2
 

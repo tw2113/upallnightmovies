@@ -7,7 +7,7 @@ defined( 'TSF_EXTENSION_MANAGER_DB_VERSION' ) or die;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -102,7 +102,7 @@ defined( 'TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE' )
  * @param string
  */
 defined( 'TSF_EXTENSION_MANAGER_API_VERSION' )
-	or define( 'TSF_EXTENSION_MANAGER_API_VERSION', '2.1' );
+	or define( 'TSF_EXTENSION_MANAGER_API_VERSION', '2.2' );
 
 /**
  * The development API secret key.

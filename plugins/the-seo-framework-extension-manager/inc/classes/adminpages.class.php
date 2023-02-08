@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -132,6 +132,7 @@ class AdminPages extends AccountActivation {
 			 * TODO Update these when clearing them via JS.
 			 *
 			 * @see /wp-admin/menu.php @ $awaiting_mod & edit-comments.js' updateCountText & updateInModerationText
+			 *      also refreshCount/decrementCount
 			 */
 			$notice_i18n = \number_format_i18n( $notice_count );
 			$notice_text = sprintf(
@@ -218,7 +219,7 @@ class AdminPages extends AccountActivation {
 	 */
 	final public function _do_tsfem_admin_actions() {
 
-		if ( false === $this->is_tsf_extension_manager_page() )
+		if ( ! $this->is_tsf_extension_manager_page() )
 			return;
 
 		static $run = false;

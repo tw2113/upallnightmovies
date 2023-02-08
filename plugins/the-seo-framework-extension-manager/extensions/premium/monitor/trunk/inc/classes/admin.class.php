@@ -7,11 +7,22 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
-if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
+/**
+ * Verify integrity and sets up API secret.
+ *
+ * @since 1.0.0
+ */
+\define(
+	'TSFEM_E_MONITOR_API_ACCESS_KEY',
+	\tsfem()->_init_final_static_extension_api_access( __NAMESPACE__ . '\\Admin', $_instance, $bits ) ?: false
+);
+
+if ( false === TSFEM_E_MONITOR_API_ACCESS_KEY )
+	return;
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -282,7 +293,7 @@ final class Admin extends Api {
 	 */
 	public function _do_monitor_admin_actions() {
 
-		if ( false === $this->is_monitor_page() )
+		if ( ! $this->is_monitor_page() )
 			return false;
 
 		if ( \TSF_Extension_Manager\has_run( __METHOD__ ) )
@@ -325,7 +336,7 @@ final class Admin extends Api {
 
 		$options = $_POST[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ];
 
-		if ( false === $this->handle_update_nonce( $options['nonce-action'], false ) )
+		if ( ! $this->handle_update_nonce( $options['nonce-action'], false ) )
 			return;
 
 		switch ( $options['nonce-action'] ) :
@@ -403,10 +414,10 @@ final class Admin extends Api {
 		}
 
 		$result = isset( $_POST[ $this->nonce_name ] )
-				? \wp_verify_nonce( \wp_unslash( $_POST[ $this->nonce_name ] ), $this->nonce_action[ $key ] )
+				? \wp_verify_nonce( $_POST[ $this->nonce_name ], $this->nonce_action[ $key ] )
 				: false;
 
-		if ( false === $result ) {
+		if ( ! $result ) {
 			// Nonce failed. Set error notice and reload.
 			$this->set_error_notice( [ 1019001 => '' ] );
 			\tsf()->admin_redirect( $this->monitor_page_slug );
@@ -903,9 +914,9 @@ final class Admin extends Api {
 			$this->get_fetch_button(),
 			$this->get_crawl_button(),
 		];
-		foreach ( $buttons as $button ) {
+
+		foreach ( $buttons as $button )
 			$content .= sprintf( '<div class=tsfem-cp-buttons>%s</div>', $button );
-		}
 
 		return sprintf( '<div class="tsfem-e-monitor-cp-actions tsfem-pane-section">%s%s</div>', $title, $content );
 	}
@@ -1133,7 +1144,7 @@ final class Admin extends Api {
 		$title   = sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Overview', 'the-seo-framework-extension-manager' ) );
 		$content = '';
 
-		$domain  = str_ireplace( [ 'https://', 'http://' ], '', \esc_url( \get_home_url(), [ 'https', 'http' ] ) );
+		$domain  = \tsfem()->get_current_site_domain();
 		$_domain = $this->get_expected_domain();
 		$class   = $_domain === $domain ? 'tsfem-success' : 'tsfem-error';
 		$domain  = sprintf( '<span class="tsfem-dashicon %s">%s</span>', \esc_attr( $class ), \esc_html( $_domain ) );

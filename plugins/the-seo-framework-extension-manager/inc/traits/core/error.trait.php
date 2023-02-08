@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -335,7 +335,6 @@ trait Error {
 			case 304:
 			case 17001:
 			case 17002:
-			case 1010203:
 			case 1010204:
 			case 1100104:
 			case 1100204:
@@ -352,7 +351,6 @@ trait Error {
 			case 1010801:
 			case 1100103:
 			case 1100107:
-			case 1100203:
 			case 1100207:
 			case 1100304:
 			case 1100308:
@@ -361,10 +359,15 @@ trait Error {
 				break;
 
 			case 17013:
+			case 1010306:
+			case 1010404:
+			case 1010508:
+			case 1010608:
+			case 1010806:
 			case 1100108:
 			case 1100208:
 			case 1100303:
-			case 1010508:
+			case 1010205:
 				$message = \esc_html__( 'Exceeded maximum number of monthly request. Upgrade your license or check back in next month.', 'the-seo-framework-extension-manager' );
 				$type    = 'error';
 				break;
@@ -391,7 +394,6 @@ trait Error {
 				break;
 
 			case 308:
-			case 1010202:
 				$message = \esc_html__( 'Your subscription is not active or has expired.', 'the-seo-framework-extension-manager' );
 				$type    = 'warning';
 				break;
@@ -467,7 +469,7 @@ trait Error {
 			case 7002:
 			case 7101:
 			case 7102:
-				$message = \esc_html__( 'An error occured while verifying the options. Security keys have likely changed and enabled extensions are now inactive. If this error keeps coming back, please disconnect your account and try again.', 'the-seo-framework-extension-manager' );
+				$message = \esc_html__( 'An error occured while verifying the options. The local instance is out of sync and enabled extensions are now inactive. If this error keeps coming back, please disconnect your account at "Account and Actions" and try again.', 'the-seo-framework-extension-manager' );
 				$type    = 'error';
 				break;
 
@@ -511,6 +513,25 @@ trait Error {
 			case 10009:
 			case 10102:
 				$message = \esc_html__( "Can't touch this.", 'the-seo-framework-extension-manager' );
+				$type    = 'error';
+				break;
+
+			case 10015:
+				$message = \esc_html__( "This domain isn't connected to the API. Transfer the license and try again.", 'the-seo-framework-extension-manager' );
+				$type    = 'error';
+				break;
+
+			case 17014:
+			case 1010307:
+			case 1010405:
+			case 1010509:
+			case 1010609:
+			case 1010807:
+			case 1100110:
+			case 1100210:
+			case 1100310:
+			case 1010206:
+				$message = \esc_html__( "This domain isn't connected to the API. Reconnect via Extension Manager.", 'the-seo-framework-extension-manager' );
 				$type    = 'error';
 				break;
 
@@ -724,9 +745,17 @@ trait Error {
 				break;
 
 			case 1100106:
+				$message = \esc_html__( 'Lexical forms received.', 'the-seo-framework-extension-manager' );
+				$type    = 'updated';
+				break;
+
 			case 1100206:
+				$message = \esc_html__( 'Synonyms received.', 'the-seo-framework-extension-manager' );
+				$type    = 'updated';
+				break;
+
 			case 1100307:
-				$message = \esc_html__( 'Lexical information received.', 'the-seo-framework-extension-manager' );
+				$message = \esc_html__( 'Inflections received.', 'the-seo-framework-extension-manager' );
 				$type    = 'updated';
 				break;
 

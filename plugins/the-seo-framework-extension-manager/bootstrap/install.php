@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -84,7 +84,7 @@ function _prepare_tsf_nag_installer_scripts() {
  * @access private
  */
 function _print_tsf_nag_installer_styles() {
-	echo '<style type="text/css">#tsfem-tsf-tb,#tsfem-tsf-install{margin-left:7px}#tsfem-tsf-install.updating-message:before{font-size:16px;vertical-align:top}</style>';
+	echo '<style>#tsfem-tsf-tb,#tsfem-tsf-install{margin-left:7px}#tsfem-tsf-install.updating-message:before{font-size:16px;vertical-align:top}</style>';
 }
 
 /**

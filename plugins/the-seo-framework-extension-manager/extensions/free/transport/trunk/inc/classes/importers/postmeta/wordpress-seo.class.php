@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Importers\PostMeta;
 
 /**
  * Transport extension for The SEO Framework
- * Copyright (C) 2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -65,8 +65,8 @@ final class WordPress_SEO extends Base {
 				[ $transformer_class, '_title_syntax' ],
 				[ $tsf, 's_title_raw' ],
 				[
-					'name' => 'Meta Title',
-					'to'   => [
+					'name'    => 'Meta Title',
+					'to'      => [
 						null,
 						[ $this, '_title_transmuter' ],
 					],
@@ -83,48 +83,6 @@ final class WordPress_SEO extends Base {
 				[ $wpdb->postmeta, '_genesis_description' ],
 				[ $transformer_class, '_description_syntax' ],
 				[ $tsf, 's_description_raw' ],
-			],
-			[
-				[ $wpdb->postmeta, '_yoast_wpseo_meta-robots-noindex' ],
-				[ $wpdb->postmeta, '_genesis_noindex' ],
-				[ $transformer_class, '_robots_qubit' ], // also sanitizes
-			],
-			[
-				[ $wpdb->postmeta, '_yoast_wpseo_meta-robots-nofollow' ],
-				[ $wpdb->postmeta, '_genesis_nofollow' ],
-				[ $transformer_class, '_robots_qubit' ], // also sanitizes
-			],
-			[
-				[ $wpdb->postmeta, '_yoast_wpseo_meta-robots-adv' ],
-				null,
-				null,
-				null,
-				[
-					'name'    => 'Yoost Robots',
-					'to'      => [
-						[ $this, '_robots_adv_transmuter_existing' ],
-						[ $this, '_robots_adv_transmuter' ],
-					],
-					'to_data' => [
-						// This could've been a simple transformer,
-						// but then we don't get to split the data if we add more robots types.
-						'transmuters' => [
-							'noarchive' => [ $wpdb->postmeta, '_genesis_noarchive' ],
-						],
-					],
-				],
-			],
-			[
-				[ $wpdb->postmeta, '_yoast_wpseo_canonical' ],
-				[ $wpdb->postmeta, '_genesis_canonical_uri' ],
-				null,
-				'\\esc_url_raw',
-			],
-			[
-				[ $wpdb->postmeta, '_yoast_wpseo_redirect' ],
-				[ $wpdb->postmeta, 'redirect' ],
-				null,
-				'\\esc_url_raw',
 			],
 			[
 				[ $wpdb->postmeta, '_yoast_wpseo_opengraph-title' ],
@@ -161,6 +119,42 @@ final class WordPress_SEO extends Base {
 				[ $wpdb->postmeta, '_twitter_description' ],
 				[ $transformer_class, '_description_syntax' ],
 				[ $tsf, 's_description_raw' ],
+			],
+			[
+				[ $wpdb->postmeta, '_yoast_wpseo_canonical' ],
+				[ $wpdb->postmeta, '_genesis_canonical_uri' ],
+				null,
+				'\\esc_url_raw',
+			],
+			[
+				[ $wpdb->postmeta, '_yoast_wpseo_meta-robots-noindex' ],
+				[ $wpdb->postmeta, '_genesis_noindex' ],
+				[ $transformer_class, '_robots_qubit' ], // also sanitizes
+			],
+			[
+				[ $wpdb->postmeta, '_yoast_wpseo_meta-robots-nofollow' ],
+				[ $wpdb->postmeta, '_genesis_nofollow' ],
+				[ $transformer_class, '_robots_qubit' ], // also sanitizes
+			],
+			[
+				[ $wpdb->postmeta, '_yoast_wpseo_meta-robots-adv' ],
+				null,
+				null,
+				null,
+				[
+					'name'    => 'Yoost Robots',
+					'to'      => [
+						[ $this, '_robots_adv_transmuter_existing' ],
+						[ $this, '_robots_adv_transmuter' ],
+					],
+					'to_data' => [
+						// This could've been a simple transformer,
+						// but then we don't get to split the data if we add more robots types.
+						'transmuters' => [
+							'noarchive' => [ $wpdb->postmeta, '_genesis_noarchive' ],
+						],
+					],
+				],
 			],
 			[
 				[ $wpdb->postmeta, ' _yoast_wpseo_twitter-image' ], // delete
@@ -217,6 +211,7 @@ final class WordPress_SEO extends Base {
 	 * Sets `_tsf_title_no_blogname` to `1` if title is transformed.
 	 *
 	 * @since 1.0.0
+	 * @since 1.1.0 No longer sets value if not transporting.
 	 * @generator
 	 *
 	 * @param array  $data    Any useful data pertaining to the current transmutation type.
@@ -226,19 +221,17 @@ final class WordPress_SEO extends Base {
 	 */
 	protected function _title_transmuter( $data, &$actions, &$results ) {
 
-		if ( ! \in_array( $data['set_value'], $this->useless_data, true ) ) {
-			[ $to_table, $to_index ] = array_map( '\\esc_sql', $data['to_data']['titleset']['index'] );
+		// Set _tsf_title_no_blogname to 1 if data isn't useless:
+		if ( $actions['transport'] && ! \in_array( $data['set_value'], $this->useless_data, true ) ) {
+			[ $to_table, $to_index ] = $data['to_data']['titleset']['index'];
 
-			$_actions = [
-				'transport' => true,
-				'delete'    => false,
-			];
-			$_results = [
-				'updated'     => 0,
-				'transformed' => 0,
-				'deleted'     => 0,
-				'sanitized'   => 0,
-			];
+			$_actions = array_merge(
+				$this->zero_actions,
+				[
+					'transport' => true,
+				]
+			);
+			$_results = $this->zero_results;
 
 			$this->transmute(
 				$data['to_data']['titleset']['value'],
@@ -252,14 +245,17 @@ final class WordPress_SEO extends Base {
 			yield 'transmutedResults' => [ $_results, $_actions ];
 		}
 
-		// Pass through to transmute. $actions and $results get written by reference here.
+		// Pass through all results for the following transmutation.
+		$results['only_end'] = false;
+
+		// Pass actual title through to transmute. $actions and $results get written by reference here.
 		$this->transmute(
 			$data['set_value'],
 			$data['item_id'],
 			$data['from'],
 			$data['to'],
 			$actions,
-			$results,
+			$results
 		);
 	}
 
@@ -267,14 +263,11 @@ final class WordPress_SEO extends Base {
 	 * Gets existing advanced robots values.
 	 *
 	 * @since 1.0.0
-	 * @global \wpdb $wpdb WordPress Database handler.
 	 *
 	 * @param array $data Any useful data pertaining to the current transmutation type.
-	 * @throws \Exception On database error when WP_DEBUG is enabled.
 	 * @return array An array with existing and transport values -- if any.
 	 */
 	public function _robots_adv_transmuter_existing( $data ) {
-		global $wpdb;
 
 		$ret             = [
 			'existing'  => [],
@@ -287,33 +280,21 @@ final class WordPress_SEO extends Base {
 			// 'noimageindex', // reserved for later
 			// 'nosnippet', // reserved for later
 		] as $type ) {
-			// Defined in $this->conversion_sets
-			[ $to_table, $to_index ] = array_map( '\\esc_sql', $data['to_data']['transmuters'][ $type ] );
+			$existing_value = $this->get_existing_meta( [
+				// Defined in $this->conversion_sets
+				'to'      => $data['to_data']['transmuters'][ $type ],
+				'item_id' => $data['item_id'],
+			] );
 
-			// TODO improve performance make this get_col->WHERE IN? Do we even improve performance then?
-			// For now, we only get one value so it doesn't matter here. For Rank Math, it may.
-			$current_value = $wpdb->get_var( $wpdb->prepare(
-				// phpcs:ignore, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $to_table is escaped.
-				"SELECT meta_value FROM `$to_table` WHERE post_id = %d AND meta_key = %s",
-				$data['item_id'],
-				$to_index
-			) );
-			if ( WP_DEBUG && $wpdb->last_error ) throw new \Exception( $wpdb->last_error );
-
-			if ( isset( $current_value ) ) {
-				$ret['existing'][ $type ] = $current_value;
+			if ( isset( $existing_value ) ) {
+				$ret['existing'][ $type ] = $existing_value;
 			} else {
 				// Get transport value if not fetched before.
 				if ( ! isset( $transport_value ) ) {
-					[ $from_table, $from_index ] = $data['from'];
-
-					$transport_value = $wpdb->get_var( $wpdb->prepare(
-						// phpcs:ignore, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $from_table is escaped.
-						"SELECT meta_value FROM `$from_table` WHERE `{$this->id_key}` = %d AND meta_key = %s",
-						$data['item_id'],
-						$from_index
-					) );
-					if ( WP_DEBUG && $wpdb->last_error ) throw new \Exception( $wpdb->last_error );
+					$transport_value = $this->get_transport_value( [
+						'from'    => $data['from'],
+						'item_id' => $data['item_id'],
+					] );
 
 					// Makes [ 'noarchive' => 1, 'nosnippet' => 1, 'noimageindex' => 1 ] when index is found.
 					$transport_value = \is_string( $transport_value )
@@ -344,19 +325,16 @@ final class WordPress_SEO extends Base {
 		[ $from_table, $from_index ] = $data['from'];
 
 		foreach ( $data['to_data']['transmuters'] as $type => $transmuter ) {
-			[ $to_table, $to_index ] = array_map( '\\esc_sql', $transmuter );
+			[ $to_table, $to_index ] = $transmuter;
 
-			$_actions = [
-				'transport' => true,
-				'delete'    => false,
-			];
+			$_actions = array_merge(
+				$this->zero_actions,
+				[
+					'transport' => true,
+				]
+			);
 			// We landed here without prior transformation or sanitization.
-			$_results = [
-				'updated'     => 0,
-				'transformed' => 0,
-				'deleted'     => 0,
-				'sanitized'   => 0,
-			];
+			$_results = $this->zero_results;
 
 			$existing_value  = $data['set_value']['existing'][ $type ] ?? null;
 			$transport_value = $data['set_value']['transport'][ $type ] ?? null;
@@ -367,8 +345,8 @@ final class WordPress_SEO extends Base {
 
 			if ( \in_array( $set_value, $this->useless_data, true ) ) {
 				$set_value               = null;
-				$_results['transformed'] = 0;
 				$_actions['transport']   = false;
+				$_results['transformed'] = 0;
 			}
 
 			$this->transmute(
@@ -387,7 +365,7 @@ final class WordPress_SEO extends Base {
 		$this->delete(
 			$data['item_id'],
 			[ $from_table, $from_index ],
-			$results,
+			$results
 		);
 	}
 }

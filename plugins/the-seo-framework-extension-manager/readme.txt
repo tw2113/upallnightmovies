@@ -2,10 +2,10 @@
 Contributors: Cybr
 Tags: seo, extensions, local, keyword, articles, monitor, modules, schema, honeypot, amp, title, the seo framework
 Requires at least: 5.5
-Tested up to: 6.0
+Tested up to: 6.1
 Requires PHP: 7.3.0
-Requires TSF: 4.2.4
-Stable tag: 2.5.3
+Requires TSF: 4.2.0
+Stable tag: 2.6.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -40,6 +40,32 @@ Learn [how to contribute](https://tsf.fyi/contributing).
 Please refer to [the installation instructions on our website](https://kb.theseoframework.com/kb/how-to-install-the-extension-manager/).
 
 == Changelog ==
+
+= 2.6.1 =
+
+**Release date:**
+
+* February 7th, 2023
+
+**Feature highlights:**
+
+* Transport now supports migration from SEOPress.
+* Local now supports price range indication and scheduled opening hours.
+* We reduced the likelihood of random disconnects for iThemes Security users.
+* And we improved overall performance by optimizing option handling and modernizing browser scripts.
+
+**Updated extensions:**
+
+* [Focus at version 1.5.3](https://theseoframework.com/extensions/focus/#changelog)
+* [Honeypot at version 2.0.1](https://theseoframework.com/extensions/honeypot/#changelog)
+* [AMP at version 1.2.1](https://theseoframework.com/extensions/amp/#changelog)
+* [Transport at version 1.1.0](https://theseoframework.com/extensions/trasnport/#changelog)
+* [Monitor at version 1.2.9](https://theseoframework.com/extensions/monitor/#changelog)
+* [Local at version 1.3.0](https://theseoframework.com/extensions/local/#changelog)
+
+**Detailed log**
+
+View the [detailed v2.6.1 changelog](https://tsf.fyi/p/4055).
 
 = 2.6.0 - Mobile SEO =
 

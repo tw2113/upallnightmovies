@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -295,7 +295,7 @@ trait Secure_Post {
 			} else {
 				$type            = 'success';
 				$send['results'] = $this->get_ajax_notice( true, 1070202 );
-				$send['tdata']   = '<script type="application/ld+json">' . PHP_EOL . $data . PHP_EOL . '</script>';
+				$send['tdata']   = '<script type="application/ld+json">' . "\n$data\n" . '</script>'; // This goes to Google for preview.
 			}
 		}
 

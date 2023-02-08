@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Honeypot;
  * Extension Name: Honeypot
  * Extension URI: https://theseoframework.com/extensions/honeypot/
  * Extension Description: The Honeypot extension catches comment spammers with a 99.99% catch-rate using five lightweight yet powerful methods that won't leak data from your site.
- * Extension Version: 2.0.0
+ * Extension Version: 2.0.1
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -21,7 +21,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Honeypot extension for The SEO Framework
- * Copyright (C) 2017-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -41,7 +41,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
  *
  * @since 1.0.0
  */
-\define( 'TSFEM_E_HONEYPOT_VERSION', '2.0.0' );
+\define( 'TSFEM_E_HONEYPOT_VERSION', '2.0.1' );
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\honeypot_init', 11 );
 /**
@@ -243,7 +243,7 @@ final class Core {
 	 */
 	private function output_css_honeypot() {
 		printf(
-			'<p style="display:none;"><input type="text" name="%1$s" value=""></p>',
+			'<p style="display:none;"><input type="text" name="%1$s" value=""></p>', // Keep XHTML valid!
 			\esc_attr( $this->hp_properties['css_input_name'] )
 		);
 	}
@@ -261,11 +261,13 @@ final class Core {
 	 * @since 1.0.0
 	 * @since 1.0.1 Moved display annotation into a scoped style node.
 	 * @since 2.0.0 Added a fake label: Website.
+	 * @since 2.0.1 Removed scoped tag for style, which became deprecated. Doesn't affect.
 	 * @todo Set CSS external rather than inline when http/2 using HTML5 spec?
 	 */
 	private function output_css_rotation_honeypot() {
 		printf(
-			'<p id="%1$s"><label for="%1$s">Website</label><input type="text" name="%1$s" value=""><style scoped>#%1$s{display:none}</style></p>',
+			// Keep XHTML valid!
+			'<p id="%1$s"><label for="%1$s">Website</label><input type="text" name="%1$s" value=""><style>#%1$s{display:none}</style></p>',
 			\esc_attr( $this->hp_properties['css_rotate_input_name'] )
 		);
 	}
@@ -335,7 +337,7 @@ JS;
 	 */
 	private function output_nonce_honeypot() {
 		vprintf(
-			'<input type="hidden" name="%1$s" value="%2$s">',
+			'<input type="hidden" name="%1$s" value="%2$s">', // Keep XHTML valid!
 			[
 				\sanitize_key( $this->hp_properties['nonce_input_name'] ),
 				\esc_attr( $this->hp_properties['nonce_rotated_input_value'] ),
@@ -385,7 +387,7 @@ JS;
 
 		// phpcs:disable, WordPress.Security.EscapeOutput.OutputNotEscaped -- Already taken care of.
 		vprintf(
-			'<input type="hidden" name="%s" value=""><script>%s</script>',
+			'<input type="hidden" name="%s" value=""><script>%s</script>', // Keep XHTML valid!
 			[
 				$input_name,
 				$script,
@@ -558,10 +560,10 @@ JS;
 	 * @return int The post ID.
 	 */
 	private function get_id( $commentdata = [] ) {
-
 		static $id;
-
-		return $id ?: $id = (int) ( $commentdata['comment_post_ID'] ?? \get_the_ID() );
+		return $id ?? (
+			$id = (int) ( $commentdata['comment_post_ID'] ?? \get_the_ID() )
+		);
 	}
 
 	/**
@@ -774,8 +776,14 @@ JS;
 		}
 
 		$hash = $previous ? $_hashes['previous'] : $_hashes['current'];
-		$hash = $flip ? strrev( $hash ) : $hash;
-		return $this->alpha_first( (string) substr( $hash, 0, $length ) );
+
+		return $this->alpha_first(
+			(string) substr(
+				$flip ? strrev( $hash ) : $hash,
+				0,
+				$length
+			)
+		);
 	}
 
 	/**
@@ -792,16 +800,20 @@ JS;
 	 */
 	private function get_static_hashed_field_name( $length = 24, $flip = false ) {
 
-		static $_hash = '';
+		static $hash = '';
 
-		if ( ! \strlen( $_hash ) ) {
-			$uid   = $this->get_id() . '+' . __METHOD__ . '+' . $GLOBALS['blog_id'];
-			$_hash = \tsfem()->_get_uid_hash( $uid );
-			$_hash = $this->hex_to_62_trim( $_hash );
-		}
+		if ( ! \strlen( $hash ) )
+			$hash = $this->hex_to_62_trim( \tsfem()->_get_uid_hash(
+				$this->get_id() . '+' . __METHOD__ . '+' . $GLOBALS['blog_id']
+			) );
 
-		$hash = $flip ? strrev( $_hash ) : $_hash;
-		return $this->alpha_first( (string) substr( $hash, 0, $length ) );
+		return $this->alpha_first(
+			(string) substr(
+				$flip ? strrev( $hash ) : $hash,
+				0,
+				$length
+			)
+		);
 	}
 
 	/**
@@ -861,8 +873,14 @@ JS;
 		}
 
 		$hash = $previous ? $_hashes['previous'] : $_hashes['current'];
-		$hash = $flip ? strrev( $hash ) : $hash;
-		return $this->alpha_first( (string) substr( $hash, 0, $length ) );
+
+		return $this->alpha_first(
+			(string) substr(
+				$flip ? strrev( $hash ) : $hash,
+				0,
+				$length
+			)
+		);
 	}
 
 	/**

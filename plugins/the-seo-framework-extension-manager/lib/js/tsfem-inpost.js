@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -69,7 +69,7 @@ window.tsfem_inpost = function( $ ) {
 	 * @param {HTMLElement} element
 	 * @return {string}
 	 */
-	const isActionableElement = ( element ) => {
+	const isActionableElement = element => {
 
 		if ( ! element instanceof HTMLElement )
 			return false;
@@ -96,7 +96,7 @@ window.tsfem_inpost = function( $ ) {
 		if ( ! str.length ) return '';
 
 		if ( noquotes ) {
-			return str.replace( /[&<>]/g, ( m ) => {
+			return str.replace( /[&<>]/g, m => {
 				return {
 					'&': '&amp;',
 					'<': '&lt;',
@@ -104,7 +104,7 @@ window.tsfem_inpost = function( $ ) {
 				}[ m ];
 			} );
 		} else {
-			return str.replace( /[&<>"']/g, ( m ) => {
+			return str.replace( /[&<>"']/g, m => {
 				return {
 					'&': '&amp;',
 					'<': '&lt;',
@@ -138,7 +138,7 @@ window.tsfem_inpost = function( $ ) {
 
 		if ( ! its ) return resolve();
 
-		const loop = ( it ) => {
+		const loop = it => {
 			let looper, stopper, rejector;
 
 			// Prepare loop stopper.
@@ -211,7 +211,7 @@ window.tsfem_inpost = function( $ ) {
 
 		debug && console.log( ajaxOps );
 
-		$.ajax( ajaxOps ).done( ( response ) => {
+		$.ajax( ajaxOps ).done( response => {
 			response = tsf.convertJSONResponse( response );
 
 			debug && console.log( response );
@@ -262,7 +262,18 @@ window.tsfem_inpost = function( $ ) {
 		} );
 	} );
 
-	var noticeBuffer;
+	/**
+	 * @since 2.6.1
+	 * @access private
+	 * @type {boolean} _appendNoticeBuffer Maintains notice appending buffer.
+	 */
+	let _appendNoticeBuffer = false;
+	/**
+	 * @since 2.6.1
+	 * @access private
+	 * @type {boolean} _cleanNoticeWrapBuffer Maintains notice cleaning buffer
+	 */
+	let _cleanNoticeWrapBuffer = false;
 	/**
 	 * Gets and inserts the flex notice. May invoke AJAX.
 	 *
@@ -273,7 +284,7 @@ window.tsfem_inpost = function( $ ) {
 	 * @param {object<string,*?>} notice The notice message
 	 * @return {Object<in:string>}
 	 */
-	const setFlexNotice = ( notice ) => {
+	const setFlexNotice = notice => {
 		/**
 		 * Appends flex notice.
 		 *
@@ -282,33 +293,66 @@ window.tsfem_inpost = function( $ ) {
 		 *
 		 * @function
 		 * @param {string} notice The notice to append.
+		 * @param {string} wrapper The querySelector for the notice wrapper.
 		 */
 		const appendFlexNotice = ( notice, wrapper ) => {
 
-			let $wrapper = $( wrapper ),
-				$notices = $wrapper.children( '.tsf-notice, #tsfem-notice-wrap .notice' );
+			const noticeWrap = document.querySelector( wrapper ),
+				  notices    = noticeWrap.querySelectorAll( '.tsf-notice, .notice' );
 
-			if ( $notices.length > 1 ) {
-				// Kill them all with fire.
-				$notices.slice( 0, $notices.length - 1 ).each( function() {
-					$( this ).slideUp( 200, function() {
-						this.remove();
-					} );
-				} );
-			}
-
-			$( notice ).hide().appendTo( $wrapper ).slideDown( 200 );
-
-			let $dismiss = $( '.tsfem-flex-settings-notification-area .tsf-dismiss' );
-
-			const dismissNotice = ( event ) => {
-				$( event.target ).closest( '.tsf-notice' ).slideUp( 200, function() {
-					this.remove();
-				} );
+			const slideDuration = 200;
+			const slideTiming   = {
+				duration:   slideDuration,
+				iterations: 1,
 			};
 
-			$dismiss.off( 'click', dismissNotice ).on( 'click', dismissNotice );
+			noticeWrap.style.willChange = 'contents';
+
+			if ( notices.length > 1 ) {
+				// Prevent bounce by locking maxHeight to current height. Use subpixels to prevent minor text shift.
+				noticeWrap.style.maxHeight = `${noticeWrap.getBoundingClientRect().height}px`;
+				noticeWrap.style.overflow  = 'hidden';
+
+				// Kill them all with fire. Except one, one may stay.
+				Array.from( notices ).slice( 0, notices.length - 1 ).forEach(
+					el => {
+						el.style.transformOrigin = 'bottom';
+						el.animate(
+							[
+								{ transform: 'scaleY(1)', maxHeight: `${el.clientHeight}px`, opacity: 1 },
+								{ transform: 'scaleY(0)', maxHeight: 0, opacity: 0 },
+							],
+							slideTiming
+						);
+						setTimeout( () => el.remove(), slideDuration );
+					}
+				);
+			}
+
+			const temp = document.createElement( 'template' );
+			temp.innerHTML = notice;
+			noticeWrap.append( temp.content );
+
+			const lC = noticeWrap.lastChild;
+
+			lC.style.transformOrigin = 'bottom';
+			lC.animate(
+				[
+					{ transform: 'scaleY(0)', maxHeight: 0, opacity: 1 },
+					{ transform: 'scaleY(1)', maxHeight: `${lC.clientHeight}px`, opacity: 1 },
+				],
+				slideTiming
+			);
+			// Debounce clearing of overflowing when multiple notices are processed in quick succession.
+			clearTimeout( _cleanNoticeWrapBuffer );
+			_cleanNoticeWrapBuffer = setTimeout( () => {
+				noticeWrap.style.maxHeight = null;
+				noticeWrap.style.overflow  = null;
+			}, slideDuration );
+
+			tsf.triggerNoticeReset();
 		}
+
 		/**
 		 * Gets and inserts AJAX inpost-flex notice.
 		 *
@@ -332,15 +376,15 @@ window.tsfem_inpost = function( $ ) {
 				url: ajaxurl,
 				datatype: 'json',
 				data: {
-					'action' : 'tsfem_inpost_get_dismissible_notice',
-					'post_ID' : postID,
-					'nonce' : nonce,
-					'tsfem-notice-key' : noticeKey,
-					'tsfem-notice-has-msg' : hasMsg,
+					action: 'tsfem_inpost_get_dismissible_notice',
+					post_ID: postID,
+					nonce: nonce,
+					'tsfem-notice-key': noticeKey,
+					'tsfem-notice-has-msg': hasMsg,
 				},
 				timeout: 7000,
 				async: true,
-			} ).done( ( response ) => {
+			} ).done( response => {
 
 				response = tsf.convertJSONResponse( response );
 
@@ -352,17 +396,17 @@ window.tsfem_inpost = function( $ ) {
 				if ( ! data || ! type || 'undefined' === typeof data.notice ) {
 					// Erroneous output. Do nothing as this error is invoked internally.
 				} else {
-					let notice = '';
+					let notice = data.notice;
 
 					if ( hasMsg ) {
-						notice = $( data.notice );
-						if ( rtl ) {
-							notice.find( 'p' ).first().prepend( `${msg} ` );
+						const temp = document.createElement( 'div' );
+						temp.innerHTML = notice;
+						if ( window.isRtl ) {
+							temp.querySelector( 'p' )?.insertAdjacentHTML( 'beforebegin', `${msg} ` );
 						} else {
-							notice.find( 'p' ).first().append( ` ${msg}` );
+							temp.querySelector( 'p' )?.insertAdjacentHTML( 'beforeend', ` ${msg}` );
 						}
-					} else {
-						notice = data.notice;
+						notice = temp.innerHTML;
 					}
 
 					output = notice;
@@ -376,7 +420,7 @@ window.tsfem_inpost = function( $ ) {
 
 				// Output fallback notice.
 				let template = hasMsg ? wp.template( 'tsfem-inpost-notice-error' ) : wp.template( 'tsfem-inpost-notice-5xx' ),
-					notice = template( { 'code' : noticeKey, 'msg' : msg } );
+					notice = template( { code: noticeKey, msg } );
 
 				output = notice;
 			} ).always( () => {
@@ -387,44 +431,46 @@ window.tsfem_inpost = function( $ ) {
 		}
 
 		return {
-			in: ( wrapper ) => {
-				if ( ! notice ) {
+			/**
+			 * @param {string} wrapper The querySelector for the notice wrapper.
+			 */
+			in: wrapper => {
+				if ( ! notice )
 					return;
-				}
 
 				// One notice at a time. This might stack up depending on AJAX.
-				if ( noticeBuffer ) {
+				if ( _appendNoticeBuffer ) {
 					setTimeout( () => {
 						setFlexNotice( notice ).in( wrapper );
 					}, 500 );
 					return;
 				}
 
-				noticeBuffer = true;
+				_appendNoticeBuffer = true;
 
 				let type = notice.type || 'error',
 					code = notice.code || void 0,
 					text = notice.text || '';
 
 				if ( void 0 === code ) {
-					retrieveNotice( -1, text ).always( ( notice ) => {
+					retrieveNotice( -1, text ).always( notice => {
 						appendFlexNotice( notice, wrapper );
-						noticeBuffer = false;
+						_appendNoticeBuffer = false;
 					} );
 				} else if ( '' === text ) {
-					retrieveNotice( code, '' ).always( ( notice ) => {
+					retrieveNotice( code, '' ).always( notice => {
 						appendFlexNotice( notice, wrapper );
-						noticeBuffer = false;
+						_appendNoticeBuffer = false;
 					} );
 				} else {
-					let template = wp.template( `tsfem-inpost-notice-${type}` );
-						notice   = template( {
-							code: code,
-							msg:  text,
-						} );
+					const template = wp.template( `tsfem-inpost-notice-${type}` );
 
-					appendFlexNotice( notice, wrapper );
-					noticeBuffer = false;
+					appendFlexNotice( template( {
+						code: code,
+						msg:  text,
+					} ), wrapper );
+
+					_appendNoticeBuffer = false;
 				}
 			}
 		};

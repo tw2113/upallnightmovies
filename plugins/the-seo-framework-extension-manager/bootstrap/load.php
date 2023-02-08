@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2022 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -68,10 +68,20 @@ function _protect_options() {
 
 	$current_options = (array) \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
 
-	\add_filter( 'pre_update_option_' . TSF_EXTENSION_MANAGER_SITE_OPTIONS, __NAMESPACE__ . '\\_pre_execute_protect_option', PHP_INT_MIN, 3 );
+	\add_filter(
+		'pre_update_option_' . TSF_EXTENSION_MANAGER_SITE_OPTIONS,
+		__NAMESPACE__ . '\\_pre_execute_protect_option',
+		PHP_INT_MIN,
+		3
+	);
 
 	if ( isset( $current_options['_instance'] ) )
-		\add_filter( "pre_update_option_tsfem_i_{$current_options['_instance']}", __NAMESPACE__ . '\\_pre_execute_protect_option', PHP_INT_MIN, 3 );
+		\add_filter(
+			"pre_update_option_tsfem_i_{$current_options['_instance']}",
+			__NAMESPACE__ . '\\_pre_execute_protect_option',
+			PHP_INT_MIN,
+			3
+		);
 }
 
 /**
@@ -91,14 +101,11 @@ function _pre_execute_protect_option( $new_value, $old_value, $option ) {
 	if ( $new_value === $old_value ) return $old_value;
 
 	// phpcs:ignore, TSF.Performance.Functions.PHP -- required
-	if ( false === class_exists( 'TSF_Extension_Manager\SecureOption', true ) ) {
+	if ( ! class_exists( 'TSF_Extension_Manager\SecureOption', true ) ) {
 		\wp_die( '<code>' . \esc_html( $option ) . '</code> is a protected option.' );
 		return $old_value;
 	}
 
-	/**
-	 * Load class overloading traits.
-	 */
 	\TSF_Extension_Manager\_load_trait( 'core/overload' );
 
 	// Why do we return on an ACTION? What's happening here... how has it tested time?
@@ -134,7 +141,7 @@ function _init_tsf_extension_manager() {
 	if ( $tsfem )
 		return $tsfem;
 
-	if ( false === \doing_action( 'plugins_loaded' ) ) {
+	if ( ! \doing_action( 'plugins_loaded' ) ) {
 		\wp_die( 'Use tsfem() after action `plugins_loaded` priority 6.' );
 		exit;
 	}
@@ -196,7 +203,7 @@ function _register_autoloader() {
 
 	foreach ( $integrity_classes as $_class ) {
 		// phpcs:ignore, TSF.Performance.Functions.PHP -- no other method exists.
-		if ( class_exists( $_class, false ) ) die;
+		class_exists( $_class, false ) and die;
 	}
 
 	/**
