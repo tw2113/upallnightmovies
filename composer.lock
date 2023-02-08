@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fad0d7aeb6201487b42c1c7a98e1d551",
+    "content-hash": "9d315e76b97dbbec79a256a9ed057515",
     "packages": [
         {
             "name": "composer/installers",
@@ -153,15 +153,15 @@
         },
         {
             "name": "wpackagist-plugin/antispam-bee",
-            "version": "2.11.1",
+            "version": "2.11.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/antispam-bee/",
-                "reference": "tags/2.11.1"
+                "reference": "tags/2.11.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/antispam-bee.2.11.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/antispam-bee.2.11.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -315,15 +315,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.5.8",
+            "version": "5.5.10",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.5.8"
+                "reference": "tags/5.5.10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.5.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.5.10.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -369,15 +369,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.24.0",
+            "version": "2.24.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.24.0"
+                "reference": "tags/2.24.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.24.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.2.24.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -387,15 +387,15 @@
         },
         {
             "name": "wpackagist-plugin/indieweb",
-            "version": "3.4.7",
+            "version": "4.0.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/indieweb/",
-                "reference": "tags/3.4.7"
+                "reference": "tags/4.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/indieweb.3.4.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/indieweb.4.0.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -423,15 +423,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.4.7",
+            "version": "4.4.9",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.4.7"
+                "reference": "tags/4.4.9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.4.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.4.9.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -531,15 +531,15 @@
         },
         {
             "name": "wpackagist-plugin/semantic-linkbacks",
-            "version": "3.11.1",
+            "version": "3.12.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/semantic-linkbacks/",
-                "reference": "tags/3.11.1"
+                "reference": "tags/3.12.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/semantic-linkbacks.3.11.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/semantic-linkbacks.3.12.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -567,15 +567,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.13.7",
+            "version": "1.13.8",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.13.7"
+                "reference": "tags/1.13.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.13.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.13.8.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
