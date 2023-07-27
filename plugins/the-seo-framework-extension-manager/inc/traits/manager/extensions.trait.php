@@ -85,7 +85,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1674791061',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -98,7 +98,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1664262329',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -109,9 +109,9 @@ trait Extensions_Properties {
 				'area'         => 'setup',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1675059167',
+				'last_updated' => '1687363584',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -124,7 +124,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1664173453',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -135,9 +135,9 @@ trait Extensions_Properties {
 				'area'         => 'analytics',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1664173453',
+				'last_updated' => '1687363584',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -150,7 +150,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1675716878',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -163,7 +163,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1565627638',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -174,9 +174,9 @@ trait Extensions_Properties {
 				'area'         => 'syntax',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1674790889',
+				'last_updated' => '1687363584',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -189,7 +189,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1515109560',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -202,7 +202,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1541601833',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -215,7 +215,7 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1572496812',
 				'requires'     => '5.5',
-				'tested'       => '6.1',
+				'tested'       => '6.2',
 				'requires_tsf' => '4.2.0',
 				'tested_tsf'   => '4.2.8',
 			],
@@ -235,9 +235,9 @@ trait Extensions_Properties {
 	 */
 	private static function get_external_extensions_checksum() {
 		return [
-			'sha256' => 'cc282deafdc1f79e6f54a4728b9ac8e8e5f6e10fa20240cb11b39f5de09d0566',
-			'sha1'   => 'fd7b79808e2955a8c0f158e4f237a07dd0297220',
-			'md5'    => '03b131aa42c18dee2edc9a779c4d007e',
+			'sha256' => '8061ecacb48bcfdb2dae101d1e589706610791d902daa3f9748182b7492e6013',
+			'sha1'   => 'a4297d95a290427ea93baef44d4a057b0dd57e3d',
+			'md5'    => '4902950aa8ddf52f7a5adf9633001e4a',
 		];
 	}
 
@@ -484,38 +484,39 @@ trait Extensions_Actions {
 	 * @since 1.0.0
 	 * @since 2.0.0 Now listens to the TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS constant.
 	 *
-	 * @param array $placeholder Unused.
 	 * @return array : {
 	 *    string The extension slug => bool True if active
 	 * }
 	 */
-	private static function get_active_extensions( $placeholder = [] ) {
+	private static function get_active_extensions() {
 
-		static $cache = false;
+		static $memo;
 
-		if ( false !== $cache )
-			return $cache;
+		if ( isset( $memo ) )
+			return $memo;
 
-		$options    = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
-		$extensions = $options['active_extensions'] ?? [];
-
-		$is_premium_user   = self::is_premium_user();
-		$is_connected_user = self::is_connected_user();
+		$extensions = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] )['active_extensions'] ?? [];
 
 		if ( TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS )
 			$extensions = array_merge( $extensions, TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS );
 
+		// Assume an extension would be active -- why else would they use this plugin?
+		// Don't add a defence clause. That should only make these calls useless right after activation.
+		$is_premium_user   = self::is_premium_user();
+		$is_connected_user = self::is_connected_user();
+
 		foreach ( $extensions as $_extension => $_active ) {
-			if ( ! $_active
-			|| ! $is_premium_user && static::is_extension_premium( $_extension )
-			|| ( ! $is_connected_user && static::is_extension_essentials( $_extension ) )
-			|| ( ! static::is_extension_compatible( $_extension ) )
+			if (
+				   ! $_active
+				|| ! $is_premium_user && static::is_extension_premium( $_extension )
+				|| ( ! $is_connected_user && static::is_extension_essentials( $_extension ) )
+				|| ( ! static::is_extension_compatible( $_extension ) )
 			) {
 				unset( $extensions[ $_extension ] );
 			}
 		}
 
-		return $cache = $extensions;
+		return $memo = $extensions;
 	}
 
 	/**
@@ -635,12 +636,7 @@ trait Extensions_Actions {
 		if ( \is_string( $extension ) )
 			$extension = static::get_extension( $extension );
 
-		$active = static::get_active_extensions();
-
-		if ( isset( $active[ $extension['slug'] ] ) )
-			return true;
-
-		return false;
+		return isset( static::get_active_extensions()[ $extension['slug'] ] );
 	}
 
 	/**
@@ -659,10 +655,10 @@ trait Extensions_Actions {
 		if ( \is_string( $extension ) )
 			$extension = static::get_extension( $extension );
 
-		if ( ! $extension ) return false;
-
-		return ! ( static::determine_extension_incompatibility( $extension )
-			& ( TSFEM_EXTENSION_TSF_INCOMPATIBLE | TSFEM_EXTENSION_WP_INCOMPATIBLE ) );
+		return $extension && ! (
+			static::determine_extension_incompatibility( $extension )
+			& ( TSFEM_EXTENSION_TSF_INCOMPATIBLE | TSFEM_EXTENSION_WP_INCOMPATIBLE )
+		);
 	}
 
 	/**
@@ -675,10 +671,9 @@ trait Extensions_Actions {
 	 * @global string $wp_version
 	 *
 	 * @param array|string $extension The extension to check.
-	 * @param bool         $get_bits Whether to get bits or int.
 	 * @return int|null The extension compatibility bitwise integer. Null on faiure.
 	 */
-	private static function determine_extension_incompatibility( $extension, $get_bits = false ) {
+	private static function determine_extension_incompatibility( $extension ) {
 
 		if ( \is_string( $extension ) )
 			$extension = static::get_extension( $extension );
@@ -1044,7 +1039,7 @@ trait Extensions_Actions {
 				break;
 
 			default:
-				$error_type = 'Type ' . $error['type'] . ' error.';
+				$error_type = "Type {$error['type']} error.";
 				break;
 		endswitch;
 

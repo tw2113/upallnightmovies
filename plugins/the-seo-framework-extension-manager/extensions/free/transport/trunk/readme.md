@@ -452,6 +452,15 @@ Many duplicated tags, some of which don't work reliably in SEOPress.
 
 ## Changelog
 
+### 1.1.1
+
+[tsfep-release time="June 22nd, 2023"]
+
+* **Note:** This extension is still in beta and will still delete data from other plugins.
+* **Fixed:** Transports now won't stop when the connection drops.
+* **Fixed:** A readable transport log is now sent when the browser doesn't support event streams.
+* **Fixed:** Yoast SEO's plugin name is now correctly spelled. [Props Joost de Valk](https://github.com/sybrew/The-SEO-Framework-Extension-Manager/pull/73).
+
 ### 1.1.0
 
 [tsfep-release time="February 7th, 2023"]

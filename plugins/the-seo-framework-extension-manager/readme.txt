@@ -2,10 +2,10 @@
 Contributors: Cybr
 Tags: seo, extensions, local, keyword, articles, monitor, modules, schema, honeypot, amp, title, the seo framework
 Requires at least: 5.5
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 7.3.0
-Requires TSF: 4.2.0
-Stable tag: 2.6.1
+Requires TSF: 4.2.8
+Stable tag: 2.6.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -41,6 +41,27 @@ Please refer to [the installation instructions on our website](https://kb.theseo
 
 == Changelog ==
 
+= 2.6.2 =
+
+**Release date:**
+
+* June 22nd, 2023
+
+**Feature highlights:**
+
+* Google sunsets Universal Analytics 3 next month. Cord now supports Google Analytics 4. First, you should [migrate](https://support.google.com/analytics/answer/10110290); then, you can get your [Measurement ID](https://support.google.com/analytics/answer/12270356).
+* The SEO Framework 4.2.8 is now required, from 4.2.0 or later.
+
+**Updated extensions:**
+
+* [Cord at version 1.1.0](https://theseoframework.com/extensions/cord/#changelog)
+* [Transport at version 1.1.1](https://theseoframework.com/extensions/transport/#changelog)
+* [Monitor at version 1.2.10](https://theseoframework.com/extensions/monitor/#changelog)
+
+**Detailed log:**
+
+View the [detailed v2.6.2 changelog](https://tsf.fyi/p/4090).
+
 = 2.6.1 =
 
 **Release date:**
@@ -51,8 +72,8 @@ Please refer to [the installation instructions on our website](https://kb.theseo
 
 * Transport now supports migration from SEOPress.
 * Local now supports price range indication and scheduled opening hours.
-* We reduced the likelihood of random disconnects for iThemes Security users.
-* And we improved overall performance by optimizing option handling and modernizing browser scripts.
+* Reduced the likelihood of random disconnects for iThemes Security users.
+* Improved overall performance by optimizing option handling and modernizing browser scripts.
 
 **Updated extensions:**
 
@@ -63,7 +84,7 @@ Please refer to [the installation instructions on our website](https://kb.theseo
 * [Monitor at version 1.2.9](https://theseoframework.com/extensions/monitor/#changelog)
 * [Local at version 1.3.0](https://theseoframework.com/extensions/local/#changelog)
 
-**Detailed log**
+**Detailed log:**
 
 View the [detailed v2.6.1 changelog](https://tsf.fyi/p/4055).
 
