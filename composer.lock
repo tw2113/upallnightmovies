@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9969a74bf4482297f4ab9bf0ac4de041",
+    "content-hash": "e48ba4033835b802bd35da788bf6a605",
     "packages": [
         {
             "name": "composer/installers",
@@ -153,15 +153,15 @@
         },
         {
             "name": "wpackagist-plugin/antispam-bee",
-            "version": "2.11.3",
+            "version": "2.11.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/antispam-bee/",
-                "reference": "tags/2.11.3"
+                "reference": "tags/2.11.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/antispam-bee.2.11.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/antispam-bee.2.11.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -279,15 +279,15 @@
         },
         {
             "name": "wpackagist-plugin/custom-post-type-ui",
-            "version": "1.14.0",
+            "version": "1.15.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/custom-post-type-ui/",
-                "reference": "tags/1.14.0"
+                "reference": "tags/1.15.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.14.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/custom-post-type-ui.1.15.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -297,15 +297,15 @@
         },
         {
             "name": "wpackagist-plugin/disable-emojis",
-            "version": "1.7.5",
+            "version": "1.7.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/disable-emojis/",
-                "reference": "tags/1.7.5"
+                "reference": "tags/1.7.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/disable-emojis.1.7.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/disable-emojis.1.7.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -315,15 +315,15 @@
         },
         {
             "name": "wpackagist-plugin/email-subscribers",
-            "version": "5.6.20",
+            "version": "5.7.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/email-subscribers/",
-                "reference": "tags/5.6.20"
+                "reference": "tags/5.7.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.6.20.zip"
+                "url": "https://downloads.wordpress.org/plugin/email-subscribers.5.7.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -333,15 +333,15 @@
         },
         {
             "name": "wpackagist-plugin/ewww-image-optimizer",
-            "version": "7.2.0",
+            "version": "7.2.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/ewww-image-optimizer/",
-                "reference": "tags/7.2.0"
+                "reference": "tags/7.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.7.2.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/ewww-image-optimizer.7.2.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -351,15 +351,15 @@
         },
         {
             "name": "wpackagist-plugin/faq-block-for-gutenberg",
-            "version": "2.4",
+            "version": "2.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/faq-block-for-gutenberg/",
-                "reference": "tags/2.4"
+                "reference": "tags/2.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/faq-block-for-gutenberg.2.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/faq-block-for-gutenberg.2.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -369,15 +369,15 @@
         },
         {
             "name": "wpackagist-plugin/give",
-            "version": "2.33.1",
+            "version": "3.1.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/give/",
-                "reference": "tags/2.33.1"
+                "reference": "tags/3.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/give.2.33.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/give.3.1.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -405,15 +405,15 @@
         },
         {
             "name": "wpackagist-plugin/jsonfeed",
-            "version": "1.4.3",
+            "version": "1.4.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jsonfeed/",
-                "reference": "tags/1.4.3"
+                "reference": "tags/1.4.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jsonfeed.1.4.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/jsonfeed.1.4.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -423,15 +423,15 @@
         },
         {
             "name": "wpackagist-plugin/poll-maker",
-            "version": "4.7.5",
+            "version": "4.8.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/poll-maker/",
-                "reference": "tags/4.7.5"
+                "reference": "tags/4.8.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.7.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/poll-maker.4.8.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -459,15 +459,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress",
-            "version": "3.12.0",
+            "version": "3.12.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress/",
-                "reference": "tags/3.12.0"
+                "reference": "tags/3.12.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress.3.12.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress.3.12.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -495,15 +495,15 @@
         },
         {
             "name": "wpackagist-plugin/query-monitor",
-            "version": "3.13.1",
+            "version": "3.14.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/query-monitor/",
-                "reference": "tags/3.13.1"
+                "reference": "tags/3.14.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.13.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.14.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -513,15 +513,15 @@
         },
         {
             "name": "wpackagist-plugin/reading-time-wp",
-            "version": "2.0.13",
+            "version": "2.0.15",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/reading-time-wp/",
-                "reference": "tags/2.0.13"
+                "reference": "tags/2.0.15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/reading-time-wp.2.0.13.zip"
+                "url": "https://downloads.wordpress.org/plugin/reading-time-wp.2.0.15.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -549,15 +549,15 @@
         },
         {
             "name": "wpackagist-plugin/taxonomy-switcher",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/taxonomy-switcher/",
-                "reference": "tags/1.0.5"
+                "reference": "tags/1.0.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/taxonomy-switcher.1.0.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/taxonomy-switcher.1.0.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -585,15 +585,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-graphql",
-            "version": "1.16.0",
+            "version": "1.18.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-graphql/",
-                "reference": "tags/1.16.0"
+                "reference": "tags/1.18.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.16.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-graphql.1.18.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -603,15 +603,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-piwik",
-            "version": "1.0.28",
+            "version": "1.0.30",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-piwik/",
-                "reference": "tags/1.0.28"
+                "reference": "tags/1.0.30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-piwik.1.0.28.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-piwik.1.0.30.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -657,15 +657,15 @@
         },
         {
             "name": "wpackagist-plugin/wpforms-lite",
-            "version": "1.8.3.1",
+            "version": "1.8.4.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wpforms-lite/",
-                "reference": "tags/1.8.3.1"
+                "reference": "tags/1.8.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.8.3.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/wpforms-lite.1.8.4.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -682,5 +682,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
