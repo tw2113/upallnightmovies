@@ -73,7 +73,7 @@ final class SEO_By_Rank_Math extends Base {
 		$this->conversion_sets = [
 			[
 				null,
-				[ $wpdb->termmeta, THE_SEO_FRAMEWORK_TERM_OPTIONS ],
+				[ $wpdb->termmeta, \THE_SEO_FRAMEWORK_TERM_OPTIONS ],
 				null,
 				null,
 				[
@@ -154,15 +154,15 @@ final class SEO_By_Rank_Math extends Base {
 							'_rm_transm_robots_noarchive'     => [ $transformer_class, '_robots_text_to_qubit' ], // also sanitizes
 						],
 						'sanitizers' => [
-							'rank_math_title'                 => [ $tsf, 's_title_raw' ],
-							'rank_math_description'           => [ $tsf, 's_description_raw' ],
-							'rank_math_facebook_title'        => [ $tsf, 's_title_raw' ],
-							'rank_math_facebook_description'  => [ $tsf, 's_description_raw' ],
-							'rank_math_facebook_image'        => '\\esc_url_raw',
-							'rank_math_facebook_image_id'     => '\\absint',
-							'rank_math_twitter_title'         => [ $tsf, 's_title_raw' ],
-							'rank_math_twitter_description'   => [ $tsf, 's_description_raw' ],
-							'rank_math_canonical_url'         => '\\esc_url_raw',
+							'rank_math_title'                 => 'TSF_Extension_Manager\Transition\sanitize_metadata_content',
+							'rank_math_description'           => 'TSF_Extension_Manager\Transition\sanitize_metadata_content',
+							'rank_math_facebook_title'        => 'TSF_Extension_Manager\Transition\sanitize_metadata_content',
+							'rank_math_facebook_description'  => 'TSF_Extension_Manager\Transition\sanitize_metadata_content',
+							'rank_math_facebook_image'        => 'sanitize_url',
+							'rank_math_facebook_image_id'     => 'absint',
+							'rank_math_twitter_title'         => 'TSF_Extension_Manager\Transition\sanitize_metadata_content',
+							'rank_math_twitter_description'   => 'TSF_Extension_Manager\Transition\sanitize_metadata_content',
+							'rank_math_canonical_url'         => 'sanitize_url',
 						],
 						'cleanup' => [
 							[ $wpdb->termmeta, 'rank_math_title' ],
@@ -223,7 +223,7 @@ final class SEO_By_Rank_Math extends Base {
 	 * @param array  $set_value The current $set_value data used for actual transmuation, passed by reference.
 	 * @param ?array $actions   The actions for and after transmuation, passed by reference.
 	 * @param ?array $results   The results before and after transmutation, passed by reference.
-	 * @throws \Exception On database error when WP_DEBUG is enabled.
+	 * @throws \Exception On database error when \WP_DEBUG is enabled.
 	 */
 	protected function _rank_math_pretransmute_robots( $data, &$set_value, &$actions, &$results ) {
 
@@ -255,7 +255,7 @@ final class SEO_By_Rank_Math extends Base {
 	 * @param array  $set_value The current $set_value data used for actual transmuation, passed by reference.
 	 * @param ?array $actions   The actions for and after transmuation, passed by reference.
 	 * @param ?array $results   The results before and after transmutation, passed by reference.
-	 * @throws \Exception On database error when WP_DEBUG is enabled.
+	 * @throws \Exception On database error when \WP_DEBUG is enabled.
 	 */
 	protected function _rank_math_pretransmute_twitter( $data, &$set_value, &$actions, &$results ) {
 

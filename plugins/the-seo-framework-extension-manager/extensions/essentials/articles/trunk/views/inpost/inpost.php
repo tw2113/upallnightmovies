@@ -6,13 +6,18 @@
 
 namespace TSF_Extension_Manager\Extension\Articles;
 
-/**
- * @package TSF_Extension_Manager\Classes
- */
-use \TSF_Extension_Manager\InpostGUI as InpostGUI;
-use \TSF_Extension_Manager\InpostHTML as InpostHTML;
+use function \TSF_Extension_Manager\Transition\{
+	make_info,
+};
+
+use \TSF_Extension_Manager\{
+	InpostGUI,
+	InpostHTML,
+};
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) and InpostGUI::verify( $_secret ) or die;
+
+// phpcs:disable, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- includes.
 
 create_type_field:;
 	$type_title = sprintf(
@@ -21,7 +26,7 @@ create_type_field:;
 	);
 	$type_info  = sprintf(
 		'<div>%s</div>',
-		\The_SEO_Framework\Interpreters\HTML::make_info(
+		make_info(
 			$post_meta['type']['label']['desc'],
 			$post_meta['type']['label']['link'],
 			false
@@ -33,7 +38,7 @@ create_type_field:;
 	$type_option_value = $post_meta['type']['option']['value'];
 
 	$type_select_fields = '';
-	foreach ( $post_meta['type']['option']['select_values'] as $_value => $_name ) :
+	foreach ( $post_meta['type']['option']['select_values'] as $_value => $_name ) {
 		$_selected = $_value === $type_option_value ? ' selected=selected' : '';
 
 		$type_select_fields .= sprintf(
@@ -42,7 +47,7 @@ create_type_field:;
 			$_selected,
 			\esc_html( $_name )
 		);
-	endforeach;
+	}
 
 	$type_field = vsprintf(
 		'<select name=%s id=%s>%s</select>',

@@ -62,10 +62,10 @@ function _amp_init() {
 	} else {
 		$is_amp = false;
 
-		if ( \function_exists( '\\is_amp_endpoint' ) ) {
+		if ( \function_exists( 'is_amp_endpoint' ) ) {
 			$is_amp = \is_amp_endpoint();
 		} elseif ( \defined( 'AMP_QUERY_VAR' ) ) {
-			$is_amp = \get_query_var( AMP_QUERY_VAR, false ) !== false;
+			$is_amp = \get_query_var( \AMP_QUERY_VAR, false ) !== false;
 		}
 
 		if ( $is_amp ) {
@@ -114,11 +114,29 @@ final class Front {
 	 */
 	public function do_output_hook() {
 
+		/**
+		 * @since 1.0.0
+		 */
 		\do_action( 'the_seo_framework_do_before_amp_output' );
 
-		// phpcs:ignore -- All callbacks escape their output.
-		echo "\n", $this->get_general_metadata(), $this->get_social_metadata(), $this->get_structured_metadata(), "\n";
+		if ( \TSF_EXTENSION_MANAGER_USE_MODERN_TSF ) {
+			// Our URI outputs do not pertain to AMP. AMP takes care of this.
+			\add_filter(
+				'the_seo_framework_meta_generator_pools',
+				static function ( $pools ) {
+					return array_diff( $pools, [ 'URI' ] );
+				}
+			);
 
+			\tsf()->print_seo_meta_tags();
+		} else {
+			// phpcs:ignore -- All callbacks escape their output.
+			echo "\n", $this->get_general_metadata(), $this->get_social_metadata(), $this->get_structured_metadata(), "\n";
+		}
+
+		/**
+		 * @since 1.0.0
+		 */
 		\do_action( 'the_seo_framework_do_after_amp_output' );
 	}
 
@@ -136,6 +154,7 @@ final class Front {
 	 * Data is taken from The SEO Framework.
 	 *
 	 * @since 1.0.1
+	 * @deprecated Remove if we only support TSF 4.3+
 	 *
 	 * @return string The general metadata.
 	 */
@@ -149,12 +168,13 @@ final class Front {
 	 *
 	 * @since 1.0.1
 	 * @since 1.0.2 Added filters.
+	 * @deprecated Remove if we only support TSF 4.3+
 	 *
 	 * @return string The social metadata.
 	 */
 	protected function get_social_metadata() {
 
-		$tsf = \tsf();
+		$tsf = \tsf(); // tsf OK
 
 		/**
 		 * Adds content before the output.
@@ -191,7 +211,7 @@ final class Front {
 		 */
 		$after = (string) \apply_filters( 'the_seo_framework_amp_pro', '' );
 
-		return $before . $output . $after;
+		return "{$before}{$output}{$after}";
 	}
 
 	/**
@@ -199,6 +219,7 @@ final class Front {
 	 * Data is taken from The SEO Framework.
 	 *
 	 * @since 1.2.0
+	 * @deprecated Remove if we only support TSF 4.3+
 	 *
 	 * @return string The structured metadata.
 	 */

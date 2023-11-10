@@ -162,7 +162,7 @@ trait Time {
 
 		$time_i18n = '';
 
-		switch ( $x_scale ) :
+		switch ( $x_scale ) {
 			case 'seconds':
 				/* translators: %d = seconds */
 				$time_i18n = sprintf( \_n( '%d second', '%d seconds', $x, 'the-seo-framework-extension-manager' ), $x );
@@ -186,8 +186,7 @@ trait Time {
 			case 'weeks':
 				/* translators: %d = weeks */
 				$time_i18n = sprintf( \_n( '%d week', '%d weeks', $x, 'the-seo-framework-extension-manager' ), $x );
-				break;
-		endswitch;
+		}
 
 		return $time_i18n;
 	}
@@ -225,7 +224,7 @@ trait Time {
 			'minutes' => [ 60, 'hours' ],
 			'hours'   => [ 24, 'days' ],
 			'days'    => [ 7, 'weeks' ],
-			'weeks'   => [ PHP_INT_MAX, 'eternity' ],
+			'weeks'   => [ \PHP_INT_MAX, 'eternity' ],
 			// Months and years are too variable for the static purpose of this method.
 		];
 

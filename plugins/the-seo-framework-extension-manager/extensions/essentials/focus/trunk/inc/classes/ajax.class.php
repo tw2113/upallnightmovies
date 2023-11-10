@@ -17,7 +17,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
 	\tsfem()->_init_final_static_extension_api_access( __NAMESPACE__ . '\\Ajax', $_instance, $bits ) ?: false
 );
 
-if ( false === TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY )
+if ( false === \TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY )
 	return;
 
 /**
@@ -48,7 +48,7 @@ if ( false === TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY )
  * Class TSF_Extension_Manager\Extension\Focus\Ajax
  *
  * @api extension/focus/%
- * @apikey protected TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY
+ * @apikey protected \TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY
  * @access protected
  * @since 1.0.0
  * @uses TSF_Extension_Manager\Traits
@@ -115,7 +115,7 @@ final class Ajax {
 	private function verify_api_access() {
 
 		$tsfem   = \tsfem();
-		$post_id = filter_input( INPUT_POST, 'post_ID', FILTER_VALIDATE_INT );
+		$post_id = filter_input( \INPUT_POST, 'post_ID', \FILTER_VALIDATE_INT );
 
 		if ( $post_id && \TSF_Extension_Manager\InpostGUI::current_user_can_edit_post( \absint( $post_id ) ) ) {
 			if ( $tsfem->is_premium_user() ) {
@@ -158,7 +158,7 @@ final class Ajax {
 			$response = json_decode( $response );
 
 			if ( empty( $response->success ) ) {
-				switch ( $response->data->error ?? '' ) :
+				switch ( $response->data->error ?? '' ) {
 					case 'WORD_NOT_FOUND':
 						$send['results'] = $this->get_ajax_notice( false, 1100102 );
 						break;
@@ -180,7 +180,7 @@ final class Ajax {
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100103 );
 						break;
-				endswitch;
+				}
 			} elseif ( ! isset( $response->data ) ) {
 				$send['results'] = $this->get_ajax_notice( false, 1100104 );
 			} else {
@@ -244,7 +244,7 @@ final class Ajax {
 			$response = json_decode( $response );
 
 			if ( empty( $response->success ) ) {
-				switch ( $response->data->error ?? '' ) :
+				switch ( $response->data->error ?? '' ) {
 					case 'WORD_NOT_FOUND':
 						$send['results'] = $this->get_ajax_notice( false, 1100302 );
 						break;
@@ -265,8 +265,7 @@ final class Ajax {
 					case 'REMOTE_API_BODY_ERROR':
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100304 );
-						break;
-				endswitch;
+				}
 			} elseif ( ! isset( $response->data ) ) {
 				$send['results'] = $this->get_ajax_notice( false, 1100305 );
 			} else {
@@ -334,7 +333,7 @@ final class Ajax {
 			$response = json_decode( $response );
 
 			if ( empty( $response->success ) ) {
-				switch ( $response->data->error ?? '' ) :
+				switch ( $response->data->error ?? '' ) {
 					case 'WORD_NOT_FOUND':
 						$send['results'] = $this->get_ajax_notice( false, 1100202 );
 						break;
@@ -355,8 +354,7 @@ final class Ajax {
 					case 'REMOTE_API_BODY_ERROR':
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100203 );
-						break;
-				endswitch;
+				}
 			} elseif ( ! isset( $response->data ) ) {
 				$send['results'] = $this->get_ajax_notice( false, 1100204 );
 			} else {

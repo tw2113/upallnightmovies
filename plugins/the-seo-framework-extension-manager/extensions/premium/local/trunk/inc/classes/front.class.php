@@ -99,7 +99,7 @@ final class Front extends Core {
 	protected function is_amp() {
 		static $memo;
 		return $memo ?? (
-			$memo = \defined( 'AMP_QUERY_VAR' ) && \get_query_var( AMP_QUERY_VAR, false ) !== false
+			$memo = \defined( 'AMP_QUERY_VAR' ) && \get_query_var( \AMP_QUERY_VAR, false ) !== false
 		);
 	}
 
@@ -112,7 +112,7 @@ final class Front extends Core {
 	 * @return string URL without scheme.
 	 */
 	protected function remove_scheme( $url ) {
-		return str_ireplace( [ 'https://', 'http://' ], '', \esc_url_raw( $url, [ 'https', 'http' ] ) );
+		return str_ireplace( [ 'https://', 'http://' ], '', \sanitize_url( $url, [ 'https', 'http' ] ) );
 	}
 
 	/**

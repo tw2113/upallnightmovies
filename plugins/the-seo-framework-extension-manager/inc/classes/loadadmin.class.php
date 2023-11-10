@@ -7,6 +7,12 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	convert_markdown,
+	do_dismissible_notice,
+	redirect,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -68,11 +74,19 @@ final class LoadAdmin extends AdminPages {
 	public function _check_constant_activation() {
 
 		$data = [
-			'email' => \sanitize_email( TSF_EXTENSION_MANAGER_API_INFORMATION['email'] ),
-			'key'   => trim( TSF_EXTENSION_MANAGER_API_INFORMATION['key'] ),
+			'email' => \sanitize_email( \TSF_EXTENSION_MANAGER_API_INFORMATION['email'] ),
+			'key'   => trim( \TSF_EXTENSION_MANAGER_API_INFORMATION['key'] ),
 		];
 
 		if ( $this->is_connected_user() ) {
+
+			// Future: we need this here, but then whilst keeping the activated extensions?
+			// -> We should split the option indexes, activated extensions in one (unencrypted), and activation data in another.
+			// if ( ! $this->are_options_valid() ) {
+			// 	$this->do_deactivation();
+			//  return;
+			// }
+
 			$current = $this->get_subscription_status();
 			$equals  = array_intersect_assoc( $current, $data );
 
@@ -86,13 +100,13 @@ final class LoadAdmin extends AdminPages {
 
 			if ( $this->is_tsf_extension_manager_page( false ) ) {
 				// Reload dashboard.
-				\tsf()->admin_redirect( $this->seo_extensions_page_slug );
+				redirect( $this->seo_extensions_page_slug );
 				exit;
 			}
 		} else {
 			$timeout = \get_transient( 'tsf-extension-manager-auto-activate-timeout' );
 			if ( $timeout ) return;
-			\set_transient( 'tsf-extension-manager-auto-activate-timeout', 1, MINUTE_IN_SECONDS * 5 );
+			\set_transient( 'tsf-extension-manager-auto-activate-timeout', 1, \MINUTE_IN_SECONDS * 5 );
 
 			$args = [
 				'activation_email' => $data['email'],
@@ -102,7 +116,7 @@ final class LoadAdmin extends AdminPages {
 
 			if ( $this->is_tsf_extension_manager_page( false ) ) {
 				// Reload dashboard.
-				\tsf()->admin_redirect( $this->seo_extensions_page_slug );
+				redirect( $this->seo_extensions_page_slug );
 				exit;
 			}
 		}
@@ -121,7 +135,7 @@ final class LoadAdmin extends AdminPages {
 		if ( ! $this->is_tsf_extension_manager_page() || ! \TSF_Extension_Manager\can_do_manager_settings() )
 			return;
 
-		if ( ! \defined( 'WP_HTTP_BLOCK_EXTERNAL' ) || ! WP_HTTP_BLOCK_EXTERNAL )
+		if ( ! \defined( 'WP_HTTP_BLOCK_EXTERNAL' ) || ! \WP_HTTP_BLOCK_EXTERNAL )
 			return;
 
 		$show_notice = ! \defined( 'WP_ACCESSIBLE_HOSTS' );
@@ -132,23 +146,23 @@ final class LoadAdmin extends AdminPages {
 			 *
 			 * @TODO maintain this well, and don't recommend it to our users.
 			 */
-			if ( false !== stristr( WP_ACCESSIBLE_HOSTS, $wildcard_host ) )
+			if ( false !== stristr( \WP_ACCESSIBLE_HOSTS, $wildcard_host ) )
 				return;
 		}
 
 		$hosts     = [];
 		$endpoints = [
-			TSF_EXTENSION_MANAGER_PREMIUM_URI,
-			TSF_EXTENSION_MANAGER_PREMIUM_EU_URI,
+			\TSF_EXTENSION_MANAGER_PREMIUM_URI,
+			\TSF_EXTENSION_MANAGER_PREMIUM_EU_URI,
+			\TSF_EXTENSION_MANAGER_PREMIUM_WCM_URI,
 		];
 
-		foreach ( $endpoints as $endpoint ) {
-			$hosts[] = parse_url( $endpoint, PHP_URL_HOST );
-		}
+		foreach ( $endpoints as $endpoint )
+			$hosts[] = parse_url( $endpoint, \PHP_URL_HOST );
 
 		if ( ! $show_notice ) {
 			foreach ( $hosts as $_host ) {
-				if ( false === stristr( WP_ACCESSIBLE_HOSTS, $_host ) ) {
+				if ( false === stristr( \WP_ACCESSIBLE_HOSTS, $_host ) ) {
 					/**
 					 * Users won't connect to the EU endpoint if they enter a global key.
 					 * Nevertheless, still nudge, for they might.
@@ -161,11 +175,8 @@ final class LoadAdmin extends AdminPages {
 
 		if ( ! $show_notice ) return;
 
-		$tsf = \tsf();
-
-		// Already escaped.
-		$tsf->do_dismissible_notice(
-			$tsf->convert_markdown(
+		do_dismissible_notice(
+			convert_markdown(
 				sprintf(
 					/* translators: Markdown. %s = API URL */
 					\esc_html__(
@@ -176,10 +187,11 @@ final class LoadAdmin extends AdminPages {
 				),
 				[ 'code' ]
 			),
-			'error',
-			true,
-			false,
-			true
+			[
+				'type'   => 'error',
+				'escape' => false,
+				'inline' => true,
+			]
 		);
 	}
 
@@ -194,18 +206,18 @@ final class LoadAdmin extends AdminPages {
 	public function _handle_update_post() {
 
 		// phpcs:ignore, WordPress.Security.NonceVerification.Missing -- handle_update_nonce does this.
-		if ( empty( $_POST[ TSF_EXTENSION_MANAGER_SITE_OPTIONS ]['nonce-action'] ) )
+		if ( empty( $_POST[ \TSF_EXTENSION_MANAGER_SITE_OPTIONS ]['nonce-action'] ) )
 			return;
 
 		// Post is taken and will be validated directly below.
 		// phpcs:ignore, WordPress.Security.NonceVerification.Missing -- handle_update_nonce does this.
-		$options = $_POST[ TSF_EXTENSION_MANAGER_SITE_OPTIONS ];
+		$options = $_POST[ \TSF_EXTENSION_MANAGER_SITE_OPTIONS ];
 
 		// Options exist. There's no need to check again them.
 		if ( ! $this->handle_update_nonce( $options['nonce-action'], false ) )
 			return;
 
-		switch ( $options['nonce-action'] ) :
+		switch ( $options['nonce-action'] ) {
 			case $this->request_name['activate-key']:
 				if ( $this->is_auto_activated() ) break;
 				$args = [
@@ -233,8 +245,8 @@ final class LoadAdmin extends AdminPages {
 
 				if ( $this->is_auto_activated() ) {
 					$args = [
-						'api_key'          => trim( TSF_EXTENSION_MANAGER_API_INFORMATION['key'] ),
-						'activation_email' => \sanitize_email( TSF_EXTENSION_MANAGER_API_INFORMATION['email'] ),
+						'api_key'          => trim( \TSF_EXTENSION_MANAGER_API_INFORMATION['key'] ),
+						'activation_email' => \sanitize_email( \TSF_EXTENSION_MANAGER_API_INFORMATION['email'] ),
 					];
 				} else {
 					$args = [
@@ -285,11 +297,11 @@ final class LoadAdmin extends AdminPages {
 			default:
 				$this->set_error_notice( [ 708 => '' ] );
 				break;
-		endswitch;
+		}
 
 		// Adds action to the URI. It's only used to visualize what has happened.
-		$args = WP_DEBUG ? [ 'did-' . $options['nonce-action'] => 'true' ] : [];
-		\tsf()->admin_redirect( $this->seo_extensions_page_slug, $args );
+		$args = \WP_DEBUG ? [ 'did-' . $options['nonce-action'] => 'true' ] : [];
+		redirect( $this->seo_extensions_page_slug, $args );
 		exit;
 	}
 
@@ -333,8 +345,8 @@ final class LoadAdmin extends AdminPages {
 		if ( $check_post ) {
 			// If this page doesn't parse the site options, there's no need to check them on each request.
 			if ( empty( $_POST ) // input var ok
-			|| ! isset( $_POST[ TSF_EXTENSION_MANAGER_SITE_OPTIONS ] )
-			|| ! \is_array( $_POST[ TSF_EXTENSION_MANAGER_SITE_OPTIONS ] ) )
+			|| ! isset( $_POST[ \TSF_EXTENSION_MANAGER_SITE_OPTIONS ] )
+			|| ! \is_array( $_POST[ \TSF_EXTENSION_MANAGER_SITE_OPTIONS ] ) )
 				return $validated[ $key ] = false;
 		}
 
@@ -345,7 +357,7 @@ final class LoadAdmin extends AdminPages {
 		if ( ! $result ) {
 			// Nonce failed. Set error notice and reload.
 			$this->set_error_notice( [ 9001 => '' ] );
-			\tsf()->admin_redirect( $this->seo_extensions_page_slug );
+			redirect( $this->seo_extensions_page_slug );
 			exit;
 		}
 
@@ -360,8 +372,13 @@ final class LoadAdmin extends AdminPages {
 	 */
 	public function do_activation_notice() {
 
-		if ( $this->is_plugin_activated() || ! \TSF_Extension_Manager\can_do_manager_settings() || $this->is_tsf_extension_manager_page() )
+		if (
+			   $this->is_plugin_activated()
+			|| ! \TSF_Extension_Manager\can_do_manager_settings()
+			|| $this->is_tsf_extension_manager_page()
+		) {
 			return;
+		}
 
 		$url   = $this->get_admin_page_url();
 		$title = \__( 'Activate the SEO Extension Manager', 'the-seo-framework-extension-manager' );
@@ -370,7 +387,13 @@ final class LoadAdmin extends AdminPages {
 		$text        = \esc_html__( 'Your extensions are only three clicks away', 'the-seo-framework-extension-manager' );
 
 		// No a11y icon. Already escaped. Use TSF as it loads styles.
-		\tsf()->do_dismissible_notice( "$text &mdash; $notice_link", 'updated', false, false, false );
+		do_dismissible_notice(
+			"$text &mdash; $notice_link",
+			[
+				'icon'   => false,
+				'escape' => false,
+			]
+		);
 	}
 
 	/**
@@ -378,7 +401,7 @@ final class LoadAdmin extends AdminPages {
 	 * Defaults to the Extension Manager page ID.
 	 *
 	 * @since 1.0.0
-	 * @TODO change to get_setitngs_page_url() (incl. parameter for extensions?).
+	 * @TODO change to get_settings_page_url() (incl. parameter for extensions?).
 	 *       see get_seo_settings_page_url() of TSF.
 	 *
 	 * @param string $page The admin menu page slug. Defaults to TSF Extension Manager's.
@@ -450,7 +473,7 @@ final class LoadAdmin extends AdminPages {
 	 * @param string $view The view file name.
 	 */
 	public function get_view_location( $view ) {
-		return TSF_EXTENSION_MANAGER_DIR_PATH . 'views' . DIRECTORY_SEPARATOR . "$view.php";
+		return \TSF_EXTENSION_MANAGER_DIR_PATH . 'views' . \DIRECTORY_SEPARATOR . "$view.php";
 	}
 
 	/**
@@ -461,7 +484,7 @@ final class LoadAdmin extends AdminPages {
 	 * @param string $template The template file name.
 	 */
 	public function get_template_location( $template ) {
-		return $this->get_view_location( 'template' . DIRECTORY_SEPARATOR . $template );
+		return $this->get_view_location( 'template' . \DIRECTORY_SEPARATOR . $template );
 	}
 
 	/**
@@ -520,8 +543,8 @@ final class LoadAdmin extends AdminPages {
 		unset( $args['content'] );
 		$parts = [];
 
-		foreach ( $args as $type => $value ) :
-			switch ( $type ) :
+		foreach ( $args as $type => $value ) {
+			switch ( $type ) {
 				case 'class':
 				case 'title':
 				case 'rel':
@@ -535,7 +558,7 @@ final class LoadAdmin extends AdminPages {
 
 				case 'url':
 					if ( '#' !== $value )
-						$parts[] = 'href="' . \esc_attr( \esc_url_raw( $value ) ) . '"';
+						$parts[] = 'href="' . \esc_attr( \sanitize_url( $value ) ) . '"';
 					break;
 
 				case 'download':
@@ -551,12 +574,8 @@ final class LoadAdmin extends AdminPages {
 					foreach ( $value as $k => $v ) {
 						$parts[] = sprintf( 'data-%s="%s"', \esc_attr( $k ), \esc_attr( $v ) );
 					}
-					break;
-
-				default:
-					break;
-			endswitch;
-		endforeach;
+			}
+		}
 
 		return sprintf( '<a %s>%s</a>', implode( ' ', $parts ), \esc_html( $content ) );
 	}
@@ -589,17 +608,38 @@ final class LoadAdmin extends AdminPages {
 	 * Generates software API My Account page HTML link.
 	 *
 	 * @since 1.0.0
+	 * @since 2.6.2 Is now public
 	 *
+	 * @param array $args optional, the link argument modifications : {
+	 *    string url
+	 *    string target
+	 *    string class
+	 *    string title
+	 *    string content
+	 * }
 	 * @return string The My Account API URL.
 	 */
-	protected function get_my_account_link() {
-		return $this->get_link( [
-			'url'     => $this->get_activation_url( 'my-account/' ),
-			'target'  => '_blank',
-			'class'   => '',
-			'title'   => \esc_attr__( 'Go to My Account', 'the-seo-framework-extension-manager' ),
-			'content' => \esc_html__( 'My Account', 'the-seo-framework-extension-manager' ),
-		] );
+	public function get_my_account_link( $args = [] ) {
+
+		if ( 'wcm' === $this->get_api_endpoint_type() ) {
+			$defaults = [
+				'url'     => 'https://woocommerce.com/my-dashboard/',
+				'target'  => '_blank',
+				'class'   => '',
+				'title'   => \esc_attr__( 'Go to WooCommerce.com dashboard', 'the-seo-framework-extension-manager' ),
+				'content' => \esc_html__( 'WooCommerce.com Dashboard', 'the-seo-framework-extension-manager' ),
+			];
+		} else {
+			$defaults = [
+				'url'     => $this->get_activation_url( 'my-account/' ),
+				'target'  => '_blank',
+				'class'   => '',
+				'title'   => \esc_attr__( 'Go to My Account', 'the-seo-framework-extension-manager' ),
+				'content' => \esc_html__( 'My Account', 'the-seo-framework-extension-manager' ),
+			];
+		}
+
+		return $this->get_link( array_merge( $defaults, $args ) );
 	}
 
 	/**
@@ -608,28 +648,49 @@ final class LoadAdmin extends AdminPages {
 	 * @since 1.0.0
 	 * @since 2.0.0 Now goes by Private/Public
 	 *
-	 * @param string $type The support link type. Accepts 'privte' or anything else for public.
+	 * @param string $type The support link type. Accepts 'private', 'wcm', or anything else for public.
 	 * @param bool   $icon Whether to show a heart/star after the button text.
 	 * @return string The Support Link.
 	 */
 	public function get_support_link( $type = 'public', $icon = true ) {
 
-		if ( 'private' === $type ) {
-			$url = 'https://premium.theseoframework.com/support/';
+		switch ( $type ) {
+			case 'private':
+				$url = 'https://premium.theseoframework.com/support/';
 
-			$title = \__( 'Get support via mail', 'the-seo-framework-extension-manager' );
-			$text  = \__( 'Private Support', 'the-seo-framework-extension-manager' );
+				$title = \__( 'Get support via mail', 'the-seo-framework-extension-manager' );
+				$text  = \__( 'Private Support', 'the-seo-framework-extension-manager' );
 
-			$class  = 'tsfem-button';
-			$class .= $icon ? ' tsfem-button-star' : '';
-		} else {
-			$url = 'https://github.com/sybrew/The-SEO-Framework-Extension-Manager/issues/new/choose';
+				$class  = 'tsfem-button';
+				$class .= $icon ? ' tsfem-button-star' : '';
+				break;
+			case 'public':
+				$url = 'https://github.com/sybrew/The-SEO-Framework-Extension-Manager/issues/new/choose';
 
-			$title = \__( 'File an issue with us', 'the-seo-framework-extension-manager' );
-			$text  = \__( 'Public Support', 'the-seo-framework-extension-manager' );
+				$title = \__( 'File an issue with us', 'the-seo-framework-extension-manager' );
+				$text  = \__( 'Public Support', 'the-seo-framework-extension-manager' );
 
-			$class  = 'tsfem-button';
-			$class .= $icon ? ' tsfem-button-love' : '';
+				$class  = 'tsfem-button';
+				$class .= $icon ? ' tsfem-button-love' : '';
+				break;
+			case 'wcm-manage':
+				$url = 'https://woocommerce.com/my-account/my-subscriptions/';
+
+				$title = \__( 'Manage your subscription via WooCommerce.com', 'the-seo-framework-extension-manager' );
+				$text  = \__( 'Manage Subscription', 'the-seo-framework-extension-manager' );
+
+				$class  = 'tsfem-button';
+				$class .= $icon ? ' tsfem-button-external' : '';
+				break;
+			case 'wcm':
+				$url = 'https://premium.theseoframework.com/support/';
+
+				$title = \__( 'Get support via WooCommerce.com', 'the-seo-framework-extension-manager' );
+				$text  = \__( 'Get Plugin Support', 'the-seo-framework-extension-manager' );
+
+				$class  = 'tsfem-button';
+				$class .= $icon ? ' tsfem-button-external' : '';
+				break;
 		}
 
 		return $this->get_link( [
@@ -658,7 +719,7 @@ final class LoadAdmin extends AdminPages {
 		$slug       = \sanitize_key( $slug );
 		$capability = \sanitize_key( $capability );
 
-		if ( ! $slug || ! \current_user_can( $capability ) )
+		if ( empty( $slug ) || ! \current_user_can( $capability ) )
 			return false;
 
 		static $parent_set = false;
@@ -666,7 +727,9 @@ final class LoadAdmin extends AdminPages {
 
 		if ( ! $parent_set ) {
 			// Set parent slug.
-			\tsf()->add_menu_link();
+			\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+				? \tsf()->admin()->menu()->register_top_menu_page()
+				: \tsf()->add_menu_link();
 			$parent_set = true;
 		}
 
@@ -674,22 +737,15 @@ final class LoadAdmin extends AdminPages {
 			return $set[ $slug ];
 
 		// Add arbitrary menu contents to known menu slug.
-		$menu = [
-			'parent_slug' => \tsf()->seo_settings_page_slug,
-			'page_title'  => '1',
-			'menu_title'  => '1',
-			'capability'  => $capability,
-			'menu_slug'   => $slug,
-			'callback'    => '__return_empty_string',
-		];
-
 		return $set[ $slug ] = (bool) \add_submenu_page(
-			$menu['parent_slug'],
-			$menu['page_title'],
-			$menu['menu_title'],
-			$menu['capability'],
-			$menu['menu_slug'],
-			$menu['callback']
+			\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+				? \tsf()->admin()->menu()->get_top_menu_args()['menu_slug'] // parent_slug
+				: \tsf()->seo_settings_page_slug,
+			'1', // page_title
+			'1', // menu_title
+			$capability,
+			$slug,
+			'__return_empty_string', // callback
 		);
 	}
 
@@ -714,7 +770,7 @@ final class LoadAdmin extends AdminPages {
 	 *
 	 * @since 1.0.0
 	 * @since 1.5.1 Added "already activated" tests to prevent "x was already defined" errors.
-	 * @since 2.0.0 Now checks for the TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS constant.
+	 * @since 2.0.0 Now checks for the \TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS constant.
 	 *
 	 * @param array $options The form/request input options.
 	 * @param bool  $ajax    Whether this is an AJAX request.
@@ -729,11 +785,11 @@ final class LoadAdmin extends AdminPages {
 		$slug = \sanitize_key( $options['extension'] );
 
 		// PHP 7 please.
-		if ( \array_key_exists( $slug, (array) TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS ) ) {
+		if ( \array_key_exists( $slug, (array) \TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS ) ) {
 			$ajax or $this->register_extension_state_change_notice( 10013, $slug );
 			return $ajax ? $this->get_ajax_notice( false, 10013 ) : false;
 		}
-		if ( \in_array( $slug, (array) TSF_EXTENSION_MANAGER_HIDDEN_EXTENSIONS, true ) ) {
+		if ( \in_array( $slug, (array) \TSF_EXTENSION_MANAGER_HIDDEN_EXTENSIONS, true ) ) {
 			$ajax or $this->register_extension_state_change_notice( 10014, $slug );
 			return $ajax ? $this->get_ajax_notice( false, 10014 ) : false;
 		}
@@ -747,8 +803,8 @@ final class LoadAdmin extends AdminPages {
 		$checksum = Extensions::get( 'extensions_checksum' );
 		$result   = $this->validate_extensions_checksum( $checksum );
 
-		if ( true !== $result ) :
-			switch ( $result ) :
+		if ( true !== $result ) {
+			switch ( $result ) {
 				case -1:
 					// No checksum found.
 					$ajax or $this->set_error_notice( [ 10001 => '' ] );
@@ -763,8 +819,8 @@ final class LoadAdmin extends AdminPages {
 					// Method mismatch error. Unknown error.
 					$ajax or $this->set_error_notice( [ 10003 => '' ] );
 					return $ajax ? $this->get_ajax_notice( false, 10003 ) : false;
-			endswitch;
-		endif;
+			}
+		}
 
 		$status = Extensions::validate_extension_activation();
 
@@ -772,7 +828,7 @@ final class LoadAdmin extends AdminPages {
 
 		if ( $status['success'] ) :
 			if ( 2 === $status['case'] ) { // Extension and license == Premium/Essentials OK.
-				switch ( $this->validate_remote_subscription_license() ) :
+				switch ( $this->validate_remote_subscription_license() ) {
 					case 6: // Enterprise.
 					case 5: // Premium.
 					case 4: // Essentials.
@@ -788,7 +844,7 @@ final class LoadAdmin extends AdminPages {
 					default: // ???
 						$ajax or $this->set_error_notice( [ 10004 => '' ] );
 						return $ajax ? $this->get_ajax_notice( false, 10004 ) : false;
-				endswitch;
+				}
 			}
 
 			$test = $this->test_extension( $slug, $ajax );
@@ -808,7 +864,7 @@ final class LoadAdmin extends AdminPages {
 			}
 		endif;
 
-		switch ( $status['case'] ) :
+		switch ( $status['case'] ) {
 			case 1:
 				// No slug set.
 				$code = 10007;
@@ -838,7 +894,7 @@ final class LoadAdmin extends AdminPages {
 				// Unknown case.
 				$code = 10011;
 				break;
-		endswitch;
+		}
 
 		$ajax or $this->register_extension_state_change_notice( $code, $slug );
 
@@ -849,7 +905,7 @@ final class LoadAdmin extends AdminPages {
 	 * Deactivates extension based on form input.
 	 *
 	 * @since 1.0.0
-	 * @since 2.0.0 Now checks for the TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS constant.
+	 * @since 2.0.0 Now checks for the \TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS constant.
 	 *
 	 * @param array $options The form input options.
 	 * @param bool  $ajax Whether this is an AJAX request.
@@ -871,11 +927,11 @@ final class LoadAdmin extends AdminPages {
 		$slug = \sanitize_key( $options['extension'] );
 
 		// PHP 7 please.
-		if ( \array_key_exists( $slug, (array) TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS ) ) {
+		if ( \array_key_exists( $slug, (array) \TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS ) ) {
 			$ajax or $this->register_extension_state_change_notice( 11003, $slug );
 			return $ajax ? $this->get_ajax_notice( false, 11003 ) : false;
 		}
-		if ( \in_array( $slug, (array) TSF_EXTENSION_MANAGER_HIDDEN_EXTENSIONS, true ) ) {
+		if ( \in_array( $slug, (array) \TSF_EXTENSION_MANAGER_HIDDEN_EXTENSIONS, true ) ) {
 			$ajax or $this->register_extension_state_change_notice( 11004, $slug );
 			return $ajax ? $this->get_ajax_notice( false, 11004 ) : false;
 		}

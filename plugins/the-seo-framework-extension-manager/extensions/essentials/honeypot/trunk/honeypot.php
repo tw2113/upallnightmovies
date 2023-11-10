@@ -152,7 +152,7 @@ final class Core {
 		// TODO Allow user to (auto/optionally) send data to us, for us to showcase how many comments are blocked?
 		// Attach unique ID to each user sending it? Must be unique from TSFEM activation ID, though.
 		foreach ( $shuffle as $honeypot ) {
-			switch ( $honeypot ) :
+			switch ( $honeypot ) {
 				case 0:
 					$this->output_css_honeypot();
 					break;
@@ -170,7 +170,7 @@ final class Core {
 					break;
 				default:
 					break 2;
-			endswitch;
+			}
 		}
 	}
 
@@ -204,7 +204,7 @@ final class Core {
 
 		$i = 0;
 		do {
-			switch ( ++$i ) :
+			switch ( ++$i ) {
 				case 1:
 					$this->check_css_field( $approved );
 					break;
@@ -227,7 +227,7 @@ final class Core {
 
 				default:
 					break 2;
-			endswitch;
+			}
 		} while ( 'spam' !== $approved );
 
 		return $approved;
@@ -363,7 +363,7 @@ JS;
 
 		// Random 16 bit timer scale. This converts to string, but that's what we need for reliable JS output.
 		// 0x00FF is subtracted for we reserve 8 bits as unknown zero-offset in JS.
-		$random_scale = number_format( mt_rand( 1, 0xFF00 / $time ), 2, '.', '' );
+		$random_scale = number_format( mt_rand( 1, (int) ( 0xFF00 / $time ) ), 2, '.', '' );
 
 		// This converts to string, but that's what we need anyway for reliable JS output.
 		$random_time = number_format( $time * $random_scale, 2, '.', '' );
@@ -581,7 +581,7 @@ JS;
 		 * @todo make option.
 		 * @param bool $hardcore
 		 */
-		$this->hardcore = (bool) \apply_filters( 'the_seo_framework_honeypot_hardcore', ! WP_CACHE );
+		$this->hardcore = (bool) \apply_filters( 'the_seo_framework_honeypot_hardcore', ! \WP_CACHE );
 	}
 
 	/**
@@ -684,7 +684,7 @@ JS;
 	 */
 	private function get_text( $what = '' ) {
 
-		switch ( $what ) :
+		switch ( $what ) {
 			case 'js_placeholder':
 				/**
 				 * @since 1.0.0
@@ -717,13 +717,9 @@ JS;
 					\__( 'Comment for robots', 'the-seo-framework-extension-manager' )
 				);
 				break;
+		}
 
-			default:
-				$text = '';
-				break;
-		endswitch;
-
-		return $text;
+		return $text ?? '';
 	}
 
 	/**
@@ -842,7 +838,7 @@ JS;
 
 			$uid = $this->get_id() . '+' . __METHOD__ . '+' . $GLOBALS['blog_id'];
 
-			$time = $this->hardcore ? 12 * HOUR_IN_SECONDS : 5 * DAY_IN_SECONDS;
+			$time = $this->hardcore ? 12 * HOUR_IN_SECONDS : 5 * \DAY_IN_SECONDS;
 
 			/**
 			 * Set this lower if you are a prominent spam target.

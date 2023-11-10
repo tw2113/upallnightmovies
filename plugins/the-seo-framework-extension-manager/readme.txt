@@ -1,11 +1,11 @@
 === The SEO Framework - Extension Manager ===
 Contributors: Cybr
 Tags: seo, extensions, local, keyword, articles, monitor, modules, schema, honeypot, amp, title, the seo framework
-Requires at least: 5.5
-Tested up to: 6.2
+Requires at least: 5.9
+Tested up to: 6.4
 Requires PHP: 7.3.0
 Requires TSF: 4.2.8
-Stable tag: 2.6.2
+Stable tag: 2.6.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -40,6 +40,30 @@ Learn [how to contribute](https://tsf.fyi/contributing).
 Please refer to [the installation instructions on our website](https://kb.theseoframework.com/kb/how-to-install-the-extension-manager/).
 
 == Changelog ==
+
+= 2.6.3 =
+
+* November 2nd, 2023
+
+**Important release notes:**
+
+* Extension Manager now requires **PHP 7.4.0 or higher** and **WordPress 5.9 or higher**.
+* We recommend installing this update before upgrading to The SEO Framework v5.0.0 to ensure a smooth upgrade.
+
+**Feature highlights:**
+
+* Added compatibility with the upcoming TSF v5.0.0 update.
+* Added WooCommerce Marketplace UI support. You can now get a [Premium Subscription via WooCommerce Marketplace](https://woo.com/products/the-seo-framework-premium/).
+
+**Updated extensions:**
+
+* [Articles at version 2.3.0](https://theseoframework.com/extensions/articles/#changelog)
+* [Cord at version 1.1.1](https://theseoframework.com/extensions/cord/#changelog)
+* [Monitor at version 1.2.11](https://theseoframework.com/extensions/monitor/#changelog)
+
+**Detailed log:**
+
+View the [detailed v2.6.3 changelog](https://tsf.fyi/p/4123).
 
 = 2.6.2 =
 

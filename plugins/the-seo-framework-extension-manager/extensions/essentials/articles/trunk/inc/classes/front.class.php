@@ -76,14 +76,17 @@ final class Front extends Core {
 	 */
 	public function _init_articles_output() {
 
-		$tsf = static::$tsf;
+		if ( \TSF_EXTENSION_MANAGER_USE_MODERN_TSF ) {
+			if ( ! \tsf()->query()->is_singular() || \tsf()->query()->utils()->is_query_exploited() ) return;
+		} else {
+			if ( ! \tsf()->is_singular() || \tsf()->is_query_exploited() ) return;
+		}
 
-		if ( ! $tsf->is_singular() || $tsf->is_query_exploited() ) return;
+		$post_type = \TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+			? \tsf()->query()->get_post_type_real_id()
+			: \tsf()->get_post_type_real_ID();
 
-		$post_type = $tsf->get_post_type_real_ID();
-		$settings  = $this->get_option( 'post_types' );
-
-		if ( empty( $settings[ $post_type ]['enabled'] ) ) return;
+		if ( empty( $this->get_option( 'post_types' )[ $post_type ]['enabled'] ) ) return;
 
 		if ( $this->is_amp() ) {
 			// Initialize output in The SEO Framework's front-end AMP meta object.
@@ -122,10 +125,10 @@ final class Front extends Core {
 		if ( isset( $is_amp ) )
 			return $is_amp;
 
-		if ( \function_exists( '\\is_amp_endpoint' ) ) {
+		if ( \function_exists( 'is_amp_endpoint' ) ) {
 			$is_amp = \is_amp_endpoint();
 		} elseif ( \defined( 'AMP_QUERY_VAR' ) ) {
-			$is_amp = \get_query_var( AMP_QUERY_VAR, false ) !== false;
+			$is_amp = \get_query_var( \AMP_QUERY_VAR, false ) !== false;
 		} else {
 			$is_amp = false;
 		}
@@ -155,7 +158,7 @@ final class Front extends Core {
 	 */
 	private function invalidate( $what = 'both' ) {
 
-		switch ( $what ) :
+		switch ( $what ) {
 			case 'both':
 				$this->is_json_valid['amp'] = $this->is_json_valid['nonamp'] = false;
 				break;
@@ -166,8 +169,7 @@ final class Front extends Core {
 
 			case 'nonamp':
 				$this->is_json_valid['nonamp'] = false;
-				break;
-		endswitch;
+		}
 	}
 
 	/**
@@ -256,16 +258,27 @@ final class Front extends Core {
 		);
 
 		if ( $data ) {
-			$options  = 0;
-			$options |= JSON_UNESCAPED_SLASHES;
-			$options |= static::$tsf->script_debug ? JSON_PRETTY_PRINT : 0;
+			// akin to The_SEO_Framework\Data\Filter\Escape::json_encode_html
+			$schema = json_encode(
+				$data,
+				\JSON_UNESCAPED_SLASHES
+				| \JSON_HEX_TAG
+				| \JSON_HEX_APOS
+				| \JSON_HEX_QUOT
+				| \JSON_HEX_AMP
+				| \JSON_UNESCAPED_UNICODE
+				| \JSON_INVALID_UTF8_IGNORE
+				| ( \SCRIPT_DEBUG ? \JSON_PRETTY_PRINT : 0 ),
+			);
 
-			return sprintf( '<script type="application/ld+json">%s</script>', json_encode( $data, $options ) ) . "\n";
+			return sprintf(
+				'<script type="application/ld+json">%s</script>',
+				$schema
+			) . "\n";
 		}
 
 		return '';
 	}
-
 
 	/**
 	 * Generates Article data.
@@ -368,6 +381,7 @@ final class Front extends Core {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.0 Added TSF v3.0 compat.
+	 * @since 2.3.0 Now always uses the canonical URL.
 	 *
 	 * @requiredSchema Never
 	 * @ignoredSchema nonAMP
@@ -378,7 +392,7 @@ final class Front extends Core {
 		if ( ! $this->is_json_valid() )
 			return [];
 
-		$url = static::$tsf->get_current_permalink();
+		$url = \tsf()->get_canonical_url();
 
 		if ( ! $url ) {
 			$this->invalidate( 'amp' );
@@ -413,15 +427,13 @@ final class Front extends Core {
 		if ( ! $this->is_json_valid() )
 			return [];
 
-		$id  = $this->get_current_id();
-		$tsf = static::$tsf;
+		$id = $this->get_current_id();
 
-		$title = $tsf->get_raw_generated_title( [
-			'id'       => $id,
-			'taxonomy' => '',
-		] );
+		$title = \TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+			? \tsf()->title()->get_bare_generated_title( [ 'id' => $id ] )
+			: \tsf()->get_raw_generated_title( [ 'id' => $id ] );
 
-		// Does not consider UTF-8 support. However, the regex does.
+		// This does not consider UTF-8 support. However, the regex that will always run will.
 		if ( \strlen( $title ) > 110 ) {
 			preg_match( '/.{0,110}([^\P{Po}\'\"]|\p{Z}|$){1}/su', trim( $title ), $matches );
 			$title = isset( $matches[0] ) ? ( $matches[0] ?: '' ) : '';
@@ -434,7 +446,7 @@ final class Front extends Core {
 		}
 
 		return [
-			'headline' => $tsf->escape_title( $title ),
+			'headline' => $title,
 		];
 	}
 
@@ -488,7 +500,7 @@ final class Front extends Core {
 
 		// TODO: Do we want to take images from the content? Users have complained about this...
 		// ... We'd have to implement (and revoke) a filter, however.
-		foreach ( static::$tsf->get_image_details( null, false, 'schema', true ) as $image ) {
+		foreach ( \tsf()->get_image_details( null, false, 'schema' ) as $image ) {
 
 			if ( ! $image['url'] ) continue;
 
@@ -586,7 +598,7 @@ final class Front extends Core {
 
 		$post = $this->get_current_post();
 
-		if ( ! $post ) {
+		if ( empty( $post->post_author ) ) {
 			$this->invalidate( 'amp' );
 			return [];
 		}
@@ -602,14 +614,17 @@ final class Front extends Core {
 		$data = [
 			'author' => [
 				'@type' => 'Person',
-				'name'  => \esc_attr( $name ),
+				'name'  => \esc_html( $name ),
 			],
 		];
 
-		$url = \esc_url( static::$tsf->get_author_canonical_url( $post->post_author ) );
+		// TODO remove me? See comment at The_SEO_Framework\Meta\Schema\Entities\Author
+		$url = \TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+			? \tsf()->uri()->get_author_url( $post->post_author )
+			: \tsf()->get_author_canonical_url( $post->post_author );
 
 		if ( $url )
-			$data['author']['url'] = $url;
+			$data['author']['url'] = \esc_url( $url );
 
 		return $data;
 	}
@@ -637,15 +652,20 @@ final class Front extends Core {
 			return [];
 		}
 
-		$tsf = static::$tsf;
-
 		/**
 		 * @since 1.0.0
 		 * @param string $name The articles publisher name.
 		 */
-		$name = (string) \apply_filters( 'the_seo_framework_articles_name', $tsf->get_option( 'knowledge_name' ) ) ?: $tsf->get_blogname();
+		$name = (string) \apply_filters(
+			'the_seo_framework_articles_name',
+			\tsf()->get_option( 'knowledge_name' )
+		) ?: (
+			\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+				? \tsf()->data()->blog()->get_public_blog_name()
+				: \tsf()->get_blogname()
+		);
 
-		$_default_img_id = (int) $this->get_option( 'logo' )['id'] ?: (int) $tsf->get_option( 'knowledge_logo_id' ) ?: \get_option( 'site_icon' );
+		$_default_img_id = (int) $this->get_option( 'logo' )['id'] ?: (int) \tsf()->get_option( 'knowledge_logo_id' ) ?: \get_option( 'site_icon' );
 		/**
 		 * @since 1.0.0
 		 * @param int $img_id The image ID to use for the logo.
@@ -692,8 +712,8 @@ final class Front extends Core {
 				'logo'  => [
 					'@type'  => 'ImageObject',
 					'url'    => \esc_url( $url, [ 'https', 'http' ] ),
-					'width'  => abs( filter_var( $w, FILTER_SANITIZE_NUMBER_INT ) ),
-					'height' => abs( filter_var( $h, FILTER_SANITIZE_NUMBER_INT ) ),
+					'width'  => abs( filter_var( $w, \FILTER_SANITIZE_NUMBER_INT ) ),
+					'height' => abs( filter_var( $h, \FILTER_SANITIZE_NUMBER_INT ) ),
 				],
 			],
 		];
@@ -717,7 +737,7 @@ final class Front extends Core {
 		if ( ! $this->is_json_valid() )
 			return [];
 
-		$description = \esc_attr( static::$tsf->get_description() );
+		$description = \esc_attr( \tsf()->get_description() );
 
 		if ( ! $description ) {
 			// Optional.
@@ -749,7 +769,7 @@ final class Front extends Core {
 		$_resized_file = \image_make_intermediate_size( $_file, $size['width'], $size['height'], false );
 
 		if ( $_resized_file ) {
-			if ( ! \function_exists( '\\wp_generate_attachment_metadata' ) )
+			if ( ! \function_exists( 'wp_generate_attachment_metadata' ) )
 				require_once ABSPATH . 'wp-admin/includes/image.php';
 
 			$_data   = \wp_generate_attachment_metadata( $attachment_id, $_file );

@@ -411,7 +411,7 @@ class Panes extends API {
 						$header = Extensions::get( 'ajax_get_extension_header', $slug );
 
 						if ( ! empty( $header['MenuSlug'] ) )
-							$this->_set_ajax_menu_link( $header['MenuSlug'], TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE );
+							$this->_set_ajax_menu_link( $header['MenuSlug'], \TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE );
 					endif;
 
 					$html = Extensions::get( 'ajax_get_extension_desc_footer', $slug );
@@ -478,7 +478,7 @@ class Panes extends API {
 					'expected' => $options_hash,
 					'actual'   => $options_valid
 						? $options_hash
-						: substr( $this->hash_options( \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] ) ), -4 ),
+						: substr( $this->hash_options( \get_option( \TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] ) ), -4 ),
 				],
 			],
 		] );
@@ -612,30 +612,41 @@ class Panes extends API {
 	 */
 	protected function get_support_buttons() {
 
-		$this->get_verification_codes( $_instance, $bits );
-
-		$title = sprintf( '<h4 class=tsfem-support-title>%s</h4>', \esc_html__( 'Get support', 'the-seo-framework-extension-manager' ) );
-
-		Layout::initialize( 'link', $_instance, $bits );
-
-		$buttons     = [];
-		$description = [];
-
-		$buttons[1]     = Layout::get( 'public-support-button' );
-		$description[1] = \__( 'Inquire your question publicly so more people will benefit from our support.', 'the-seo-framework-extension-manager' );
-
-		$buttons[2]     = Layout::get( 'private-support-button' );
-		$description[2] = \__( 'Questions about your account should be inquired via Private Support.', 'the-seo-framework-extension-manager' );
-
-		Layout::reset();
-
+		$title   = '';
 		$content = '';
-		foreach ( $buttons as $key => $button ) {
-			$content .= sprintf(
-				'<div class=tsfem-cp-buttons>%s %s</div>',
-				$button,
-				HTML::make_inline_question_tooltip( $description[ $key ] )
+
+		if ( 'wcm' === $this->get_api_endpoint_type() ) {
+			$title = sprintf(
+				'<h4 class=tsfem-support-title>%s %s</h4>',
+				\esc_html__( 'Your WooCommerce.com subscription', 'the-seo-framework-extension-manager' ),
+				HTML::make_inline_question_tooltip( \__( 'Get support for The SEO Framework and manage your subscription via WooCommerce.com.', 'the-seo-framework-extension-manager' ) )
 			);
+
+			$buttons = [
+				$this->get_support_link( 'wcm' ),
+				$this->get_support_link( 'wcm-manage' ),
+			];
+
+			foreach ( $buttons as $button )
+				$content .= sprintf( '<div class=tsfem-cp-buttons>%s</div>', $button );
+		} else {
+			$buttons = [
+				[
+					'button' => $this->get_support_link( 'public' ),
+					'tt'     => \__( 'Inquire your question publicly so more people will benefit from our support.', 'the-seo-framework-extension-manager' ),
+				],
+				[
+					'button' => $this->get_support_link( 'private' ),
+					'tt'     => \__( 'Questions about your account should be inquired via Private Support.', 'the-seo-framework-extension-manager' ),
+				],
+			];
+			foreach ( $buttons as $button ) {
+				$content .= sprintf(
+					'<div class=tsfem-cp-buttons>%s %s</div>',
+					$button['button'],
+					HTML::make_inline_question_tooltip( $button['tt'] )
+				);
+			}
 		}
 
 		return sprintf(

@@ -7,6 +7,11 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	is_headless,
+	redirect,
+};
+
 /**
  * Verify integrity and sets up API secret.
  *
@@ -17,7 +22,7 @@ namespace TSF_Extension_Manager\Extension\Monitor;
 	\tsfem()->_init_final_static_extension_api_access( __NAMESPACE__ . '\\Admin', $_instance, $bits ) ?: false
 );
 
-if ( false === TSFEM_E_MONITOR_API_ACCESS_KEY )
+if ( false === \TSFEM_E_MONITOR_API_ACCESS_KEY )
 	return;
 
 /**
@@ -137,7 +142,7 @@ final class Admin extends Api {
 		/**
 		 * @see trait TSF_Extension_Manager\Extension_Views
 		 */
-		$this->view_location_base = TSFEM_E_MONITOR_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
+		$this->view_location_base = \TSFEM_E_MONITOR_DIR_PATH . 'views' . \DIRECTORY_SEPARATOR;
 
 		$this->nonce_name = 'tsfem_e_monitor_nonce_name';
 		// phpcs:disable, WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
@@ -203,11 +208,11 @@ final class Admin extends Api {
 		 */
 		$this->o_index = 'monitor';
 
-		// Nothing to do here...
-		if ( \tsf()->is_headless['settings'] ) return;
+		// Nothing to do here if headless.
+		if ( is_headless( 'settings' ) ) return;
 
 		// Initialize menu links
-		\add_action( 'admin_menu', [ $this, '_init_menu' ] );
+		\add_action( 'admin_menu', [ $this, '_add_menu_link' ], 100 );
 
 		// Initialize Monitor page actions.
 		\add_action( 'admin_init', [ $this, '_load_monitor_admin_actions' ] );
@@ -229,45 +234,23 @@ final class Admin extends Api {
 	}
 
 	/**
-	 * Initializes extension menu.
-	 *
-	 * @since 1.0.0
-	 * @since 1.2.6 The extension access level is now controlled via another constant.
-	 * @uses \TSF_Extension_Manager\can_do_extension_settings()
-	 * @access private
-	 */
-	public function _init_menu() {
-		if ( \TSF_Extension_Manager\can_do_extension_settings() )
-			\add_action( 'admin_menu', [ $this, '_add_menu_link' ], 100 );
-	}
-
-	/**
 	 * Adds menu link for monitor, when possible, underneath The SEO Framework
 	 * SEO settings.
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Added TSF v3.1 compat.
-	 * @uses \tsf()->seo_settings_page_slug.
 	 * @access private
 	 */
 	public function _add_menu_link() {
-
-		$menu = [
-			'parent_slug' => \tsf()->seo_settings_page_slug,
-			'page_title'  => 'Monitor',
-			'menu_title'  => 'Monitor',
-			'capability'  => TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
-			'menu_slug'   => $this->monitor_page_slug,
-			'callback'    => [ $this, '_init_monitor_page' ],
-		];
-
 		$this->monitor_menu_page_hook = \add_submenu_page(
-			$menu['parent_slug'],
-			$menu['page_title'],
-			$menu['menu_title'],
-			$menu['capability'],
-			$menu['menu_slug'],
-			$menu['callback']
+			\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+				? \tsf()->admin()->menu()->get_top_menu_args()['menu_slug'] // parent_slug
+				: \tsf()->seo_settings_page_slug,
+			'Monitor', // page_title
+			'Monitor', // menu_title
+			\TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
+			$this->monitor_page_slug, // menu_slug
+			[ $this, '_init_monitor_page' ] // callback
 		);
 	}
 
@@ -331,15 +314,15 @@ final class Admin extends Api {
 
 		// phpcs:disable, WordPress.Security.NonceVerification -- No data is processed in this method.
 
-		if ( empty( $_POST[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ]['nonce-action'] ) )
+		if ( empty( $_POST[ \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ]['nonce-action'] ) )
 			return;
 
-		$options = $_POST[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ];
+		$options = $_POST[ \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ];
 
 		if ( ! $this->handle_update_nonce( $options['nonce-action'], false ) )
 			return;
 
-		switch ( $options['nonce-action'] ) :
+		switch ( $options['nonce-action'] ) {
 			case $this->request_name['connect']:
 				$this->api_register_site();
 				break;
@@ -366,11 +349,10 @@ final class Admin extends Api {
 
 			default:
 				$this->set_error_notice( [ 1010101 => '' ] );
-				break;
-		endswitch;
+		}
 
-		$args = WP_DEBUG ? [ 'did-' . $options['nonce-action'] => 'true' ] : [];
-		\tsf()->admin_redirect( $this->monitor_page_slug, $args );
+		$args = \WP_DEBUG ? [ 'did-' . $options['nonce-action'] => 'true' ] : [];
+		redirect( $this->monitor_page_slug, $args );
 		exit;
 
 		// phpcs:enable, WordPress.Security.NonceVerification
@@ -406,8 +388,8 @@ final class Admin extends Api {
 			 * If this page doesn't parse the site options,
 			 * there's no need to check them on each request.
 			 */
-			if ( ! isset( $_POST[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ] )
-			|| ! \is_array( $_POST[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ] )
+			if ( ! isset( $_POST[ \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ] )
+			|| ! \is_array( $_POST[ \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $this->o_index ] )
 			) {
 				return $validated[ $key ] = false;
 			}
@@ -420,7 +402,7 @@ final class Admin extends Api {
 		if ( ! $result ) {
 			// Nonce failed. Set error notice and reload.
 			$this->set_error_notice( [ 1019001 => '' ] );
-			\tsf()->admin_redirect( $this->monitor_page_slug );
+			redirect( $this->monitor_page_slug );
 			exit;
 		}
 
@@ -504,7 +486,7 @@ final class Admin extends Api {
 						// There's possibly new data found. This should certainly be true with statistics.
 						$api = $this->api_get_remote_data( true );
 
-						switch ( $api['code'] ) :
+						switch ( $api['code'] ) {
 							case 1010602:
 							case 1010603:
 								$type = 'requires_fix';
@@ -512,8 +494,7 @@ final class Admin extends Api {
 
 							default:
 								$type = $api['success'] ? 'success' : 'failure';
-								break;
-						endswitch;
+						}
 
 						$status = [
 							'content' => [
@@ -542,7 +523,7 @@ final class Admin extends Api {
 					endif;
 				}
 
-				if ( WP_DEBUG ) {
+				if ( \WP_DEBUG ) {
 					$response = [
 						'status'   => $status,
 						'timeout'  => [
@@ -591,7 +572,7 @@ final class Admin extends Api {
 						// Crawl can be requested.
 						$api = $this->api_request_crawl( true );
 
-						switch ( $api['code'] ) :
+						switch ( $api['code'] ) {
 							case 1010504:
 								$type = 'yield_unchanged';
 								break;
@@ -603,8 +584,7 @@ final class Admin extends Api {
 
 							default:
 								$type = $api['success'] ? 'success' : 'failure';
-								break;
-						endswitch;
+						}
 
 						// Get new timeout.
 						$current_timeout = $this->get_remote_crawl_timeout();
@@ -626,7 +606,7 @@ final class Admin extends Api {
 					endif;
 				}
 
-				if ( WP_DEBUG ) {
+				if ( \WP_DEBUG ) {
 					$response = [
 						'status'   => $status,
 						'timeout'  => [
@@ -662,7 +642,10 @@ final class Admin extends Api {
 
 				if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
 					// Initialize menu hooks.
-					\tsf()->add_menu_link();
+					\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+						? \tsf()->admin()->menu()->register_top_menu_page()
+						: \tsf()->add_menu_link();
+
 					$this->_add_menu_link();
 
 					$send['html'] = $this->get_site_fix_fields();
@@ -689,7 +672,7 @@ final class Admin extends Api {
 		 */
 		$this->ui_hook = $this->monitor_menu_page_hook;
 
-		\add_action( 'tsfem_before_enqueue_scripts', [ $this, '_register_monitor_scripts' ] );
+		\add_filter( 'the_seo_framework_scripts', [ $this, '_register_monitor_scripts' ] );
 
 		$this->init_ui();
 	}
@@ -702,43 +685,42 @@ final class Admin extends Api {
 	 * @access private
 	 * @internal
 	 *
-	 * @param string $scripts The scripts builder class name.
+	 * @param array $scripts The default CSS and JS loader settings.
+	 * @return array More CSS and JS loaders.
 	 */
 	public function _register_monitor_scripts( $scripts ) {
 
-		if ( \TSF_Extension_Manager\has_run( __METHOD__ ) ) return;
-
-		$scripts::register( [
-			[
-				'id'       => 'tsfem-monitor',
-				'type'     => 'css',
-				'deps'     => [ 'tsf-tt', 'tsfem-ui' ],
-				'autoload' => true,
-				'hasrtl'   => true,
-				'name'     => 'tsfem-monitor',
-				'base'     => TSFEM_E_MONITOR_DIR_URL . 'lib/css/',
-				'ver'      => TSFEM_E_MONITOR_VERSION,
-				'inline'   => null,
-			],
-			[
-				'id'       => 'tsfem-monitor',
-				'type'     => 'js',
-				'deps'     => [ 'tsf-tt', 'tsfem-ui' ],
-				'autoload' => true,
-				'name'     => 'tsfem-monitor',
-				'base'     => TSFEM_E_MONITOR_DIR_URL . 'lib/js/',
-				'ver'      => TSFEM_E_MONITOR_VERSION,
-				'l10n'     => [
-					'name' => 'tsfem_e_monitorL10n',
-					'data' => [
-						// This won't ever run when the user can't. But, sanity.
-						'nonce'                => \TSF_Extension_Manager\can_do_extension_settings() ? \wp_create_nonce( 'tsfem-e-monitor-ajax-nonce' ) : '',
-						'remote_data_timeout'  => $this->get_remote_data_timeout(),
-						'remote_crawl_timeout' => $this->get_remote_crawl_timeout(),
-					],
+		$scripts[] = [
+			'id'       => 'tsfem-monitor',
+			'type'     => 'css',
+			'deps'     => [ 'tsf-tt', 'tsfem-ui' ],
+			'autoload' => true,
+			'hasrtl'   => true,
+			'name'     => 'tsfem-monitor',
+			'base'     => \TSFEM_E_MONITOR_DIR_URL . 'lib/css/',
+			'ver'      => \TSFEM_E_MONITOR_VERSION,
+			'inline'   => null,
+		];
+		$scripts[] = [
+			'id'       => 'tsfem-monitor',
+			'type'     => 'js',
+			'deps'     => [ 'tsf-tt', 'tsfem-ui' ],
+			'autoload' => true,
+			'name'     => 'tsfem-monitor',
+			'base'     => \TSFEM_E_MONITOR_DIR_URL . 'lib/js/',
+			'ver'      => \TSFEM_E_MONITOR_VERSION,
+			'l10n'     => [
+				'name' => 'tsfem_e_monitorL10n',
+				'data' => [
+					// This won't ever run when the user can't. But, sanity.
+					'nonce'                => \TSF_Extension_Manager\can_do_extension_settings() ? \wp_create_nonce( 'tsfem-e-monitor-ajax-nonce' ) : '',
+					'remote_data_timeout'  => $this->get_remote_data_timeout(),
+					'remote_crawl_timeout' => $this->get_remote_crawl_timeout(),
 				],
 			],
-		] );
+		];
+
+		return $scripts;
 	}
 
 	/**
@@ -749,8 +731,8 @@ final class Admin extends Api {
 	 * @return bool
 	 */
 	public function is_monitor_page() {
-		// Don't load from $_GET request.
-		return \The_SEO_Framework\memo( \tsf()->is_menu_page( $this->monitor_menu_page_hook ) );
+		return $this->monitor_menu_page_hook
+			&& ( $GLOBALS['page_hook'] ?? null ) === $this->monitor_menu_page_hook;
 	}
 
 	/**
@@ -969,7 +951,7 @@ final class Admin extends Api {
 		];
 
 		$options = [];
-		foreach ( $time_settings as $id => $args ) :
+		foreach ( $time_settings as $id => $args ) {
 			$_options = [];
 			foreach ( $args['options']['values'] as $_value ) {
 				$_options[] = vsprintf(
@@ -1008,10 +990,10 @@ final class Admin extends Api {
 					]
 				),
 			];
-		endforeach;
+		}
 
 		$_rows = '';
-		foreach ( $options as $id => $_fields ) :
+		foreach ( $options as $id => $_fields ) {
 			$_rows .= \TSF_Extension_Manager\Layout::wrap_row_content(
 				HTML::wrap_inline_tooltip( HTML::make_inline_tooltip(
 					\esc_html( $time_settings[ $id ]['title'] ),
@@ -1026,7 +1008,7 @@ final class Admin extends Api {
 				),
 				false
 			);
-		endforeach;
+		}
 
 		$content .= sprintf( '<div class="tsfem-flex-account-setting-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $_rows );
 

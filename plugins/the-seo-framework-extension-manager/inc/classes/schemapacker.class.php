@@ -456,9 +456,8 @@ final class SchemaPacker {
 
 		$value = '';
 		// Not invoking a generator. Data does not yield, but return.
-		foreach ( ( $this->pack( $schema ) ) as $k => $v ) {
+		foreach ( ( $this->pack( $schema ) ) as $v )
 			$value .= $v;
-		}
 
 		return $value;
 	}
@@ -514,20 +513,21 @@ final class SchemaPacker {
 			return $value;
 		}
 
-		switch ( $how ) :
+		switch ( $how ) {
 			case 'sanitize_key':
 				return \sanitize_key( $value );
 
 			case 'convert_to_host':
-				return parse_url( $value, PHP_URL_HOST ) ?: '';
+				return \is_string( $value ) ? ( parse_url( $value, \PHP_URL_HOST ) ?: '' ) : '';
 
 			case 'esc_url_raw':
-				return \esc_url_raw( $value, [ 'https', 'http' ] );
+			case 'sanitize_url':
+				return \is_string( $value ) ? \sanitize_url( $value, [ 'https', 'http' ] ) : '';
 
 			default:
 			case 'sanitize_text_field':
 				return \sanitize_text_field( $value );
-		endswitch;
+		}
 	}
 
 	/**
@@ -715,7 +715,7 @@ final class SchemaPacker {
 	 */
 	private function convert( $value, $to ) {
 
-		switch ( $to ) :
+		switch ( $to ) {
 			case 'string':
 				return (string) $value;
 
@@ -736,6 +736,6 @@ final class SchemaPacker {
 
 			default:
 				return $value;
-		endswitch;
+		}
 	}
 }

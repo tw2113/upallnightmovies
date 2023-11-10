@@ -7,6 +7,11 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	convert_markdown,
+	get_image_uploader_form,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -164,7 +169,7 @@ final class FormGenerator {
 			 *
 			 * @see \TSF_Extension_Manager\LoadAdmin
 			 */
-			\add_action( 'tsfem_form_do_ajax_iterations', __CLASS__ . '::_output_ajax_form_its', PHP_INT_MIN );
+			\add_action( 'tsfem_form_do_ajax_iterations', __CLASS__ . '::_output_ajax_form_its', \PHP_INT_MIN );
 
 			return static::get_ajax_target_id();
 		}
@@ -260,7 +265,7 @@ final class FormGenerator {
 
 		// phpcs:ignore, WordPress.Security.NonceVerification -- tsfem_form_prepare_ajax_iterations() is called before this, which performed user verification checks.
 		$caller = $_POST['args']['caller'];
-		$items  = preg_split( '/[\[\]]+/', $caller, -1, PREG_SPLIT_NO_EMPTY );
+		$items  = preg_split( '/[\[\]]+/', $caller, -1, \PREG_SPLIT_NO_EMPTY );
 
 		// Unset the option indexes.
 		$unset_count = $this->o_key ? 3 : 2;
@@ -372,16 +377,13 @@ final class FormGenerator {
 	 * @return void|mixed The private property.
 	 */
 	public function get( $what = '' ) {
-		switch ( $what ) :
+		switch ( $what ) {
 			case 'bits':
 				return $this->bits;
 
 			case 'max_it':
 				return $this->max_it;
-
-			default:
-				break;
-		endswitch;
+		}
 	}
 
 	/**
@@ -416,7 +418,7 @@ final class FormGenerator {
 	 */
 	private function get_form_wrap( $what, $url, $validator ) {
 
-		switch ( $what ) :
+		switch ( $what ) {
 			case 'start':
 				return vsprintf(
 					'<form action="%s" method=post id="%s" enctype=multipart/form-data class="tsfem-form%s" autocomplete=off data-form-type=other>',
@@ -429,10 +431,7 @@ final class FormGenerator {
 
 			case 'end':
 				return '</form>';
-
-			default:
-				break;
-		endswitch;
+		}
 	}
 
 	/**
@@ -467,7 +466,7 @@ final class FormGenerator {
 	 */
 	private function get_form_button( $what, $name ) {
 
-		switch ( $what ) :
+		switch ( $what ) {
 			case 'submit':
 				return vsprintf(
 					'<button type=submit name="%1$s" form="%1$s" class="tsfem-button-primary tsfem-button-upload hide-if-no-tsf-js">%2$s</button>',
@@ -476,10 +475,7 @@ final class FormGenerator {
 						\esc_html( $name ),
 					]
 				);
-
-			default:
-				break;
-		endswitch;
+		}
 	}
 
 	/**
@@ -556,7 +552,7 @@ final class FormGenerator {
 	 * Returns form ID attribute for form wrap.
 	 *
 	 * @since 1.3.0
-	 * @uses TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS
+	 * @uses \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS
 	 * @uses $this->o_index
 	 * @see TSF_Extension_Manager\Traits\Extension_Options
 	 * @uses $this->o_key
@@ -567,9 +563,9 @@ final class FormGenerator {
 	private function get_form_id() {
 
 		if ( $this->o_key ) {
-			$k = sprintf( '%s[%s][%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index, $this->o_key );
+			$k = sprintf( '%s[%s][%s]', \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index, $this->o_key );
 		} else {
-			$k = sprintf( '%s[%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index );
+			$k = sprintf( '%s[%s]', \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index );
 		}
 
 		return $k;
@@ -579,7 +575,7 @@ final class FormGenerator {
 	 * Returns field name and ID attributes for form fields.
 	 *
 	 * @since 1.3.0
-	 * @uses TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS
+	 * @uses \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS
 	 * @uses $this->o_index
 	 * @see TSF_Extension_Manager\Traits\Extension_Options
 	 * @uses $this->o_key
@@ -589,9 +585,9 @@ final class FormGenerator {
 	private function get_field_id() {
 
 		if ( $this->o_key ) {
-			$k = sprintf( '%s[%s][%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index, $this->o_key );
+			$k = sprintf( '%s[%s][%s]', \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index, $this->o_key );
 		} else {
-			$k = sprintf( '%s[%s]', TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index );
+			$k = sprintf( '%s[%s]', \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index );
 		}
 
 		// Correct the length of bits, split them and put them in the right order.
@@ -618,7 +614,7 @@ final class FormGenerator {
 	 * When $what is not 'full', it will omit the option namespaces.
 	 *
 	 * @since 1.3.0
-	 * @uses TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS
+	 * @uses \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS
 	 * @uses $this->o_index
 	 * @see TSF_Extension_Manager\Traits\Extension_Options
 	 * @uses $this->o_key
@@ -630,7 +626,7 @@ final class FormGenerator {
 
 		$k = [];
 		if ( 'full' === $what ) {
-			$k[] = TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS;
+			$k[] = \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS;
 			$k[] = $this->o_index;
 		}
 
@@ -901,7 +897,7 @@ final class FormGenerator {
 
 		$this->clean_desc_index( $args['_desc'] );
 
-		switch ( $args['_type'] ) :
+		switch ( $args['_type'] ) {
 			case 'multi':
 				return $this->create_fields_multi( $args );
 
@@ -963,10 +959,7 @@ final class FormGenerator {
 
 			case 'image':
 				return $this->create_image_field( $args );
-
-			default:
-				return '';
-		endswitch;
+		}
 
 		return '';
 	}
@@ -1152,9 +1145,7 @@ final class FormGenerator {
 	 */
 	private function fields_iterator( $args, $type = 'echo' ) {
 
-		$o = '';
-
-		switch ( $type ) :
+		switch ( $type ) {
 			case 'echo':
 				$this->output_fields_iterator( $args );
 				break;
@@ -1164,14 +1155,10 @@ final class FormGenerator {
 				break;
 
 			case 'get':
-				$o = $this->get_fields_iterator( $args );
-				break;
+				return $this->get_fields_iterator( $args );
+		}
 
-			default:
-				break;
-		endswitch;
-
-		return $o;
+		return '';
 	}
 
 	/**
@@ -1455,7 +1442,7 @@ final class FormGenerator {
 	 */
 	private function create_fields_sub_description( $description, $use_markdown ) {
 
-		$description = $use_markdown ? \tsf()->convert_markdown( $description ) : $description;
+		$description = $use_markdown ? convert_markdown( $description ) : $description;
 
 		// make_inline_tooltip escapes.
 		return HTML::wrap_inline_tooltip( HTML::make_inline_tooltip(
@@ -1479,10 +1466,10 @@ final class FormGenerator {
 	 */
 	private function create_fields_description( $description, $use_markdown ) {
 
-		if ( is_scalar( $description ) ) {
+		if ( \is_scalar( $description ) ) {
 			return sprintf(
 				'<span class=tsfem-form-option-description>%s</span>',
-				$use_markdown ? \tsf()->convert_markdown( \esc_html( $description ) ) : \esc_html( $description )
+				$use_markdown ? convert_markdown( \esc_html( $description ) ) : \esc_html( $description )
 			);
 		} else {
 			$ret = '';
@@ -1580,7 +1567,7 @@ final class FormGenerator {
 		$ret = [];
 
 		foreach ( $data as $k => $v ) {
-			if ( ! is_scalar( $v ) ) {
+			if ( ! \is_scalar( $v ) ) {
 				$ret[] = sprintf(
 					'data-%s="%s"',
 					strtolower( preg_replace(
@@ -1588,7 +1575,7 @@ final class FormGenerator {
 						'-$1',
 						preg_replace( '/[^a-z0-9_\-]/i', '', $k )
 					) ), // dash case.
-					htmlspecialchars( json_encode( $v, JSON_UNESCAPED_SLASHES ), ENT_COMPAT, 'UTF-8' )
+					htmlspecialchars( json_encode( $v, \JSON_UNESCAPED_SLASHES ), \ENT_COMPAT, 'UTF-8' )
 				);
 			} else {
 				$ret[] = sprintf(
@@ -1628,7 +1615,7 @@ final class FormGenerator {
 	 */
 	private function create_input_field_by_type( $args ) {
 
-		switch ( $args['_type'] ) :
+		switch ( $args['_type'] ) {
 			case 'date':
 			case 'number':
 			case 'range':
@@ -1667,7 +1654,7 @@ final class FormGenerator {
 				if ( isset( $args['_pattern'] ) )
 					$s_pattern = $this->get_fields_pattern( $args['_pattern'] );
 				break;
-		endswitch;
+		}
 
 		// s = Escaped.
 		$s_type = \esc_attr( $args['_type'] );
@@ -1782,12 +1769,12 @@ final class FormGenerator {
 
 		static $_level = 0;
 
-		if ( null !== $selected && '' !== $selected && [] !== $selected ) :
+		if ( null !== $selected && '' !== $selected && [] !== $selected ) {
 
 			// Convert $selected to array.
 			$a_selected = (array) $selected;
 
-			foreach ( $select as $args ) :
+			foreach ( $select as $args ) {
 
 				if ( $_level ) {
 					// Multilevel isn't supported by Chrome, for instance, yet.
@@ -1810,9 +1797,9 @@ final class FormGenerator {
 				} else {
 					yield sprintf( '<option value="%s"%s>%s</option>', $args[0], $s_selected, $args[1] );
 				}
-			endforeach;
-		else :
-			foreach ( $select as $args ) :
+			}
+		} else {
+			foreach ( $select as $args ) {
 
 				if ( $_level ) {
 					// Multilevel isn't supported by Chrome, for instance, yet.
@@ -1831,8 +1818,8 @@ final class FormGenerator {
 				} else {
 					yield sprintf( '<option value="%s">%s</option>', $args[0], $args[1] );
 				}
-			endforeach;
-		endif;
+			}
+		}
 	}
 
 	/**
@@ -1946,8 +1933,10 @@ final class FormGenerator {
 
 		yield '<ul class=tsfem-form-multi-a11y-wrap>';
 
-		foreach ( $select as $args ) :
+		foreach ( $select as $args ) {
+
 			$this->iterate();
+
 			if ( isset( $args[2] ) ) {
 				// Level up.
 				yield sprintf( '<li><strong>%s</strong></li>', $args[1] );
@@ -1988,7 +1977,7 @@ final class FormGenerator {
 					);
 				}
 			}
-		endforeach;
+		}
 
 		yield '</ul>';
 	}
@@ -2001,7 +1990,6 @@ final class FormGenerator {
 	 *
 	 * @since 1.3.0
 	 * @see TSF_Extension_Manager\Traits\UI
-	 * @see TSF_Extension_Manager\Traits\UI\register_media_scripts()
 	 * @see method TSF_Extension_Manager\AJAX\_wp_ajax_crop_image() The AJAX cropper callback.
 	 * @uses \get_upload_iframe_src()
 	 *
@@ -2071,7 +2059,7 @@ final class FormGenerator {
 								$s_id_value,
 							]
 						),
-						\The_SEO_Framework\Interpreters\Form::get_image_uploader_form( [
+						get_image_uploader_form( [
 							'id'           => $s_field_id,
 							'button_class' => [
 								'set'    => [

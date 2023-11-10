@@ -46,7 +46,7 @@ function _do_critical_core_upgrade( $upgrader ) {
 	// phpcs:disable -- Example with unused variable.
 	$version = $upgrader->get_current_version( 'core' );
 
-	switch ( true ) :
+	switch ( true ) {
 		case $version < 2500:
 			$upgrader->_register_upgrade(
 				'core',
@@ -59,7 +59,6 @@ function _do_critical_core_upgrade( $upgrader ) {
 			// no break, do moar upgrades;
 
 		default:
-			$upgrader->_register_upgrade( 'core', TSF_EXTENSION_MANAGER_DB_VERSION, '\\__return_true' );
-			break;
-	endswitch;
+			$upgrader->_register_upgrade( 'core', \TSF_EXTENSION_MANAGER_DB_VERSION, '__return_true' );
+	}
 }

@@ -7,6 +7,10 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	is_headless,
+};
+
 if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
@@ -50,7 +54,7 @@ final class Admin extends Core {
 	 * @since 1.0.0
 	 * @var string Page ID/Slug
 	 */
-	protected $local_page_slug;
+	protected $local_page_slug = 'theseoframework-local';
 
 	/**
 	 * Constructor, initializes WordPress actions.
@@ -59,20 +63,8 @@ final class Admin extends Core {
 	 */
 	private function construct() {
 
-		// Sets local page slug.
-		$this->local_page_slug = 'theseoframework-local';
-
-		// Load admin actions.
-		if ( ! \tsf()->is_headless['settings'] )
-			$this->load_admin_actions();
-	}
-
-	/**
-	 * Loads admin actions.
-	 *
-	 * @since 1.0.0
-	 */
-	private function load_admin_actions() {
+		// Nothing to do here if headless.
+		if ( is_headless( 'settings' ) ) return;
 
 		// Initialize menu links
 		\add_action( 'admin_menu', [ $this, '_init_menu' ] );
@@ -100,27 +92,18 @@ final class Admin extends Core {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.0 Added TSF v3.1 compat.
-	 * @uses \tsf()->seo_settings_page_slug.
 	 * @access private
 	 */
 	public function _add_menu_link() {
-
-		$menu = [
-			'parent_slug' => \tsf()->seo_settings_page_slug,
-			'page_title'  => 'Local',
-			'menu_title'  => 'Local',
-			'capability'  => TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
-			'menu_slug'   => $this->local_page_slug,
-			'callback'    => [ $this, '_output_local_settings_page' ],
-		];
-
 		$this->local_menu_page_hook = \add_submenu_page(
-			$menu['parent_slug'],
-			$menu['page_title'],
-			$menu['menu_title'],
-			$menu['capability'],
-			$menu['menu_slug'],
-			$menu['callback']
+			\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+				? \tsf()->admin()->menu()->get_top_menu_args()['menu_slug'] // parent_slug
+				: \tsf()->seo_settings_page_slug,
+			'Local', // page_title
+			'Local', // menu_title
+			\TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
+			$this->local_page_slug, // menu_slug
+			[ $this, '_output_local_settings_page' ] // callback
 		);
 	}
 
@@ -198,8 +181,8 @@ final class Admin extends Core {
 	 * @return bool
 	 */
 	public function is_local_page() {
-		// Don't load from $_GET request.
-		return \The_SEO_Framework\memo( \tsf()->is_menu_page( $this->local_menu_page_hook ) );
+		return $this->local_menu_page_hook
+			&& ( $GLOBALS['page_hook'] ?? null ) === $this->local_menu_page_hook;
 	}
 
 	/**

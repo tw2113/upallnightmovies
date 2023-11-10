@@ -7,6 +7,10 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	clamp_sentence,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -51,16 +55,14 @@ final class Trends {
 
 		\tsfem()->_verify_instance( $instance, $bits[1] ) or die;
 
-		switch ( $type ) :
+		switch ( $type ) {
 			case 'feed':
 				return static::prototype_trends();
-
 			case 'ajax_feed':
 				return static::prototype_trends( true );
+		}
 
-			default:
-				return '';
-		endswitch;
+		return '';
 	}
 
 	/**
@@ -109,55 +111,47 @@ final class Trends {
 
 		$xml = \wp_remote_retrieve_body( $request );
 		// Add bitwise operators.
-		$options = LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_NOWARNING | LIBXML_NONET | LIBXML_NSCLEAN;
+		$options = \LIBXML_NOCDATA | \LIBXML_NOBLANKS | \LIBXML_NOWARNING | \LIBXML_NONET | \LIBXML_NSCLEAN;
 		$xml     = simplexml_load_string( $xml, 'SimpleXMLElement', $options );
 
 		if ( empty( $xml->channel->item ) ) {
 			// Retry in hour when server is down.
-			\set_transient( $transient_name, '', HOUR_IN_SECONDS );
+			\set_transient( $transient_name, '', \HOUR_IN_SECONDS );
 			return '';
 		}
 
 		$output   = '';
 		$a_output = [];
 
-		$tsf = \tsf();
-
 		$max = 6;
 		$i   = 0;
-		foreach ( $xml->channel->item as $obj ) :
+		foreach ( $xml->channel->item as $obj ) {
 			// phpcs:disable, WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- XML, not my fault.
-
-			if ( $i >= $max )
-				break;
+			if ( $i >= $max ) break;
 
 			// A little too many defence clauses -- I tried to combine them as best I could.
 			if ( ! isset( $obj->title, $obj->link, $obj->description, $obj->pubDate ) )
 				continue;
 
 			$link = \esc_url( strtok( $obj->link->__toString(), '#' ) );
-			if ( ! $link )
-				continue;
+			if ( ! $link ) continue;
 
-			$title = $tsf->escape_title( $obj->title->__toString() );
-			if ( ! $title )
-				continue;
+			$title = $obj->title->__toString();
+			if ( ! $title ) continue;
 
 			// Let's not advertise.
-			if ( false !== stripos( "$link$title", 'conference' )
-			|| false !== stripos( "$link$title", 'thanks' )
-			|| false !== stripos( "$link$title", 'live' )
-			|| false !== stripos( "$link$title", 'highlights' )
+			if (
+				   false !== stripos( "$link$title", 'conference' )
+				|| false !== stripos( "$link$title", 'thanks' )
+				|| false !== stripos( "$link$title", 'live' )
+				|| false !== stripos( "$link$title", 'highlights' )
 			) continue;
 
 			$date = strtotime( $obj->pubDate->__toString() );
-			if ( ! $date )
-				continue;
+			if ( ! $date ) continue;
 
-			$description = $tsf->trim_excerpt( $obj->description->__toString(), 0, 234 ); // Magic number, because why not.
-			$description = $tsf->escape_description( $description );
-			if ( ! $description )
-				continue;
+			$description = clamp_sentence( $obj->description->__toString(), 0, 234 ); // Magic number, because why not.
+			if ( ! $description ) continue;
 
 			// No need for translations, it's English only.
 			$_output = sprintf(
@@ -165,10 +159,10 @@ final class Trends {
 				sprintf(
 					'<h4><a href="%s" target=_blank rel="nofollow noopener noreferrer" title="Read more...">%s</a></h4>',
 					\esc_url( $link, [ 'https', 'http' ] ),
-					$title
+					\esc_html( $title ),
 				),
 				'<time>' . \date_i18n( \get_option( 'date_format' ), $date ) . '</time>',
-				$description
+				\esc_html( $description ),
 			);
 
 			// Maintain full list for transient / non-AJAX.
@@ -179,9 +173,9 @@ final class Trends {
 			unset( $_output );
 			$i++;
 			// phpcs:enable, WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		endforeach;
+		}
 
-		\set_transient( $transient_name, $output, DAY_IN_SECONDS * 2 );
+		\set_transient( $transient_name, $output, \DAY_IN_SECONDS * 2 );
 
 		return $ajax ? $a_output : $output;
 	}

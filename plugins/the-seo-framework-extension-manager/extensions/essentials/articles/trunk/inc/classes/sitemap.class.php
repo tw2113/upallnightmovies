@@ -7,6 +7,10 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	sitemap_registry,
+};
+
 if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
@@ -63,12 +67,16 @@ final class Sitemap extends Core {
 		/**
 		 * @see trait TSF_Extension_Manager\Extension_Views
 		 */
-		$this->view_location_base = TSFEM_E_ARTICLES_DIR_PATH . 'views' . DIRECTORY_SEPARATOR;
+		$this->view_location_base = \TSFEM_E_ARTICLES_DIR_PATH . 'views' . \DIRECTORY_SEPARATOR;
 
 		\add_filter( 'the_seo_framework_sitemap_endpoint_list', [ $this, '_register_news_sitemap_endpoint' ] );
 		\add_action( 'the_seo_framework_sitemap_schemas', [ $this, '_adjust_news_sitemap_schemas' ] );
 
-		\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_delete_news_sitemap_transient' ] );
+		if ( \TSF_EXTENSION_MANAGER_USE_MODERN_TSF ) {
+			\add_action( 'the_seo_framework_cleared_sitemap_transients', [ $this, '_delete_news_sitemap_transient' ] );
+		} else {
+			\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_delete_news_sitemap_transient' ] );
+		}
 
 		// Don't use action `the_seo_framework_ping_search_engines`; News Sitemaps don't have a ping threshold.
 		// Don't allow prerendering; News Sitemaps are small for a reason!
@@ -76,7 +84,11 @@ final class Sitemap extends Core {
 		if ( \tsf()->get_option( 'ping_use_cron' ) ) {
 			\add_action( 'tsf_sitemap_cron_hook', [ $this, '_ping_google_news' ] );
 		} else {
-			\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_ping_google_news' ] );
+			if ( \TSF_EXTENSION_MANAGER_USE_MODERN_TSF ) {
+				\add_action( 'the_seo_framework_cleared_sitemap_transients', [ $this, '_ping_google_news' ] );
+			} else {
+				\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_ping_google_news' ] );
+			}
 		}
 	}
 
@@ -97,7 +109,7 @@ final class Sitemap extends Core {
 	 *      'callback' => callable The callback for the sitemap output.
 	 *                             Tip: You can pass arbitrary indexes. Prefix them with an underscore to ensure forward compatibility.
 	 *                             Tip: In the callback, use
-	 *                                  `\The_SEO_Framework\Bridges\Sitemap::get_instance()->get_sitemap_endpoint_list()[$sitemap_id]`
+	 *                                  `\tsf()->sitemap()->registry()->get_sitemap_endpoint_list()[$sitemap_id]`
 	 *                                  It returns the arguments you've passed in this filter; including your arbitrary indexes.
 	 *      'robots'   => bool     Whether the endpoint should be mentioned in the robots.txt file.
 	 *   }
@@ -138,7 +150,9 @@ final class Sitemap extends Core {
 		$this->doing_news_sitemap = true;
 
 		// Remove output, if any.
-		\tsf()->clean_response_header();
+		\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+			? \tsf()->headers()->clean_response_header()
+			: \tsf()->clean_response_header();
 
 		if ( ! headers_sent() ) {
 			\status_header( 200 );
@@ -185,6 +199,7 @@ final class Sitemap extends Core {
 	 * Deletes news sitemap transient.
 	 *
 	 * @since 2.0.0
+	 * @todo use TSF 4.3.0's get_sitemap_transient_key
 	 * @access private
 	 */
 	public function _delete_news_sitemap_transient() {
@@ -199,7 +214,7 @@ final class Sitemap extends Core {
 	 */
 	public function _ping_google_news() {
 		$pingurl = 'https://www.google.com/ping?sitemap=' . rawurlencode(
-			\The_SEO_Framework\Bridges\Sitemap::get_instance()->get_expected_sitemap_endpoint_url( 'news' )
+			sitemap_registry()->get_expected_sitemap_endpoint_url( 'news' )
 		);
 		\wp_safe_remote_get( $pingurl, [ 'timeout' => 3 ] );
 	}
@@ -208,7 +223,7 @@ final class Sitemap extends Core {
 	 * Returns the sitemap transient name.
 	 *
 	 * @since 2.0.0
-	 * @todo use TSF 4.2.9's get_sitemap_transient_key
+	 * @todo use TSF 4.3.0's get_sitemap_transient_key
 	 *
 	 * @return string The sitemap transient name.
 	 */

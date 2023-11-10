@@ -119,7 +119,7 @@ final class Output {
 		$content = $this->parse_content( $key, $value, $type );
 
 		if ( $content ) {
-			switch ( $type ) :
+			switch ( $type ) {
 				case 'issues':
 					$name   = $this->get_entry_title( $key, $type );
 					$prefix = $this->get_entry_state_icon( $key, $type );
@@ -130,7 +130,7 @@ final class Output {
 
 				default:
 					return sprintf( '<div class="tsfem-flex tsfem-flex-row">%s</div>', $content );
-			endswitch;
+			}
 		}
 
 		return '';
@@ -290,7 +290,7 @@ final class Output {
 	 */
 	protected function parse_defined_icon_state( $state = '' ) {
 
-		switch ( $state ) :
+		switch ( $state ) {
 			case 'good':
 			case 'okay':
 			case 'warning':
@@ -300,8 +300,7 @@ final class Output {
 
 			default:
 				$state = 'unknown';
-				break;
-		endswitch;
+		}
 
 		return $state;
 	}
@@ -317,9 +316,9 @@ final class Output {
 	 */
 	protected function parse_title( $key, $type ) {
 
-		switch ( $type ) :
+		switch ( $type ) {
 			case 'issues':
-				switch ( $key ) :
+				switch ( $key ) {
 					case 'title':
 						$title = \__( 'Titles', 'the-seo-framework-extension-manager' );
 						break 2;
@@ -354,14 +353,14 @@ final class Output {
 
 					default:
 						// Falls back to underlying default.
-						break 1;
-				endswitch;
+						break;
+				}
 				// No break to fall back to default.
 
 			default:
 				$title = ucwords( str_replace( [ '-', '_' ], ' ', $key ) );
-				break 1;
-		endswitch;
+				break;
+		}
 
 		return $title ?? '';
 	}
@@ -378,14 +377,10 @@ final class Output {
 	 */
 	protected function parse_content( $key, $value, $type ) {
 
-		switch ( $type ) :
+		switch ( $type ) {
 			case 'issues':
 				$content = $this->parse_issues_content( $key, $value );
-				break;
-
-			default:
-				break;
-		endswitch;
+		}
 
 		return $content ?? '';
 	}
@@ -406,10 +401,8 @@ final class Output {
 		if ( ! isset( $tests ) )
 			$tests = Tests::get_instance();
 
-		$this->disable_tsf_debugging();
-
-		if ( isset( $value['requires'] ) && version_compare( TSFEM_E_MONITOR_VERSION, $value['requires'], '>=' ) ) {
-			if ( isset( $value['tested'] ) && version_compare( TSFEM_E_MONITOR_VERSION, $value['tested'], '<=' ) ) {
+		if ( isset( $value['requires'] ) && version_compare( \TSFEM_E_MONITOR_VERSION, $value['requires'], '>=' ) ) {
+			if ( isset( $value['tested'] ) && version_compare( \TSFEM_E_MONITOR_VERSION, $value['tested'], '<=' ) ) {
 				$output = isset( $value['data'] ) ? $tests->{"issue_$key"}( $value['data'] ) : '';
 				if ( '' !== $output ) {
 					$content = $output['content'];
@@ -419,8 +412,6 @@ final class Output {
 		} else {
 			$content = $this->get_em_requires_update_notification();
 		}
-
-		$this->reset_tsf_debugging();
 
 		return $content ?? '';
 	}
@@ -435,56 +426,5 @@ final class Output {
 	protected function get_em_requires_update_notification() {
 		static $cache;
 		return $cache ?: $cache = \esc_html__( 'The Extension Manager needs to be updated to interpret this data.', 'the-seo-framework-extension-manager' );
-	}
-
-	/**
-	 * Disables The SEO Framework debugging when activated.
-	 *
-	 * @since 1.0.0
-	 */
-	protected function disable_tsf_debugging() {
-
-		$debug = $this->get_tsf_debug_states();
-
-		// phpcs:ignore, Generic.Formatting.MultipleStatementAlignment
-		$debug[1] and \tsf()->the_seo_framework_debug = false;
-		$debug[2] and \The_SEO_Framework\Debug::get_instance()->the_seo_framework_debug = false;
-	}
-
-	/**
-	 * Fetches and returns The SEO Framework default debugging properties.
-	 *
-	 * @since 1.0.0
-	 * @since 1.2.0 Added TSF v3.1 compat, by adding a condition to `$debug[2]`.
-	 * @since 1.3.0 Now only uses TSF 3.1+ debugging states, nullifying the 1.2.0 changes.
-	 *
-	 * @return array The debug values.
-	 */
-	protected function get_tsf_debug_states() {
-
-		static $debug;
-
-		if ( ! isset( $debug ) ) {
-			$debug = [];
-
-			$debug[1] = \tsf()->the_seo_framework_debug;
-			$debug[2] = $debug[1] ? \The_SEO_Framework\Debug::get_instance()->the_seo_framework_debug : false;
-		}
-
-		return $debug;
-	}
-
-	/**
-	 * Resets The SEO Framework debugging properties to previous values.
-	 *
-	 * @since 1.0.0
-	 * @since 1.3.0 Now only uses TSF 3.1+ debugging states.
-	 */
-	protected function reset_tsf_debugging() {
-
-		$debug = $this->get_tsf_debug_states();
-
-		$debug[1] and \tsf()->the_seo_framework_debug                                   = $debug[1];
-		$debug[2] and \The_SEO_Framework\Debug::get_instance()->the_seo_framework_debug = $debug[2];
 	}
 }

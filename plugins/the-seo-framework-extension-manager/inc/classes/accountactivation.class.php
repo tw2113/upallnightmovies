@@ -199,7 +199,7 @@ class AccountActivation extends Panes {
 	 * Returns the default activation options.
 	 *
 	 * @since 2.6.1
-	 * @since 2.6.2 Now listens to constant TSF_EXTENSION_MANAGER_INSTANCE_VERSION.
+	 * @since 2.6.2 Now listens to constant \TSF_EXTENSION_MANAGER_INSTANCE_VERSION.
 	 *
 	 * @return array The default activation options.
 	 */
@@ -216,12 +216,12 @@ class AccountActivation extends Panes {
 			 *               '2.0' relies on Extension Manager's folder location.
 			 *               '3.0' relies on the site URL.
 			 */
-			\defined( 'TSF_EXTENSION_MANAGER_INSTANCE_VERSION' ) ? TSF_EXTENSION_MANAGER_INSTANCE_VERSION : false
+			\defined( 'TSF_EXTENSION_MANAGER_INSTANCE_VERSION' ) ? \TSF_EXTENSION_MANAGER_INSTANCE_VERSION : false
 		) {
 			case '1.0': // wp-config.php AUTH_KEY and AUTH_SALT values.
 			case '2.0': // Extension Manager's folder location.
 			case '3.0': // Site URL.
-				$instance_version = TSF_EXTENSION_MANAGER_INSTANCE_VERSION;
+				$instance_version = \TSF_EXTENSION_MANAGER_INSTANCE_VERSION;
 				break;
 
 			default:
@@ -326,9 +326,9 @@ class AccountActivation extends Panes {
 	protected function do_deactivation( $moe = false, $downgrade = false ) {
 
 		if ( $moe && $this->get_option( '_instance' ) ) {
-			$expire = $this->get_option( 'moe' ) ?: time() + DAY_IN_SECONDS * 3;
-			if ( $expire >= time() || $expire < ( time() - DAY_IN_SECONDS * 7 ) ) {
-				$this->update_option( 'moe', time() + DAY_IN_SECONDS * 3 );
+			$expire = $this->get_option( 'moe' ) ?: time() + \DAY_IN_SECONDS * 3;
+			if ( $expire >= time() || $expire < ( time() - \DAY_IN_SECONDS * 7 ) ) {
+				$this->update_option( 'moe', time() + \DAY_IN_SECONDS * 3 );
 				return false;
 			}
 		}
@@ -368,7 +368,7 @@ class AccountActivation extends Panes {
 
 		$status = $this->validate_remote_subscription_license();
 
-		switch ( $status ) :
+		switch ( $status ) {
 			case 0:
 				// Already free or couldn't reach API.
 				break;
@@ -380,11 +380,10 @@ class AccountActivation extends Panes {
 				break;
 
 			case 2:
+				$this->set_error_notice( [ 902 => '' ] );
 				// Instance failed. Set 3 day timeout.
 				// Administrator has already been notified to fix this ASAP.
 				$this->do_deactivation( true, true );
-				// @TODO notify of timeout?
-				$this->set_error_notice( [ 902 => '' ] );
 				break;
 
 			case 3:
@@ -412,8 +411,7 @@ class AccountActivation extends Panes {
 				( $this->get_option( '_activation_level' ) !== 'Enterprise' )
 					and $this->update_option( '_activation_level', 'Enterprise' )
 						and $this->set_error_notice( [ 906 => '' ] );
-				break;
-		endswitch;
+		}
 
 		return $status;
 	}
@@ -486,10 +484,10 @@ class AccountActivation extends Panes {
 
 		if ( isset( $status['status']['status_check'] ) && 'active' !== $status['status']['status_check'] ) {
 			// Updates at most every 1 minute.
-			$divider = MINUTE_IN_SECONDS;
+			$divider = \MINUTE_IN_SECONDS;
 		} else {
 			// Updates at most every 5 minutes.
-			$divider = MINUTE_IN_SECONDS * 5;
+			$divider = \MINUTE_IN_SECONDS * 5;
 		}
 
 		// In-house transient cache.

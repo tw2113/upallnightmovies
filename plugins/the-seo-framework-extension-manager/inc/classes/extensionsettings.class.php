@@ -7,6 +7,10 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	is_headless,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -196,19 +200,11 @@ final class ExtensionSettings {
 		 */
 		$this->error_notice_option = 'tsfem_extension_settings_error_notice_option';
 
-		\add_action( 'admin_menu', [ $this, '_init_menu' ] );
-		\add_action( 'admin_init', [ $this, '_load_admin_actions' ], 10 );
-	}
+		// Nothing to do here if headless.
+		if ( is_headless( 'settings' ) ) return;
 
-	/**
-	 * Initializes WordPress menu entry.
-	 *
-	 * @since 2.2.0
-	 * @access private
-	 */
-	public function _init_menu() {
-		if ( \TSF_Extension_Manager\can_do_extension_settings() && ! \tsf()->is_headless['settings'] )
-			\add_action( 'admin_menu', [ $this, '_add_menu_link' ], 12 );
+		\add_action( 'admin_menu', [ $this, '_add_menu_link' ], 12 );
+		\add_action( 'admin_init', [ $this, '_load_admin_actions' ], 10 );
 	}
 
 	/**
@@ -219,22 +215,17 @@ final class ExtensionSettings {
 	 */
 	public function _add_menu_link() {
 
-		$menu = [
-			'parent_slug' => \tsf()->seo_settings_page_slug,
-			'page_title'  => \__( 'Extension Settings', 'the-seo-framework-extension-manager' ),
-			'menu_title'  => \__( 'Extension Settings', 'the-seo-framework-extension-manager' ),
-			'capability'  => TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
-			'menu_slug'   => static::$settings_page_slug,
-			'callback'    => [ $this, '_output_settings_page' ],
-		];
+		$es_i18n = \__( 'Extension Settings', 'the-seo-framework-extension-manager' );
 
 		$this->ui_hook = \add_submenu_page(
-			$menu['parent_slug'],
-			$menu['page_title'],
-			$menu['menu_title'],
-			$menu['capability'],
-			$menu['menu_slug'],
-			$menu['callback']
+			\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+				? \tsf()->admin()->menu()->get_top_menu_args()['menu_slug'] // parent_slug
+				: \tsf()->seo_settings_page_slug,
+			$es_i18n, // page_title
+			$es_i18n, // menu_title
+			\TSF_EXTENSION_MANAGER_EXTENSION_ADMIN_ROLE,
+			static::$settings_page_slug, // menu_slug
+			[ $this, '_output_settings_page' ] // callback
 		);
 	}
 
@@ -285,13 +276,13 @@ final class ExtensionSettings {
 		// Only store sanitized data. Thank you.
 		// This may leave stray options about. That should be resolved through the upgrader.
 		foreach ( static::$sanitize as $slug => $sanitizations ) {
-			if ( ! isset( $data[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ] ) )
+			if ( ! isset( $data[ \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ] ) )
 				continue;
 
 			foreach ( $sanitizations as $_key => $_cb ) {
 				$store[ $slug ][ $_key ] = \call_user_func(
 					$_cb,
-					$data[ TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ][ $_key ] ?? null
+					$data[ \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS ][ $slug ][ $_key ] ?? null
 				);
 			}
 		}
@@ -366,7 +357,15 @@ final class ExtensionSettings {
 	 */
 	public function _do_settings_page_actions() {
 
-		if ( ! \tsf()->is_menu_page( $this->ui_hook ) ) return;
+		if (
+			   empty( $this->ui_hook )
+			|| ( $GLOBALS['page_hook'] ?? null ) !== $this->ui_hook
+		) return;
+
+		\add_filter( 'the_seo_framework_scripts', [ $this, '_register_scripts' ], 10, 3 );
+
+		// Add something special for Vivaldi & Android.
+		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 
 		/**
 		 * @see trait TSF_Extension_Manager\Error
@@ -374,11 +373,6 @@ final class ExtensionSettings {
 		$this->init_errors();
 
 		$this->init_ui();
-
-		\add_action( 'tsfem_before_enqueue_scripts', [ $this, '_register_scripts' ] );
-
-		// Add something special for Vivaldi & Android.
-		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 	}
 
 	/**
@@ -407,21 +401,19 @@ final class ExtensionSettings {
 	 * @access private
 	 * @internal
 	 *
-	 * @param string $scripts The scripts builder class name.
+	 * @param array  $scripts  The default CSS and JS loader settings.
+	 * @param string $registry The \The_SEO_Framework\Admin\Script\Registry registry class name.
+	 * @param string $loader   The \The_SEO_Framework\Admin\Script\Loader loader class name.
+	 * @return array More CSS and JS loaders.
 	 */
-	public function _register_scripts( $scripts ) {
+	public function _register_scripts( $scripts, $registry, $loader ) {
 
-		if ( \TSF_Extension_Manager\has_run( __METHOD__ ) ) return;
+		$loader::prepare_media_scripts();
 
-		/**
-		 * @see trait TSF_Extension_Manager\UI
-		 */
-		$this->register_form_scripts( $scripts );
+		$scripts[] = $this->get_form_scripts( $scripts );
+		$scripts[] = $loader::get_media_scripts();
 
-		/**
-		 * @see trait TSF_Extension_Manager\UI
-		 */
-		$this->register_media_scripts( $scripts );
+		return $scripts;
 	}
 
 	/**
@@ -493,7 +485,7 @@ final class ExtensionSettings {
 		return '';
 		// phpcs:disable
 		return sprintf(
-			'<button type=submit name=tsf-extension-manager-extension-settings form=tsf-extension-manager-extension-settings class="tsfem-button-primary tsfem-button-primary-bright tsfem-button-upload" onclick="tsfemForm.saveAll()">%s</button>',
+			'<button type=submit name=tsf-extension-manager-extension-settings form=tsf-extension-manager-extension-settings class="tsfem-button-primary tsfem-button-upload" onclick="tsfemForm.saveAll()">%s</button>',
 			\esc_html__( 'Save All', 'the-seo-framework-extension-manager' )
 		);
 		// phpcs:enable

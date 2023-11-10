@@ -83,6 +83,13 @@ If you just initiated a crawl request, you might receive outdated or incorrect d
 
 *Because Monitor is a two-part system, changes are differentiated via Extension and API.*
 
+### 1.2.11
+
+[tsfep-release time="November 2nd, 2023"]
+
+* **Extension:**
+	* **Fixed:** No longer conflicts with The SEO Framework's debugging features.
+
 ### 1.2.10
 
 [tsfep-release time="June 22nd, 2023"]

@@ -50,8 +50,6 @@ final class SEO_By_Rank_Math extends Base {
 			\TSF_Extension_Manager\Extension\Transport\Transformers\SEO_By_Rank_Math::get_instance()
 		);
 
-		$tsf = \tsf();
-
 		/**
 		 * [ $from_table, $from_index ]
 		 * [ $to_table, $to_index ]
@@ -65,7 +63,7 @@ final class SEO_By_Rank_Math extends Base {
 				[ $wpdb->postmeta, 'rank_math_title' ],
 				[ $wpdb->postmeta, '_genesis_title' ],
 				[ $transformer_class, '_title_syntax' ],
-				[ $tsf, 's_title_raw' ],
+				'TSF_Extension_Manager\Transition\sanitize_metadata_content',
 				[
 					'name' => 'Meta Title',
 					'to'   => [
@@ -84,31 +82,31 @@ final class SEO_By_Rank_Math extends Base {
 				[ $wpdb->postmeta, 'rank_math_description' ],
 				[ $wpdb->postmeta, '_genesis_description' ],
 				[ $transformer_class, '_description_syntax' ],
-				[ $tsf, 's_description_raw' ],
+				'TSF_Extension_Manager\Transition\sanitize_metadata_content',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_facebook_title' ],
 				[ $wpdb->postmeta, '_open_graph_title' ],
 				[ $transformer_class, '_title_syntax' ],
-				[ $tsf, 's_title_raw' ],
+				'TSF_Extension_Manager\Transition\sanitize_metadata_content',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_facebook_description' ],
 				[ $wpdb->postmeta, '_open_graph_description' ],
 				[ $transformer_class, '_description_syntax' ],
-				[ $tsf, 's_description_raw' ],
+				'TSF_Extension_Manager\Transition\sanitize_metadata_content',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_facebook_image' ],
 				[ $wpdb->postmeta, '_social_image_url' ],
 				null,
-				'\\esc_url_raw',
+				'sanitize_url',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_facebook_image_id' ],
 				[ $wpdb->postmeta, '_social_image_id' ],
 				null,
-				'\\absint',
+				'absint',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_twitter_use_facebook' ],
@@ -134,19 +132,19 @@ final class SEO_By_Rank_Math extends Base {
 				[ $wpdb->postmeta, 'rank_math_twitter_title' ],
 				[ $wpdb->postmeta, '_twitter_title' ],
 				[ $transformer_class, '_title_syntax' ],
-				[ $tsf, 's_title_raw' ],
+				'TSF_Extension_Manager\Transition\sanitize_metadata_content',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_twitter_description' ],
 				[ $wpdb->postmeta, '_twitter_description' ],
 				[ $transformer_class, '_description_syntax' ],
-				[ $tsf, 's_description_raw' ],
+				'TSF_Extension_Manager\Transition\sanitize_metadata_content',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_canonical_url' ],
 				[ $wpdb->postmeta, '_genesis_canonical_uri' ],
 				null,
-				'\\esc_url_raw',
+				'sanitize_url',
 			],
 			[
 				[ $wpdb->postmeta, 'rank_math_robots' ],
@@ -219,7 +217,7 @@ final class SEO_By_Rank_Math extends Base {
 					[ $wpdb->postmeta, "rank_math_primary_{$_taxonomy}" ],
 					[ $wpdb->postmeta, "_primary_term_{$_taxonomy}" ],
 					null,
-					'\\absint',
+					'absint',
 				]
 			);
 		}
@@ -282,7 +280,7 @@ final class SEO_By_Rank_Math extends Base {
 	 * @since 1.0.0
 	 *
 	 * @param array $data Any useful data pertaining to the current transmutation type.
-	 * @throws \Exception On database error when WP_DEBUG is enabled.
+	 * @throws \Exception On database error when \WP_DEBUG is enabled.
 	 * @return array An array with existing and transport values -- if any.
 	 */
 	public function _robots_transmuter_existing( $data ) {
@@ -341,7 +339,7 @@ final class SEO_By_Rank_Math extends Base {
 	 * @param array  $data    Any useful data pertaining to the current transmutation type.
 	 * @param ?array $actions The actions for and after transmuation, passed by reference.
 	 * @param ?array $results The results before and after transmutation, passed by reference.
-	 * @throws \Exception On database error when WP_DEBUG is enabled.
+	 * @throws \Exception On database error when \WP_DEBUG is enabled.
 	 */
 	public function _robots_transmuter( $data, &$actions, &$results ) {
 
@@ -401,7 +399,7 @@ final class SEO_By_Rank_Math extends Base {
 	 * @param array  $data    Any useful data pertaining to the current transmutation type.
 	 * @param ?array $actions The actions for and after transmuation, passed by reference.
 	 * @param ?array $results The results before and after transmutation, passed by reference.
-	 * @throws \Exception On database error when WP_DEBUG is enabled.
+	 * @throws \Exception On database error when \WP_DEBUG is enabled.
 	 */
 	protected function _purge_rank_math_twitter_if_facebook( $data, &$actions, &$results ) {
 

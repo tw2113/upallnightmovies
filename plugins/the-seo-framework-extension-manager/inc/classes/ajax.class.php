@@ -55,18 +55,6 @@ final class AJAX extends Secure_Abstract {
 	private static $instance;
 
 	/**
-	 * @since 2.1.0
-	 * @var null|object TSF class object.
-	 */
-	private static $tsf;
-
-	/**
-	 * @since 2.1.0
-	 * @var null|object TSF Extension Manager class object.
-	 */
-	private static $tsfem;
-
-	/**
 	 * Initializes class variables. Always use reset when done with this class.
 	 *
 	 * @since 2.1.0
@@ -83,10 +71,7 @@ final class AJAX extends Secure_Abstract {
 		self::set( '_wpaction' );
 		self::set( '_type', 'generic' );
 
-		static::$tsfem = \tsfem();
-		static::$tsfem->_verify_instance( $instance, $bits[1] ) or die;
-
-		static::$tsf = \tsf();
+		\tsfem()->_verify_instance( $instance, $bits[1] ) or die;
 
 		static::$_validated = true;
 		static::$instance   = new static;
@@ -156,7 +141,7 @@ final class AJAX extends Secure_Abstract {
 		if ( \check_ajax_referer( 'tsfem-ajax-insecure-nonce', 'nonce', false ) )
 			$notice_data = static::build_ajax_dismissible_notice();
 
-		static::$tsfem->send_json(
+		\tsfem()->send_json(
 			$notice_data ?? [],
 			$notice_data['type'] ?? 'failure'
 		);
@@ -176,14 +161,14 @@ final class AJAX extends Secure_Abstract {
 
 		if ( ! static::$_validated ) return;
 
-		$post_id = filter_input( INPUT_POST, 'post_ID', FILTER_VALIDATE_INT );
+		$post_id = filter_input( \INPUT_POST, 'post_ID', \FILTER_VALIDATE_INT );
 		if ( ! $post_id || ! InpostGUI::current_user_can_edit_post( \absint( $post_id ) ) ) return;
 
 		if ( \check_ajax_referer( InpostGUI::JS_NONCE_ACTION, InpostGUI::JS_NONCE_NAME, false ) ) {
 			$notice_data = static::build_ajax_dismissible_notice();
 		}
 
-		static::$tsfem->send_json(
+		\tsfem()->send_json(
 			$notice_data ?? [],
 			$notice_data['type'] ?? 'failure'
 		);
@@ -203,7 +188,7 @@ final class AJAX extends Secure_Abstract {
 
 		if ( ! static::$_validated ) return;
 		if ( ! \TSF_Extension_Manager\can_do_extension_settings() || ! \check_ajax_referer( 'tsfem-form-nonce', 'nonce', false ) ) {
-			static::$tsfem->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 9002 ) ], 'failure' );
+			\tsfem()->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 9002 ) ], 'failure' );
 			exit;
 		}
 
@@ -240,12 +225,12 @@ final class AJAX extends Secure_Abstract {
 
 		if ( ! static::$_validated ) return;
 		if ( ! \TSF_Extension_Manager\can_do_extension_settings() || ! \check_ajax_referer( 'tsfem-form-nonce', 'nonce', false ) ) {
-			static::$tsfem->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 9003 ) ], 'failure' );
+			\tsfem()->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 9003 ) ], 'failure' );
 			exit;
 		}
 
 		if ( empty( $_POST['data'] ) ) {
-			static::$tsfem->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 17100 ) ], 'failure' );
+			\tsfem()->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 17100 ) ], 'failure' );
 			exit;
 		}
 
@@ -273,7 +258,7 @@ final class AJAX extends Secure_Abstract {
 		if ( ! static::$_validated ) return;
 
 		if ( ! \TSF_Extension_Manager\can_do_extension_settings() || ! \check_ajax_referer( 'tsfem-form-nonce', 'nonce', false ) ) {
-			static::$tsfem->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 9004 ) ], 'failure' );
+			\tsfem()->send_json( [ 'results' => static::$instance->get_ajax_notice( false, 9004 ) ], 'failure' );
 			exit;
 		}
 
@@ -293,7 +278,7 @@ final class AJAX extends Secure_Abstract {
 				],
 			];
 
-			$response = static::$tsfem->_get_protected_api_response( static::$instance, self::get_property( 'secret_api_key' ), $args );
+			$response = \tsfem()->_get_protected_api_response( static::$instance, self::get_property( 'secret_api_key' ), $args );
 			$response = json_decode( $response );
 
 			if ( ! isset( $response->success ) ) {
@@ -310,7 +295,7 @@ final class AJAX extends Secure_Abstract {
 						$data['status'] = $data['status'] ?? null;
 
 						if ( 'OK' !== $data['status'] ) {
-							switch ( $data['status'] ) :
+							switch ( $data['status'] ) {
 								// @link https://developers.google.com/maps/documentation/geocoding/overview#reverse-response
 								case 'ZERO_RESULTS':
 									$send['results'] = static::$instance->get_ajax_notice( false, 17004 );
@@ -359,7 +344,7 @@ final class AJAX extends Secure_Abstract {
 									// Undefined error.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17011 );
 									break;
-							endswitch;
+							}
 						} else {
 							$send['results'] = static::$instance->get_ajax_notice( false, 17012 );
 							$send['geodata'] = $data;
@@ -370,7 +355,7 @@ final class AJAX extends Secure_Abstract {
 			}
 		}
 
-		static::$tsfem->send_json( $send, $_type ?? 'failure' );
+		\tsfem()->send_json( $send, $_type ?? 'failure' );
 		exit;
 	}
 
@@ -396,7 +381,16 @@ final class AJAX extends Secure_Abstract {
 				// If it has a custom message (already stored in browser), then don't output the notice message.
 				$msg = ! empty( $_POST['tsfem-notice-has-msg'] ) ? $notice['before'] : $notice['message'];
 
-				$data['notice'] = static::$tsf->generate_dismissible_notice( $msg, $notice['type'], true, false, true );
+				$data['notice'] = \TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+					? \tsf()->admin()->notice()->generate_notice(
+						$msg,
+						[
+							'type'   => $notice['type'],
+							'escape' => false,
+							'inline' => true,
+						]
+					)
+					: \tsf()->generate_dismissible_notice( $msg, $notice['type'], true, false, true );
 				$data['type']   = $notice['type'];
 			}
 		}
@@ -422,7 +416,9 @@ final class AJAX extends Secure_Abstract {
 
 		if ( ! static::$_validated ) return;
 
-		\tsf()->clean_response_header();
+		\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+			? \tsf()->headers()->clean_response_header()
+			: \tsf()->clean_response_header();
 
 		if ( ! \current_user_can( 'upload_files' ) || ! isset( $_POST['id'], $_POST['context'], $_POST['cropDetails'] ) )
 			\wp_send_json_error();
@@ -442,7 +438,7 @@ final class AJAX extends Secure_Abstract {
 		if ( ! $cropped || \is_wp_error( $cropped ) )
 			\wp_send_json_error( [ 'message' => \esc_js( \__( 'Image could not be processed.', 'the-seo-framework-extension-manager' ) ) ] );
 
-		switch ( $context ) :
+		switch ( $context ) {
 			case 'tsfem-image':
 				/**
 				 * Fires before a cropped image is saved.
@@ -466,7 +462,7 @@ final class AJAX extends Secure_Abstract {
 				$url              = str_replace( $parent_basename, $cropped_basename, $parent_url );
 
 				// phpcs:ignore, WordPress.PHP.NoSilencedErrors -- See https://core.trac.wordpress.org/ticket/42480
-				$size       = \function_exists( '\\wp_getimagesize' ) ? \wp_getimagesize( $cropped ) : @getimagesize( $cropped );
+				$size       = \function_exists( 'wp_getimagesize' ) ? \wp_getimagesize( $cropped ) : @getimagesize( $cropped );
 				$image_type = $size['mime'] ?? 'image/jpeg';
 
 				// Get the original image's post to pre-populate the cropped image.
@@ -479,7 +475,7 @@ final class AJAX extends Secure_Abstract {
 					 * meaning the image had a title when originally uploaded or its title was edited.
 					 */
 					( $parent_basename !== $sanitized_post_title ) &&
-					( pathinfo( $parent_basename, PATHINFO_FILENAME ) !== $sanitized_post_title )
+					( pathinfo( $parent_basename, \PATHINFO_FILENAME ) !== $sanitized_post_title )
 				);
 				$use_original_description = \strlen( trim( $original_attachment->post_content ) );
 
@@ -522,8 +518,7 @@ final class AJAX extends Secure_Abstract {
 
 			default:
 				\wp_send_json_error( [ 'message' => \esc_js( \__( 'Image could not be processed.', 'the-seo-framework-extension-manager' ) ) ] );
-				break;
-		endswitch;
+		}
 
 		\wp_send_json_success( \wp_prepare_attachment_for_js( $attachment_id ) );
 

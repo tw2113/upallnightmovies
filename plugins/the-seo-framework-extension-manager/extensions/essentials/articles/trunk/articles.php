@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  * Extension Name: Articles
  * Extension URI: https://theseoframework.com/extensions/articles/
  * Extension Description: The Articles extension enhances your published posts by automatically adding important [Structured Data](https://developers.google.com/search/docs/advanced/structured-data/article). Great for bloggers, news publishers, and scientific pieces. It comes with a Google News sitemap, as well.
- * Extension Version: 2.2.1
+ * Extension Version: 2.3.0
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -41,7 +41,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_ARTICLES_VERSION', '2.2.1' );
+\define( 'TSFEM_E_ARTICLES_VERSION', '2.3.0' );
 
 /**
  * The extension file, absolute unix path.
@@ -55,28 +55,28 @@ namespace TSF_Extension_Manager\Extension\Articles;
  *
  * @since 2.2.0
  */
-\define( 'TSFEM_E_ARTICLES_DIR_URL', \TSF_Extension_Manager\extension_dir_url( TSFEM_E_ARTICLES_BASE_FILE ) );
+\define( 'TSFEM_E_ARTICLES_DIR_URL', \TSF_Extension_Manager\extension_dir_url( \TSFEM_E_ARTICLES_BASE_FILE ) );
 
 /**
  * The extension file relative to the plugins dir.
  *
  * @since 1.2.0
  */
-\define( 'TSFEM_E_ARTICLES_DIR_PATH', \TSF_Extension_Manager\extension_dir_path( TSFEM_E_ARTICLES_BASE_FILE ) );
+\define( 'TSFEM_E_ARTICLES_DIR_PATH', \TSF_Extension_Manager\extension_dir_path( \TSFEM_E_ARTICLES_BASE_FILE ) );
 
 /**
  * The plugin class map absolute path.
  *
  * @since 1.2.0
  */
-\define( 'TSFEM_E_ARTICLES_PATH_CLASS', TSFEM_E_ARTICLES_DIR_PATH . 'inc' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR );
+\define( 'TSFEM_E_ARTICLES_PATH_CLASS', \TSFEM_E_ARTICLES_DIR_PATH . 'inc' . \DIRECTORY_SEPARATOR . 'classes' . \DIRECTORY_SEPARATOR );
 
 /**
  * Verify integrity and sets up autoloader.
  *
  * @since 1.2.0
  */
-if ( ! \tsfem()->_init_early_extension_autoloader( TSFEM_E_ARTICLES_PATH_CLASS, 'Articles', $_instance, $bits ) )
+if ( ! \tsfem()->_init_early_extension_autoloader( \TSFEM_E_ARTICLES_PATH_CLASS, 'Articles', $_instance, $bits ) )
 	return;
 
 /**
@@ -85,7 +85,7 @@ if ( ! \tsfem()->_init_early_extension_autoloader( TSFEM_E_ARTICLES_PATH_CLASS, 
  *
  * @since 1.0.0
  */
-\add_filter( 'the_seo_framework_remove_amp_articles', '\\__return_true' );
+\add_filter( 'the_seo_framework_remove_amp_articles', '__return_true' );
 
 \add_action( 'the_seo_framework_init', __NAMESPACE__ . '\\_articles_init', 10 );
 /**

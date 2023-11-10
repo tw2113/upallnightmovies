@@ -7,6 +7,10 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	convert_markdown,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -60,10 +64,9 @@ final class Layout extends Secure_Abstract {
 		if ( ! $type ) {
 			\tsf()->_doing_it_wrong( __METHOD__, 'You must specify an initialization type.' );
 		} else {
-
 			self::set( '_wpaction' );
 
-			switch ( $type ) :
+			switch ( $type ) {
 				case 'form':
 				case 'link':
 				case 'list':
@@ -74,8 +77,7 @@ final class Layout extends Secure_Abstract {
 				default:
 					self::reset();
 					self::invoke_invalid_type( __METHOD__ );
-					break;
-			endswitch;
+			}
 		}
 	}
 
@@ -96,15 +98,9 @@ final class Layout extends Secure_Abstract {
 			return false;
 		}
 
-		switch ( $type ) :
+		switch ( $type ) {
 			case 'disconnect-button':
 				return static::get_disconnect_button();
-
-			case 'public-support-button':
-				return static::get_public_support_button();
-
-			case 'private-support-button':
-				return static::get_private_support_button();
 
 			case 'account-information':
 				return static::get_account_info();
@@ -117,8 +113,7 @@ final class Layout extends Secure_Abstract {
 
 			default:
 				\tsf()->_doing_it_wrong( __METHOD__, 'You must specify a correct get type.' );
-				break;
-		endswitch;
+		}
 
 		return false;
 	}
@@ -213,40 +208,6 @@ final class Layout extends Secure_Abstract {
 	}
 
 	/**
-	 * Outputs public support button.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string The public support button link.
-	 */
-	private static function get_public_support_button() {
-
-		if ( 'link' === self::get_property( '_type' ) ) {
-			return \tsfem()->get_support_link( 'public' );
-		} else {
-			\tsf()->_doing_it_wrong( __METHOD__, 'The public support button only supports the link type.' );
-			return '';
-		}
-	}
-
-	/**
-	 * Outputs private support button.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string The private support button link.
-	 */
-	private static function get_private_support_button() {
-
-		if ( 'link' === self::get_property( '_type' ) ) {
-			return \tsfem()->get_support_link( 'private' );
-		} else {
-			\tsf()->_doing_it_wrong( __METHOD__, 'The private support button only supports the link type.' );
-			return '';
-		}
-	}
-
-	/**
 	 * Outputs premium support button.
 	 *
 	 * @since 1.0.0
@@ -309,7 +270,7 @@ final class Layout extends Secure_Abstract {
 			$valid_options ? 'tsfem-success' : 'tsfem-error',
 		];
 
-		switch ( $level ) :
+		switch ( $level ) {
 			case 'Enterprise':
 				$_level = \__( 'Enterprise', 'the-seo-framework-extension-manager' );
 				break;
@@ -330,8 +291,7 @@ final class Layout extends Secure_Abstract {
 				$_level   = $level;
 				$_class   = array_diff( $_class, [ 'tsfem-error', 'tsfem-success' ] );
 				$_class[] = 'tsfem-error';
-				break;
-		endswitch;
+		}
 
 		if ( isset( $data['timestamp'], $data['divider'] ) ) {
 			/**
@@ -370,7 +330,7 @@ final class Layout extends Secure_Abstract {
 		if ( ! isset( $activation_domain ) || $activation_domain === $current_domain ) {
 			$_classes[] = 'tsfem-success';
 		} else {
-			$_warning = \tsf()->convert_markdown(
+			$_warning = convert_markdown(
 				sprintf(
 					/* translators: `%s` = domain with markdown backtics */
 					\esc_html__( 'The domain `%s` does not match the registered domain. If your website is accessible on multiple domains, switch to the registered domain. Otherwise, disconnect the account and reconnect.', 'the-seo-framework-extension-manager' ),
@@ -393,16 +353,19 @@ final class Layout extends Secure_Abstract {
 			false
 		);
 
-		switch ( $tsfem->get_api_endpoint_type() ) :
+		switch ( $tsfem->get_api_endpoint_type() ) {
 			case 'eu':
 				$_ep = \__( 'TSF Europe', 'the-seo-framework-extension-manager' );
+				break;
+
+			case 'wcm':
+				$_ep = \__( 'TSF + WC', 'the-seo-framework-extension-manager' );
 				break;
 
 			default:
 			case 'global':
 				$_ep = \__( 'TSF global', 'the-seo-framework-extension-manager' );
-				break;
-		endswitch;
+		}
 
 		$output .= static::wrap_row_content(
 			\esc_html__( 'API endpoint:', 'the-seo-framework-extension-manager' ),

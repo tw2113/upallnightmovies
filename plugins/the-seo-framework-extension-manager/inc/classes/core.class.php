@@ -241,7 +241,7 @@ class Core {
 		static $memo;
 		if ( isset( $memo ) ) return $memo;
 
-		$options = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
+		$options = \get_option( \TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
 
 		// There's nothing to verify yet during setup.
 		if ( ! $options ) return $memo = true;
@@ -305,7 +305,7 @@ class Core {
 	 */
 	final public function set_status_header( $code = 200, $type = '' ) {
 
-		switch ( $type ) :
+		switch ( $type ) {
 			case 'json':
 				header( 'Content-Type: application/json; charset=' . \get_option( 'blog_charset' ) );
 				break;
@@ -313,8 +313,7 @@ class Core {
 			case 'html':
 			default:
 				header( 'Content-Type: text/html; charset=' . \get_option( 'blog_charset' ) );
-				break;
-		endswitch;
+		}
 
 		if ( $code )
 			\status_header( $code );
@@ -419,7 +418,7 @@ class Core {
 			],
 		];
 
-		return \map_deep( $post, '\\esc_js' );
+		return \map_deep( $post, 'esc_js' );
 	}
 
 	/**
@@ -491,28 +490,6 @@ class Core {
 	}
 
 	/**
-	 * Checks whether the variable is set and passes it back.
-	 * If the value isn't set, it will set it to the fallback variable.
-	 *
-	 * Basically, a PHP < 7 wrapper for null coalescing.
-	 *
-	 * It will also return the value so it can be used in a return statement.
-	 *
-	 * Example: `$v = $v ?? $f` becomes `coalesce_var( $v, $f )`
-	 * The fallback value must always be set, so performance benefits thereof aren't present.
-	 *
-	 * @link http://php.net/manual/en/migration70.new-features.php#migration70.new-features.null-coalesce-op
-	 * @since 1.2.0
-	 *
-	 * @param mixed $v The variable that's maybe set. Passed by reference.
-	 * @param mixed $f The fallback variable. Default null.
-	 * @return mixed
-	 */
-	final public function coalesce_var( &$v = null, $f = null ) {
-		return $v ?? ( $v = $f );
-	}
-
-	/**
 	 * Performs wp_die on TSF Extension Manager Page.
 	 * Destructs class otherwise.
 	 *
@@ -524,6 +501,7 @@ class Core {
 	 */
 	final public function _maybe_die( $message = '' ) {
 
+		// secure=false because we're shutting down the plugin.
 		if ( $this->is_tsf_extension_manager_page( false ) ) {
 			// wp_die() can be filtered. Remove filters JIT.
 			\remove_all_filters( 'wp_die_ajax_handler' );
@@ -531,6 +509,7 @@ class Core {
 			\remove_all_filters( 'wp_die_handler' );
 
 			\wp_die( \esc_html( $message ) );
+			die;
 		}
 
 		// Don't spam error log.
@@ -567,10 +546,9 @@ class Core {
 
 		$properties = array_merge( $class_vars, $other_vars );
 
-		foreach ( $properties as $property => $value ) :
+		foreach ( $properties as $property => $value )
 			if ( isset( $this->$property ) )
 				$this->$property = \is_array( $this->$property ) ? [] : null;
-		endforeach;
 
 		array_walk( $GLOBALS['wp_filter'], [ $this, 'stop_class_filters' ] );
 		$this->__destruct();
@@ -739,7 +717,7 @@ class Core {
 			$timer += $pepper;
 		} else {
 			// It's over ninethousand! And also a prime.
-			$timer  = $this->is_64() ? time() * 9001 : PHP_INT_MAX / 9001;
+			$timer  = $this->is_64() ? time() * 9001 : \PHP_INT_MAX / 9001;
 			$pepper = mt_rand( -$timer, $timer );
 		}
 
@@ -785,13 +763,13 @@ class Core {
 			$_time = time();
 
 			// phpcs:disable, Generic.Formatting.MultipleStatementAlignment -- It'll be worse to read.
-			$_i = $this->is_64() && $_time > $_boundary ? $_time : ( PHP_INT_MAX - $_boundary ) / $_prime;
+			$_i = $this->is_64() && $_time > $_boundary ? $_time : ( \PHP_INT_MAX - $_boundary ) / $_prime;
 			$_i > 0 or $_i = ~$_i;
 			$_i = (int) $_i;
 
 			    $_i = $_i * $_prime
 			and \is_int( $_i )
-			and ( $_i + $_boundary ) < PHP_INT_MAX // if this fails, there's a precision error in PHP.
+			and ( $_i + $_boundary ) < \PHP_INT_MAX // if this fails, there's a precision error in PHP.
 			and $bit = $_bit = mt_rand( ~ $_i, $_i )
 			and $bit & 1
 			and $bit = $_bit++;
@@ -934,7 +912,7 @@ class Core {
 				// A combobulation of various static yet unique values.
 				$values = [
 					'key'  => 'k' . ( \get_option( 'initial_db_version' ) + 1493641 ) . '+++42===',
-					'salt' => 's' . md5( \dirname( TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE ) )
+					'salt' => 's' . md5( \dirname( \TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE ) )
 						. \get_option( 'the_seo_framework_initial_db_version' ) . '+++69---',
 				];
 				break;
@@ -953,7 +931,7 @@ class Core {
 					$_scheme = $scheme;
 				}
 
-				foreach ( [ 'key', 'salt' ] as $type ) :
+				foreach ( [ 'key', 'salt' ] as $type ) {
 					$const = strtoupper( "{$_scheme}_{$type}" );
 					if ( \defined( $const ) && \constant( $const ) ) {
 						$values[ $type ] = \constant( $const );
@@ -967,11 +945,10 @@ class Core {
 							$values[ $type ] = \wp_salt( $_scheme );
 						}
 					}
-				endforeach;
+				}
 				break;
 			default:
 				\wp_die( 'Invalid scheme supplied for <code>' . __METHOD__ . '</code>.' );
-				break;
 		}
 
 		return $cached_salts[ $scheme ] = "{$values['key']}{$values['salt']}";
@@ -1025,7 +1002,7 @@ class Core {
 
 		$plugins = \get_site_option( 'active_sitewide_plugins' );
 
-		return $network_mode = isset( $plugins[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] );
+		return $network_mode = isset( $plugins[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] );
 		// phpcs:enable
 	}
 
@@ -1166,24 +1143,14 @@ class Core {
 		if ( 0 !== strpos( $class, 'tsf_extension_manager\\extension\\', 0 ) )
 			return;
 
-		static $loaded = [];
-
-		if ( isset( $loaded[ $class ] ) )
-			return $loaded[ $class ];
-
 		if ( $this->_has_died() ) {
 			$this->create_class_alias( $class );
 			return false;
 		}
 
-		static $_timenow = true;
+		static $_timer;
 
-		if ( $_timenow ) {
-			$_bootstrap_timer = hrtime( true );
-			$_timenow         = false;
-		} else {
-			$_bootstrap_timer = 0;
-		}
+		$_timer ??= hrtime( true );
 
 		$_class = str_replace( 'tsf_extension_manager\\extension\\', '', $class );
 		$_ns    = substr( $_class, 0, strpos( $_class, '\\' ) );
@@ -1193,30 +1160,28 @@ class Core {
 		if ( $_path ) {
 			$_file = str_replace(
 				[ "$_ns\\", '\\', '/', '_' ],
-				[ '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, '-' ],
+				[ '', \DIRECTORY_SEPARATOR, \DIRECTORY_SEPARATOR, '-' ],
 				$_class
 			);
 
 			$this->get_verification_codes( $_instance, $bits );
 
-			$loaded[ $class ] = require "{$_path}{$_file}.class.php";
+			require "{$_path}{$_file}.class.php";
 		} else {
 			\tsf()->_doing_it_wrong( __METHOD__, 'Class <code>' . \esc_html( $class ) . '</code> has not been registered.' );
 
 			// Prevent fatal errors.
 			$this->create_class_alias( $class );
-
-			$loaded[ $class ] = false;
 		}
 
-		if ( $_bootstrap_timer ) {
-			$_t = ( hrtime( true ) - $_bootstrap_timer ) / 1e9; // ns to s
+		if ( isset( $_timer ) ) {
+			// When the class extends, the last class in the stack will reach this first.
+			// All classes before cannot reach this any more.
+			$_t = ( hrtime( true ) - $_timer ) / 1e9;
 			\The_SEO_Framework\_bootstrap_timer( $_t );
 			\TSF_Extension_Manager\_bootstrap_timer( $_t );
-			$_timenow = true;
+			$_timer = null;
 		}
-
-		return $loaded[ $class ];
 	}
 
 	/**
@@ -1366,9 +1331,9 @@ class Core {
 	 */
 	final public function get_font_file_location( $font = '', $url = false ) {
 		if ( $url ) {
-			return TSF_EXTENSION_MANAGER_DIR_URL . "lib/fonts/$font";
+			return \TSF_EXTENSION_MANAGER_DIR_URL . "lib/fonts/$font";
 		} else {
-			return TSF_EXTENSION_MANAGER_DIR_PATH . 'lib' . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . $font;
+			return \TSF_EXTENSION_MANAGER_DIR_PATH . 'lib' . \DIRECTORY_SEPARATOR . 'fonts' . \DIRECTORY_SEPARATOR . $font;
 		}
 	}
 
@@ -1383,9 +1348,9 @@ class Core {
 	 */
 	final public function get_image_file_location( $image = '', $url = false ) {
 		if ( $url ) {
-			return TSF_EXTENSION_MANAGER_DIR_URL . "lib/images/$image";
+			return \TSF_EXTENSION_MANAGER_DIR_URL . "lib/images/$image";
 		} else {
-			return TSF_EXTENSION_MANAGER_DIR_PATH . 'lib' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $image;
+			return \TSF_EXTENSION_MANAGER_DIR_PATH . 'lib' . \DIRECTORY_SEPARATOR . 'images' . \DIRECTORY_SEPARATOR . $image;
 		}
 	}
 
@@ -1410,7 +1375,7 @@ class Core {
 	/**
 	 * Sanitizes AJAX input string.
 	 * Removes NULL, converts to string, normalizes entities and escapes attributes.
-	 * Also prevents regex execution.
+	 * Also prevents JS-regex execution.
 	 *
 	 * @since 1.0.0
 	 * @since 1.5.0 Now is public and moved to class Core.
@@ -1447,28 +1412,17 @@ class Core {
 	 */
 	final public function is_tsf_extension_manager_page( $secure = true ) {
 
-		static $cache;
-
-		if ( isset( $cache ) )
-			return $cache;
-
-		if ( ! \is_admin() )
-			return $cache = false;
+		if ( ! \is_admin() || empty( $this->seo_extensions_menu_page_hook ) )
+			return false;
 
 		if ( $secure ) {
-			// Don't load from $_GET request if secure.
-			if ( \did_action( 'current_screen' ) ) {
-				return $cache = \tsf()->is_menu_page( $this->seo_extensions_menu_page_hook );
-			} else {
-				// current_screen isn't set up.
-				return false;
-			}
+			return ( $GLOBALS['page_hook'] ?? null ) === $this->seo_extensions_menu_page_hook;
 		} else {
-			// Don't cache if insecure.
 			if ( \wp_doing_ajax() ) {
 				return $this->ajax_is_tsf_extension_manager_page();
 			} else {
-				return \tsf()->is_menu_page( $this->seo_extensions_menu_page_hook, $this->seo_extensions_page_slug );
+				return ( $GLOBALS['page_hook'] ?? null ) === $this->seo_extensions_menu_page_hook
+					|| ( $_GET['page'] ?? null ) === $this->seo_extensions_menu_page_hook; // phpcs:ignore, WordPress.Security.NonceVerification;
 			}
 		}
 	}

@@ -7,6 +7,10 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	do_dismissible_notice,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -80,11 +84,15 @@ trait Error {
 			return;
 		}
 
-		$tsf = \tsf();
-
-		// Already escaped.
 		foreach ( $notices as $notice )
-			$tsf->do_dismissible_notice( $notice['message'], $notice['type'], true, false, true );
+			do_dismissible_notice(
+				$notice['message'],
+				[
+					'type'   => $notice['type'],
+					'escape' => false,
+					'inline' => true,
+				]
+			);
 
 		$this->unset_error_notice_option();
 	}
@@ -154,7 +162,7 @@ trait Error {
 
 		if ( \is_array( $option ) ) {
 			$key = key( $option );
-		} elseif ( is_scalar( $option ) ) {
+		} elseif ( \is_scalar( $option ) ) {
 			$key = $option;
 		}
 
@@ -213,7 +221,7 @@ trait Error {
 
 		$args = array_merge( $defaults, $args );
 
-		switch ( $args['type'] ) :
+		switch ( $args['type'] ) {
 			case 'error':
 				$status_i18n = \esc_html__( 'Error code:', 'the-seo-framework-extension-manager' );
 				break;
@@ -226,8 +234,7 @@ trait Error {
 			case 'info':
 			case 'updated':
 				$status_i18n = \esc_html__( 'Status code:', 'the-seo-framework-extension-manager' );
-				break;
-		endswitch;
+		}
 
 		/* translators: 1: 'Error code:', 2: The error code. */
 		$status = sprintf( \esc_html__( '%1$s %2$s', 'the-seo-framework-extension-manager' ), $status_i18n, $code );
@@ -264,7 +271,7 @@ trait Error {
 	 */
 	protected function get_error_notice_by_key( $key, $get_type = true ) {
 
-		switch ( $key ) :
+		switch ( $key ) {
 			case -1:
 				// Placeholder error. See TSF_Extension_Manager\_wp_ajax_get_dismissible_notice()
 				$message = 'Undefined error. Check other messages.';
@@ -327,7 +334,7 @@ trait Error {
 				$message = sprintf(
 					/* translators: %s = My Account */
 					\esc_html__( 'Invalid API license key. Login to the %s page to find a valid API License Key.', 'the-seo-framework-extension-manager' ),
-					$this->get_my_account_link()
+					$this->get_my_account_link() // can never be WCM; user isn't connected yet.
 				);
 				$type = 'error';
 				break;
@@ -383,7 +390,7 @@ trait Error {
 				$message = sprintf(
 					/* translators: %s = My Account */
 					\esc_html__( 'Exceeded maximum number of activations. Login to the %s page to manage your sites.', 'the-seo-framework-extension-manager' ),
-					$this->get_my_account_link()
+					$this->get_my_account_link() // can never be WCM; user isn't connected yet.
 				);
 				$type = 'error';
 				break;
@@ -439,35 +446,31 @@ trait Error {
 				break;
 
 			case 902:
-				$message = sprintf(
-					/* translators: %s = My Account */
-					\esc_html__( "Your subscription instance couldn't be verified. Login to the %s page and verify if this site is still connected.", 'the-seo-framework-extension-manager' ),
-					$this->get_my_account_link()
-				);
+				if ( 'wcm' === $this->get_api_endpoint_type() ) {
+					// Headless. User cannot inspect key. Edge case -- user gets disconnected right before this error.
+					$message = \esc_html__( "Your subscription instance couldn't be verified.", 'the-seo-framework-extension-manager' );
+				} else {
+					$message = sprintf(
+						/* translators: %s = My Account */
+						\esc_html__( "Your subscription instance couldn't be verified. Login to the %s page and verify if this site is still connected.", 'the-seo-framework-extension-manager' ),
+						$this->get_my_account_link() // this can be WCM, which is troubling.
+					);
+				}
 				$type = 'warning';
 				break;
 
 			case 904:
-				$message = sprintf(
-					\esc_html__( "Your account level has been set to Essentials. Reload the page if it didn't take effect.", 'the-seo-framework-extension-manager' ),
-					$this->get_my_account_link()
-				);
+				$message = \esc_html__( "Your account level has been set to Essentials. Reload the page if it didn't take effect.", 'the-seo-framework-extension-manager' );
 				$type    = 'info';
 				break;
 
 			case 905:
-				$message = sprintf(
-					\esc_html__( "Your account level has been set to Premium. Reload the page if it didn't take effect.", 'the-seo-framework-extension-manager' ),
-					$this->get_my_account_link()
-				);
+				$message = \esc_html__( "Your account level has been set to Premium. Reload the page if it didn't take effect.", 'the-seo-framework-extension-manager' );
 				$type    = 'info';
 				break;
 
 			case 906:
-				$message = sprintf(
-					\esc_html__( "Your account level has been set to Enterprise. Reload the page if it didn't take effect.", 'the-seo-framework-extension-manager' ),
-					$this->get_my_account_link()
-				);
+				$message = \esc_html__( "Your account level has been set to Enterprise. Reload the page if it didn't take effect.", 'the-seo-framework-extension-manager' );
 				$type    = 'info';
 				break;
 
@@ -795,8 +798,7 @@ trait Error {
 			case 1010605:
 				$message = \esc_html__( 'An unknown error occurred. Contact the plugin author if this error keeps coming back.', 'the-seo-framework-extension-manager' );
 				$type    = 'error';
-				break;
-		endswitch;
+		}
 
 		return $get_type ? compact( 'message', 'type' ) : $message;
 	}

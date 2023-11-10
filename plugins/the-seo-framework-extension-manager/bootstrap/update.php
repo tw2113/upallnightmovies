@@ -7,6 +7,11 @@ namespace TSF_Extension_Manager;
 
 \defined( 'TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE' ) or die;
 
+use function \TSF_Extension_Manager\Transition\{
+	convert_markdown,
+	do_dismissible_notice,
+};
+
 /**
  * The SEO Framework - Extension Manager plugin
  * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
@@ -39,19 +44,17 @@ function _check_external_blocking() {
 
 	if ( ! \current_user_can( 'update_plugins' ) ) return;
 
-	if ( \defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && true === WP_HTTP_BLOCK_EXTERNAL ) {
+	if ( \defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && true === \WP_HTTP_BLOCK_EXTERNAL ) {
 
-		$parsed_url = \wp_parse_url( TSF_EXTENSION_MANAGER_DL_URI );
+		$parsed_url = \wp_parse_url( \TSF_EXTENSION_MANAGER_DL_URI );
 		$host       = $parsed_url['host'] ?? '';
 
-		if ( ! \defined( 'WP_ACCESSIBLE_HOSTS' ) || false === stristr( WP_ACCESSIBLE_HOSTS, $host ) ) {
+		if ( ! \defined( 'WP_ACCESSIBLE_HOSTS' ) || false === stristr( \WP_ACCESSIBLE_HOSTS, $host ) ) {
 
 			// We rely on TSF here but it might not be available. Still, not outputting this notice does not harm.
-			if ( ! \function_exists( '\\tsf' ) ) return;
+			if ( ! \function_exists( 'tsf' ) ) return;
 
-			$tsf = \tsf();
-
-			$notice = $tsf->convert_markdown(
+			$notice = convert_markdown(
 				sprintf(
 					/* translators: Markdown. %s = Update API URL */
 					\esc_html__(
@@ -62,12 +65,18 @@ function _check_external_blocking() {
 				),
 				[ 'code' ]
 			);
-			$tsf->do_dismissible_notice( $notice, 'error', true, false );
+			do_dismissible_notice(
+				$notice,
+				[
+					'type'   => 'error',
+					'escape' => false,
+				]
+			);
 		}
 	}
 }
 
-\add_filter( 'plugins_api', __NAMESPACE__ . '\\_hook_plugins_api', PHP_INT_MAX, 3 );
+\add_filter( 'plugins_api', __NAMESPACE__ . '\\_hook_plugins_api', \PHP_INT_MAX, 3 );
 /**
  * Filters the plugin API to bind to The SEO Framework's own updater service.
  *
@@ -82,7 +91,7 @@ function _check_external_blocking() {
  */
 function _hook_plugins_api( $res, $action, $args ) {
 
-	if ( 'plugin_information' !== $action || TSF_EXTENSION_MANAGER_PLUGIN_SLUG !== ( $args->slug ?? '' ) )
+	if ( 'plugin_information' !== $action || \TSF_EXTENSION_MANAGER_PLUGIN_SLUG !== ( $args->slug ?? '' ) )
 		return $res;
 
 	if ( ! \wp_http_supports( [ 'ssl' ] ) ) {
@@ -95,10 +104,10 @@ function _hook_plugins_api( $res, $action, $args ) {
 	// include an unmodified $wp_version
 	include ABSPATH . WPINC . '/version.php';
 
-	$url       = TSF_EXTENSION_MANAGER_DL_URI . 'get/info/1.0/';
+	$url       = \TSF_EXTENSION_MANAGER_DL_URI . 'get/info/1.0/';
 	$http_args = [
 		'timeout'    => 15,
-		'user-agent' => "WordPress/$wp_version; " . PHP_VERSION_ID . '; ' . \home_url( '/' ),
+		'user-agent' => "WordPress/$wp_version; " . \PHP_VERSION_ID . '; ' . \home_url( '/' ),
 		'body'       => [
 			'action'  => $action,
 			'request' => serialize( $args ), // phpcs:ignore -- Object injection is mitigated at the request server.
@@ -111,7 +120,7 @@ function _hook_plugins_api( $res, $action, $args ) {
 		$error_message = sprintf(
 			/* translators: %1$s: API url, %2$s: support URL */
 			\__( 'An unexpected error occurred. Something may be wrong with %1$s or this server&#8217;s configuration. If you continue to have problems, please <a href="%2$s">contact us</a>.', 'the-seo-framework-extension-manager' ),
-			\esc_url( TSF_EXTENSION_MANAGER_DL_URI ),
+			\esc_url( \TSF_EXTENSION_MANAGER_DL_URI ),
 			'https://theseoframework.com/contact/'
 		);
 		$res = new \WP_Error(
@@ -154,10 +163,10 @@ function _hook_plugins_api( $res, $action, $args ) {
  * @access private
  */
 function _clear_update_cache() {
-	\update_site_option( TSF_EXTENSION_MANAGER_UPDATER_CACHE, [] );
+	\update_site_option( \TSF_EXTENSION_MANAGER_UPDATER_CACHE, [] );
 }
 
-\add_filter( 'pre_set_site_transient_update_plugins', __NAMESPACE__ . '\\_push_update', PHP_INT_MAX, 2 );
+\add_filter( 'pre_set_site_transient_update_plugins', __NAMESPACE__ . '\\_push_update', \PHP_INT_MAX, 2 );
 /**
  * Push values into the update_plugins site transient.
  * This allows for multisite network updates.
@@ -165,6 +174,7 @@ function _clear_update_cache() {
  * We use pre_* because WP's object cache would otherwise prevent the second run
  * as it won't detect changes.
  *
+ * @hook pre_set_site_transient_update_plugins PHP_INT_MAX
  * @since 2.0.0
  * @since 2.0.2 Added more cache, because some sites disable transients completely...
  * @since 2.4.0 Can now fetch required (and available) locale files.
@@ -173,26 +183,25 @@ function _clear_update_cache() {
  * @access private
  * @see WP Core \wp_update_plugins()
  *
- * @param mixed  $value     Site transient value.
- * @param string $transient Transient name.
+ * @param mixed $value Site transient value.
  * @return mixed $value
  */
-function _push_update( $value, $transient ) {
+function _push_update( $value ) {
 
 	unset(
-		$value->checked[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ],
-		$value->response[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ],
-		$value->no_update[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ]
+		$value->checked[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ],
+		$value->response[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ],
+		$value->no_update[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ]
 	);
 
 	static $runtimecache;
 
-	$this_plugin = \get_plugins()[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ];
+	$this_plugin = \get_plugins()[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ];
 
 	if ( isset( $runtimecache ) ) {
 		$cache =& $runtimecache;
 	} else {
-		$cache = \get_site_option( TSF_EXTENSION_MANAGER_UPDATER_CACHE, [] );
+		$cache = \get_site_option( \TSF_EXTENSION_MANAGER_UPDATER_CACHE, [] );
 
 		if ( isset( $cache['_failure_timeout'] ) ) {
 			if ( $cache['_failure_timeout'] > time() )
@@ -205,7 +214,7 @@ function _push_update( $value, $transient ) {
 			// include an unmodified $wp_version
 			include ABSPATH . WPINC . '/version.php';
 
-			$url = TSF_EXTENSION_MANAGER_DL_URI . 'get/update/1.1/';
+			$url = \TSF_EXTENSION_MANAGER_DL_URI . 'get/update/1.1/';
 
 			$locales = array_values( \get_available_languages() );
 			/**
@@ -220,7 +229,7 @@ function _push_update( $value, $transient ) {
 			$locales = \apply_filters( 'plugins_update_check_locales', $locales );
 			$locales = array_unique( $locales );
 
-			$plugins      = [ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME => $this_plugin ];
+			$plugins      = [ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME => $this_plugin ];
 			$translations = \wp_get_installed_translations( 'plugins' );
 
 			// This is set at the plugin's base PHP file plugin-header.
@@ -232,12 +241,12 @@ function _push_update( $value, $transient ) {
 				$translations = [];
 			}
 
-			$options    = \get_option( TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
+			$options    = \get_option( \TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] );
 			$extensions = $options['active_extensions'] ?? [];
 
 			$http_args = [
 				'timeout'    => 7, // WordPress generously sets 30 seconds when doing cron to check all plugins, but we only check 1 plugin.
-				'user-agent' => "WordPress/$wp_version; " . PHP_VERSION_ID . '; ' . \home_url( '/' ), // phpcs:ignore, VariableAnalysis
+				'user-agent' => "WordPress/$wp_version; " . \PHP_VERSION_ID . '; ' . \home_url( '/' ), // phpcs:ignore, VariableAnalysis
 				'body'       => [
 					'plugins'      => json_encode( $plugins ),
 					'translations' => json_encode( $translations ),
@@ -248,13 +257,14 @@ function _push_update( $value, $transient ) {
 
 			$raw_response = \wp_remote_post( $url, $http_args );
 
-			if ( \is_wp_error( $raw_response )
-			|| 200 != \wp_remote_retrieve_response_code( $raw_response ) // phpcs:ignore, WordPress.PHP.StrictComparisons.LooseComparison
+			if (
+				   \is_wp_error( $raw_response )
+				|| 200 != \wp_remote_retrieve_response_code( $raw_response ) // phpcs:ignore, WordPress.PHP.StrictComparisons.LooseComparison
 			) {
 				$_cache = [
-					'_failure_timeout' => time() + ( MINUTE_IN_SECONDS * 10 ),
+					'_failure_timeout' => time() + ( \MINUTE_IN_SECONDS * 10 ),
 				];
-				\update_site_option( TSF_EXTENSION_MANAGER_UPDATER_CACHE, $_cache );
+				\update_site_option( \TSF_EXTENSION_MANAGER_UPDATER_CACHE, $_cache );
 
 				return $value;
 			}
@@ -276,23 +286,23 @@ function _push_update( $value, $transient ) {
 			unset( $plugin );
 
 			$cache                         =& $response;
-			$cache['_tsfem_delay_updater'] = time() + ( MINUTE_IN_SECONDS * 30 );
+			$cache['_tsfem_delay_updater'] = time() + ( \MINUTE_IN_SECONDS * 30 );
 
-			\update_site_option( TSF_EXTENSION_MANAGER_UPDATER_CACHE, $cache );
+			\update_site_option( \TSF_EXTENSION_MANAGER_UPDATER_CACHE, $cache );
 		}
 
 		$runtimecache = $cache;
 	}
 
 	// We're only checking this plugin. This type of merge needs expansion in a bulk-updater.
-	$value->checked[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $this_plugin['Version'];
-	if ( isset( $cache['no_update'][ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] ) ) {
+	$value->checked[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $this_plugin['Version'];
+	if ( isset( $cache['no_update'][ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] ) ) {
 		// TODO Core considers changing this. @see \wp_update_plugins().
-		$value->no_update[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $cache['no_update'][ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ];
+		$value->no_update[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $cache['no_update'][ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ];
 	}
 	// This should be an "else" of "no_update"--but our server already mitigates that.
-	if ( isset( $cache['plugins'][ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] ) ) {
-		$value->response[ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $cache['plugins'][ TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ];
+	if ( isset( $cache['plugins'][ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] ) ) {
+		$value->response[ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ] = $cache['plugins'][ \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ];
 	}
 
 	if ( ! empty( $cache['translations'] ) ) {
