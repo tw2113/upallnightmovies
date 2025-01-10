@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6dc4e79949a27f8234d52b5eedf9c9c",
+    "content-hash": "1df81ab3a2feb927eb9a3465f0825df2",
     "packages": [
         {
             "name": "composer/installers",
@@ -460,15 +460,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress",
-            "version": "4.5.0",
+            "version": "4.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress/",
-                "reference": "tags/4.5.0"
+                "reference": "tags/4.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress.4.5.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress.4.5.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -478,15 +478,15 @@
         },
         {
             "name": "wpackagist-plugin/publishpress-checklists",
-            "version": "2.13.0",
+            "version": "2.17.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/publishpress-checklists/",
-                "reference": "tags/2.13.0"
+                "reference": "tags/2.17.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/publishpress-checklists.2.13.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/publishpress-checklists.2.17.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -496,15 +496,15 @@
         },
         {
             "name": "wpackagist-plugin/query-monitor",
-            "version": "3.16.4",
+            "version": "3.17.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/query-monitor/",
-                "reference": "tags/3.16.4"
+                "reference": "tags/3.17.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.16.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.17.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
