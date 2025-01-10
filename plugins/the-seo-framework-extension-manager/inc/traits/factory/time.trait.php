@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -64,15 +64,15 @@ trait Time {
 		} elseif ( $ago < $hour ) {
 			$x = round( $ago / $minute );
 			/* translators: %d = minutes */
-			$ago_i18n = sprintf( \_n( '%d minute ago', '%d minutes ago', $x, 'the-seo-framework-extension-manager' ), $x );
+			$ago_i18n = \sprintf( \_n( '%d minute ago', '%d minutes ago', $x, 'the-seo-framework-extension-manager' ), $x );
 		} elseif ( $ago < $day ) {
 			$x = round( $ago / $hour );
 			/* translators: %d = hours */
-			$ago_i18n = sprintf( \_n( '%d hour ago', '%d hours ago', $x, 'the-seo-framework-extension-manager' ), $x );
+			$ago_i18n = \sprintf( \_n( '%d hour ago', '%d hours ago', $x, 'the-seo-framework-extension-manager' ), $x );
 		} elseif ( $ago < $week ) {
 			$x = round( $ago / $day );
 			/* translators: %d = days */
-			$ago_i18n = sprintf( \_n( '%d day ago', '%d days ago', $x, 'the-seo-framework-extension-manager' ), $x );
+			$ago_i18n = \sprintf( \_n( '%d day ago', '%d days ago', $x, 'the-seo-framework-extension-manager' ), $x );
 		}
 
 		if ( $ago_i18n )
@@ -92,19 +92,19 @@ trait Time {
 		} elseif ( $ago < $month ) {
 			$x = round( $ago / $week );
 			/* translators: %d = weeks */
-			$ago_i18n = sprintf( \_n( '%d week ago', '%d weeks ago', $x, 'the-seo-framework-extension-manager' ), $x );
+			$ago_i18n = \sprintf( \_n( '%d week ago', '%d weeks ago', $x, 'the-seo-framework-extension-manager' ), $x );
 		} elseif ( $ago < $last_month ) {
 			$ago_i18n = \__( 'Last month', 'the-seo-framework-extension-manager' );
 		} elseif ( $ago < $year ) {
 			$x = round( $ago / $month );
 			/* translators: %d = months */
-			$ago_i18n = sprintf( \_n( '%d month ago', '%d months ago', $x, 'the-seo-framework-extension-manager' ), $x );
+			$ago_i18n = \sprintf( \_n( '%d month ago', '%d months ago', $x, 'the-seo-framework-extension-manager' ), $x );
 		} elseif ( $ago < $last_year ) {
 			$ago_i18n = \__( 'Last year', 'the-seo-framework-extension-manager' );
 		} else {
 			$x = round( $ago / $year );
 			/* translators: %d = months */
-			$ago_i18n = sprintf( \_n( '%d year ago', '%d years ago', $x, 'the-seo-framework-extension-manager' ), $x );
+			$ago_i18n = \sprintf( \_n( '%d year ago', '%d years ago', $x, 'the-seo-framework-extension-manager' ), $x );
 		}
 
 		ret:;
@@ -165,27 +165,27 @@ trait Time {
 		switch ( $x_scale ) {
 			case 'seconds':
 				/* translators: %d = seconds */
-				$time_i18n = sprintf( \_n( '%d second', '%d seconds', $x, 'the-seo-framework-extension-manager' ), $x );
+				$time_i18n = \sprintf( \_n( '%d second', '%d seconds', $x, 'the-seo-framework-extension-manager' ), $x );
 				break;
 
 			case 'minutes':
 				/* translators: %d = minutes */
-				$time_i18n = sprintf( \_n( '%d minute', '%d minutes', $x, 'the-seo-framework-extension-manager' ), $x );
+				$time_i18n = \sprintf( \_n( '%d minute', '%d minutes', $x, 'the-seo-framework-extension-manager' ), $x );
 				break;
 
 			case 'hours':
 				/* translators: %d = hours */
-				$time_i18n = sprintf( \_n( '%d hour', '%d hours', $x, 'the-seo-framework-extension-manager' ), $x );
+				$time_i18n = \sprintf( \_n( '%d hour', '%d hours', $x, 'the-seo-framework-extension-manager' ), $x );
 				break;
 
 			case 'days':
 				/* translators: %d = days */
-				$time_i18n = sprintf( \_n( '%d day', '%d days', $x, 'the-seo-framework-extension-manager' ), $x );
+				$time_i18n = \sprintf( \_n( '%d day', '%d days', $x, 'the-seo-framework-extension-manager' ), $x );
 				break;
 
 			case 'weeks':
 				/* translators: %d = weeks */
-				$time_i18n = sprintf( \_n( '%d week', '%d weeks', $x, 'the-seo-framework-extension-manager' ), $x );
+				$time_i18n = \sprintf( \_n( '%d week', '%d weeks', $x, 'the-seo-framework-extension-manager' ), $x );
 		}
 
 		return $time_i18n;
@@ -228,11 +228,12 @@ trait Time {
 			// Months and years are too variable for the static purpose of this method.
 		];
 
-		while ( $x_remaining ) :
+		while ( $x_remaining ) {
 			$_threshold = $scale_table[ $x_scale ][0];
 
-			if ( $x_remaining >= $_threshold                       // > vs >= is 24 hours vs 1 day.
-			&& ( ! $precise || ( \count( $times ) < $scales - 1 ) ) // -1 as we're adding another to reach this.
+			if (
+				   $x_remaining >= $_threshold                          // > vs >= is 24 hours vs 1 day.
+				&& ( ! $precise || ( \count( $times ) < $scales - 1 ) ) // -1 as we're adding another to reach this.
 			) {
 				if ( $x_remaining % $_threshold ) {
 					// Calculate current and next time scale.
@@ -255,7 +256,7 @@ trait Time {
 				// No need to try upcoming scales, save processing power.
 				break;
 			}
-		endwhile;
+		}
 
 		$out = '';
 
@@ -267,14 +268,14 @@ trait Time {
 			if ( 0 === $i ) {
 				$out .= $times[ $i ];
 			} elseif ( $i === $count - 1 ) {
-				$out = sprintf(
+				$out = \sprintf(
 					/* translators: 1: Greater time, 2: Smaller time */
 					\_x( '%1$s and %2$s', '5 minutes and 3 seconds', 'the-seo-framework-extension-manager' ),
 					$out,
 					$times[ $i ]
 				);
 			} else {
-				$out = sprintf(
+				$out = \sprintf(
 					/* translators: 1: Greater time, 2: Smaller time */
 					\_x( '%1$s, %2$s', '7 hours, 8 minutes [and...]', 'the-seo-framework-extension-manager' ),
 					$out,

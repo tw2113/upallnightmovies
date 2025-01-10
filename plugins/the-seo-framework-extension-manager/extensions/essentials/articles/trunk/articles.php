@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  * Extension Name: Articles
  * Extension URI: https://theseoframework.com/extensions/articles/
  * Extension Description: The Articles extension enhances your published posts by automatically adding important [Structured Data](https://developers.google.com/search/docs/advanced/structured-data/article). Great for bloggers, news publishers, and scientific pieces. It comes with a Google News sitemap, as well.
- * Extension Version: 2.3.0
+ * Extension Version: 2.3.2
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -41,7 +41,7 @@ namespace TSF_Extension_Manager\Extension\Articles;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_ARTICLES_VERSION', '2.3.0' );
+\define( 'TSFEM_E_ARTICLES_VERSION', '2.3.2' );
 
 /**
  * The extension file, absolute unix path.
@@ -87,34 +87,10 @@ if ( ! \tsfem()->_init_early_extension_autoloader( \TSFEM_E_ARTICLES_PATH_CLASS,
  */
 \add_filter( 'the_seo_framework_remove_amp_articles', '__return_true' );
 
-\add_action( 'the_seo_framework_init', __NAMESPACE__ . '\\_articles_init', 10 );
-/**
- * Initializes the extension.
- *
- * @since 1.0.0
- * @since 1.2.0 Now also loads Admin class.
- * @since 1.4.0 Now always loads when the knowledge type is organization.
- * @since 2.0.0 No longer tests for the knowledge type option before launching.
- * @access private
- *
- * @return bool True if class is loaded.
- */
-function _articles_init() {
-
-	static $loaded;
-
-	if ( isset( $loaded ) )
-		return $loaded;
-
-	if ( \is_admin() ) {
-		new Admin;
-		$loaded = true;
-	} else {
-		new Front;
-		$loaded = true;
-	}
-
-	new Sitemap;
-
-	return $loaded;
+if ( \is_admin() ) {
+	new Admin;
+} else {
+	new Front;
 }
+
+new Sitemap;

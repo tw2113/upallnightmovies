@@ -15,7 +15,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -149,7 +149,7 @@ final class Admin extends Core {
 					'_desc'    => [
 						\__( 'Google News Sitemap', 'the-seo-framework-extension-manager' ),
 						[
-							sprintf(
+							\sprintf(
 								/* translators: %s = Articles FAQ link. Markdown. */
 								\__( 'For more information, please refer to the [Articles FAQ](%s).', 'the-seo-framework-extension-manager' ),
 								'https://theseoframework.com/extensions/articles/#faq'
@@ -158,7 +158,7 @@ final class Admin extends Core {
 								? ''
 								: ' ' . \__( 'To use this feature, you must enable the optimized sitemap of The SEO Framework.', 'the-seo-framework-extension-manager' )
 							),
-							$this->get_option( 'news_sitemap' ) ? sprintf(
+							$this->get_option( 'news_sitemap' ) ? \sprintf(
 								'[%s](%s)',
 								\__( 'View the news sitemap.', 'the-seo-framework-extension-manager' ),
 								sitemap_registry()->get_expected_sitemap_endpoint_url( 'news' )
@@ -184,12 +184,7 @@ final class Admin extends Core {
 					'_readonly' => true,
 					'_desc'     => [
 						\__( 'Publisher Logo', 'the-seo-framework-extension-manager' ),
-						sprintf(
-							/* translators: %s = Logo guidelines link. Markdown. */
-							\__( 'Please refer to the [logo guidelines](%s).', 'the-seo-framework-extension-manager' ),
-							'https://developers.google.com/search/docs/advanced/structured-data/article#logo-guidelines'
-						),
-						\__( 'The logo must be a horizontally wide rectangle, not a square, and at least 60px high.', 'the-seo-framework-extension-manager' ),
+						\__( 'The logo must be at least 112px by 112px and should look how you intend it to on a purely white background.', 'the-seo-framework-extension-manager' ),
 					],
 					'_md'       => true,
 				],

@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -70,7 +70,7 @@ class Api extends Data {
 
 		$response = \tsfem()->_get_protected_api_response(
 			$this,
-			TSFEM_E_MONITOR_API_ACCESS_KEY,
+			\TSFEM_E_MONITOR_API_ACCESS_KEY,
 			array_merge(
 				$args,
 				[
@@ -119,9 +119,12 @@ class Api extends Data {
 			return false;
 		}
 
-		$response = $response['data'];
+		$response = $response['data'] ?? [];
 
 		switch ( $response['status'] ) {
+			case 'success':
+				break;
+
 			case 'REQUEST_LIMIT_REACHED':
 				$this->set_error_notice( [ 1010306 => '' ] );
 				return false;
@@ -130,6 +133,7 @@ class Api extends Data {
 				$this->set_error_notice( [ 1010307 => '' ] );
 				return false;
 
+			default:
 			case 'failure':
 				$this->set_error_notice( [ 1010301 => '' ] );
 				return false;
@@ -152,6 +156,8 @@ class Api extends Data {
 		$success[] = $this->set_remote_crawl_timeout();
 		$success[] = $this->update_option( 'site_requires_fix', false );
 		$success[] = $this->update_option( 'site_marked_inactive', false );
+		// Also set a data timeout to prevent immediate fetching resulting in no useful data.
+		$success[] = $this->set_remote_data_timeout();
 
 		if ( \in_array( false, $success, true ) ) {
 			$this->set_error_notice( [ 1010303 => '' ] );
@@ -181,11 +187,14 @@ class Api extends Data {
 			return false;
 		}
 
-		$response = $response['data'];
+		$response = $response['data'] ?? [];
 
 		// NOTE: Do not delete data on failure -- the user won't get new data anyway;
 		// this bypasses timeouts for "instant data" and lags their site.
 		switch ( $response['status'] ) {
+			case 'success':
+				break;
+
 			case 'REQUEST_LIMIT_REACHED':
 				$this->set_error_notice( [ 1010404 => '' ] );
 				return false;
@@ -194,6 +203,7 @@ class Api extends Data {
 				$this->set_error_notice( [ 1010405 => '' ] );
 				return false;
 
+			default:
 			case 'failure':
 				$this->set_error_notice( [ 1010401 => '' ] );
 				return false;
@@ -248,9 +258,12 @@ class Api extends Data {
 			return $ajax ? $response : false;
 		}
 
-		$response = $response['data'];
+		$response = $response['data'] ?? [];
 
 		switch ( $response['status'] ) {
+			case 'success':
+				break;
+
 			case 'REQUEST_LIMIT_REACHED':
 				$this->set_remote_crawl_timeout();
 				$ajax or $this->set_error_notice( [ 1010508 => '' ] );
@@ -259,10 +272,6 @@ class Api extends Data {
 			case 'LICENSE_TOO_LOW':
 				$ajax or $this->set_error_notice( [ 1010509 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 1010509 ) : false;
-
-			case 'failure':
-				$ajax or $this->set_error_notice( [ 1010501 => '' ] );
-				return $ajax ? $this->get_ajax_notice( false, 1010501 ) : false;
 
 			case 'site expired':
 				$this->update_option( 'site_requires_fix', true );
@@ -278,6 +287,11 @@ class Api extends Data {
 				$this->set_remote_crawl_timeout();
 				$ajax or $this->set_error_notice( [ 1010504 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 1010504 ) : false;
+
+			default:
+			case 'failure':
+				$ajax or $this->set_error_notice( [ 1010501 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010501 ) : false;
 		}
 
 		$success = $this->set_remote_crawl_timeout();
@@ -329,9 +343,12 @@ class Api extends Data {
 			return $ajax ? $response : false;
 		}
 
-		$response = $response['data'];
+		$response = $response['data'] ?? [];
 
 		switch ( $response['status'] ) {
+			case 'success':
+				break;
+
 			case 'REQUEST_LIMIT_REACHED':
 				$this->set_remote_crawl_timeout();
 				$ajax or $this->set_error_notice( [ 1010608 => '' ] );
@@ -340,10 +357,6 @@ class Api extends Data {
 			case 'LICENSE_TOO_LOW':
 				$ajax or $this->set_error_notice( [ 1010609 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 1010609 ) : false;
-
-			case 'failure':
-				$ajax or $this->set_error_notice( [ 1010601 => '' ] );
-				return $ajax ? $this->get_ajax_notice( false, 1010601 ) : false;
 
 			case 'site expired':
 				$this->update_option( 'site_requires_fix', true );
@@ -354,6 +367,11 @@ class Api extends Data {
 				$this->update_option( 'site_marked_inactive', true );
 				$ajax or $this->set_error_notice( [ 1010603 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 1010603 ) : false;
+
+			default:
+			case 'failure':
+				$ajax or $this->set_error_notice( [ 1010601 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010601 ) : false;
 		}
 
 		/**
@@ -428,9 +446,12 @@ class Api extends Data {
 			return $ajax ? $response : false;
 		}
 
-		$response = $response['data'];
+		$response = $response['data'] ?? [];
 
 		switch ( $response['status'] ) {
+			case 'success':
+				break;
+
 			case 'REQUEST_LIMIT_REACHED':
 				$this->set_remote_crawl_timeout();
 				$ajax or $this->set_error_notice( [ 1010806 => '' ] );
@@ -439,10 +460,6 @@ class Api extends Data {
 			case 'LICENSE_TOO_LOW':
 				$ajax or $this->set_error_notice( [ 1010807 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 1010807 ) : false;
-
-			case 'failure':
-				$ajax or $this->set_error_notice( [ 1010801 => '' ] );
-				return $ajax ? $this->get_ajax_notice( false, 1010801 ) : false;
 
 			case 'site expired':
 				$this->update_option( 'site_requires_fix', true );
@@ -453,6 +470,11 @@ class Api extends Data {
 				$this->update_option( 'site_marked_inactive', true );
 				$ajax or $this->set_error_notice( [ 1010803 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 1010803 ) : false;
+
+			default:
+			case 'failure':
+				$ajax or $this->set_error_notice( [ 1010801 => '' ] );
+				return $ajax ? $this->get_ajax_notice( false, 1010801 ) : false;
 		}
 
 		$success = [];
@@ -507,7 +529,7 @@ class Api extends Data {
 	 * @param int $seconds The seconds to try again in.
 	 */
 	protected function get_try_again_notice( $seconds ) {
-		return sprintf(
+		return \sprintf(
 			/* translators: %s = numeric seconds. */
 			\esc_html( \_n( 'Try again in %s second.', 'Try again in %s seconds.', $seconds, 'the-seo-framework-extension-manager' ) ),
 			(int) $seconds
@@ -550,14 +572,14 @@ class Api extends Data {
 
 	/**
 	 * Returns the remote data fetch timeout buffer.
-	 * Currently yields 93 seconds timeout.
+	 * Currently yields 46 seconds timeout.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return int The timeout buffer.
 	 */
 	protected function get_remote_data_buffer() {
-		return 93;
+		return 46;
 	}
 
 	/**
@@ -601,7 +623,7 @@ class Api extends Data {
 
 	/**
 	 * Returns the remote data crawl timeout buffer.
-	 * Currently yields 63 seconds timeout.
+	 * Currently yields 31 seconds timeout.
 	 *
 	 * @since 1.0.0
 	 * @todo Fine-tune this, maybe get remote response on next cron?
@@ -610,7 +632,7 @@ class Api extends Data {
 	 * @return int The timeout buffer.
 	 */
 	protected function get_request_next_crawl_buffer() {
-		return 63;
+		return 31;
 	}
 
 	/**

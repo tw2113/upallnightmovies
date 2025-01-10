@@ -8,7 +8,7 @@
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -109,12 +109,11 @@ window.tsfem_e_monitor = {
 				remote_crawl_timeout: tsfem_e_monitor.rCrawlTimeout,
 			},
 			timeout: 10000,
-			async: true,
 		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
 
-			if ( tsf.l10n.states.debug ) console.log( response );
+			tsf.l10n.states.debug && console.log( response );
 
 			let data = response?.data,
 				type = response?.type;
@@ -161,7 +160,7 @@ window.tsfem_e_monitor = {
 	 * @function
 	 * @param {jQuery.event} event
 	 */
-	fetchData: function( event ) {
+	fetchData: event => {
 
 		let $button = jQuery( event.target );
 
@@ -200,7 +199,6 @@ window.tsfem_e_monitor = {
 				'remote_data_timeout' : tsfem_e_monitor.rDataTimeout,
 			},
 			timeout: 15000,
-			async: true,
 		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
@@ -245,7 +243,7 @@ window.tsfem_e_monitor = {
 						);
 
 						// Loop through each issue and slowly insert it.
-						jQuery.each( issues.data.info, function( index, value ) {
+						jQuery.each( issues.data.info, ( index, value ) => {
 							setTimeout( () => {
 								jQuery( value ).appendTo( '.tsfem-e-monitor-issues-wrap > div' ).css( 'opacity', 0 ).animate(
 									{ 'opacity' : 1 },
@@ -310,7 +308,7 @@ window.tsfem_e_monitor = {
 	 * @function
 	 * @return {Void} If element already exists.
 	 */
-	addRequiresFix: function() {
+	addRequiresFix: () => {
 
 		if ( jQuery( '.tsfem-account-fix' ).length > 0 || jQuery( '.tsfem-account-info' ).length < 1 )
 			return;
@@ -353,7 +351,7 @@ window.tsfem_e_monitor = {
 	 * @function
 	 * @return {undefined}
 	 */
-	setSettingsLoader: function() {
+	setSettingsLoader: () => {
 		let settingElements = document.querySelectorAll( '.tsfem-e-monitor-edit' );
 		for ( let i = 0; i < settingElements.length; i++ ) {
 			settingElements[ i ].classList.remove( 'tsfem-edit' );
@@ -370,7 +368,7 @@ window.tsfem_e_monitor = {
 	 * @function
 	 * @return {undefined}
 	 */
-	unsetSettingsLoader: function() {
+	unsetSettingsLoader: () => {
 		let e = document.querySelectorAll( '.tsfem-e-monitor-edit' );
 		for ( let i = 0; i < e.length; i++ ) {
 			tsfem_e_monitor.animateResetClicker( e[ i ] );
@@ -388,7 +386,7 @@ window.tsfem_e_monitor = {
 	 * @param {boolean|undefined} animate Whether to animate and reset the edit button.
 	 * @return {undefined}
 	 */
-	setSetting: function( what, value, animate ) {
+	setSetting: ( what, value, animate ) => {
 
 		animate ||= false;
 
@@ -425,7 +423,7 @@ window.tsfem_e_monitor = {
 	 * @param {Element} clicker The clicker element to animate.
 	 * @return {undefined} Early so if already animated.
 	 */
-	animateResetClicker: function( clicker ) {
+	animateResetClicker: clicker => {
 
 		if ( clicker.classList.contains( 'tsfem-dashicon-fadeout-3000' )
 		|| ( clicker.classList.contains( 'tsfem-edit' ) ) )
@@ -459,7 +457,7 @@ window.tsfem_e_monitor = {
 	 * @param {jQuery.event} event
 	 * @return {boolean|undefined} False on error. Undefined otherwise.
 	 */
-	editSetting: function( event ) {
+	editSetting: event => {
 
 		let clicker  = event.target,
 			selectId = void 0,
@@ -577,7 +575,6 @@ window.tsfem_e_monitor = {
 							loaderText = tsfem.i18n['UnknownError'];
 							topNoticeCode = rCode || false;
 							status = 0;
-							break;
 					}
 
 					if ( 'undefined' !== typeof data.settings ) {
@@ -621,7 +618,7 @@ window.tsfem_e_monitor = {
 			jQuery( selector ).trigger( 'blur' ).hide();
 			jQuery( clicker ).fadeIn( 300 );
 		}
-		const onChange = function( event ) {
+		const onChange = event => {
 			let _target = event.target;
 			newVal  = _target.value;
 			newText = _target.options[ _target.selectedIndex ].text;
@@ -629,7 +626,7 @@ window.tsfem_e_monitor = {
 
 			newVal == lastVal && reset() || doChange();
 		}
-		const clickOff = function( event ) {
+		const clickOff = event => {
 			let $select = jQuery( event.target ).closest( selector );
 			if ( $select.length < 1 ) {
 				reset();
@@ -664,7 +661,7 @@ window.tsfem_e_monitor = {
 	 * @function
 	 * @param {jQuery.event} event
 	 */
-	a11yEditSetting: function( event ) {
+	a11yEditSetting: event => {
 		if ( 32 === event.which ) { // spacebar nonJQ: ' ' === event.key
 			event.preventDefault();
 			tsfem_e_monitor.editSetting( event );
@@ -684,7 +681,7 @@ window.tsfem_e_monitor = {
 	 * @param {Object} jQ jQuery
 	 * @function
 	 */
-	ready: function( jQ ) {
+	ready: jQ => {
 		// Disable semi-disabled buttons.
 		jQ( '#tsfem-e-monitor-privacy-readmore' ).on( 'click', tsfem_e_monitor.showReadMore );
 

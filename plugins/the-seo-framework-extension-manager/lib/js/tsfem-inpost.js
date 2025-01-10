@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -35,7 +35,7 @@
  * @constructor
  * @param {!jQuery} $ jQuery object.
  */
-window.tsfem_inpost = function( $ ) {
+window.tsfem_inpost = function ( $ ) {
 
 	/**
 	 * Signifies known states on-load.
@@ -45,18 +45,14 @@ window.tsfem_inpost = function( $ ) {
 	 *
 	 * @const {string|number}         postID
 	 * @const {string}                nonce
-	 * @const {boolean}               rtl
 	 * @const {boolean}               isPremium
 	 * @const {string}                locale
-	 * @const {boolean}               debug
 	 * @const {object<string,string>} i18n
 	 */
 	const postID    = tsfem_inpostL10n.post_ID;
 	const nonce     = tsfem_inpostL10n.nonce;
-	const rtl       = tsfem_inpostL10n.rlt;
 	const isPremium = tsfem_inpostL10n.isPremium;
 	const locale    = tsfem_inpostL10n.locale;
-	const debug     = tsfem_inpostL10n.debug;
 	const i18n      = tsfem_inpostL10n.i18n;
 
 	/**
@@ -131,7 +127,7 @@ window.tsfem_inpost = function( $ ) {
 	 * @param {number|undefined}         timeout  The iteration timeout. Optional.
 	 * @param {number|undefined}         stopAt   The iteration anti-lag blocker. Optional. Defaults to 2000 ms.
 	 *                                            Set to 0 to turn off.
-	 * @return {jQuery.Deferred|Promise} The promise object.
+	 * @return {Promise} The promise object.
 	 */
 	const promiseLoop = ( iterable, cb, timeout, stopAt = 2000 ) => new Promise( ( resolve, reject ) => {
 		let its = iterable.length;
@@ -209,12 +205,12 @@ window.tsfem_inpost = function( $ ) {
 			return reject();
 		}
 
-		debug && console.log( ajaxOps );
+		tsf.l10n.states.debug && console.log( ajaxOps );
 
 		$.ajax( ajaxOps ).done( response => {
 			response = tsf.convertJSONResponse( response );
 
-			debug && console.log( response );
+			tsf.l10n.states.debug && console.log( response );
 
 			let data = response?.data,
 				type = response?.type;
@@ -383,12 +379,11 @@ window.tsfem_inpost = function( $ ) {
 					'tsfem-notice-has-msg': hasMsg,
 				},
 				timeout: 7000,
-				async: true,
 			} ).done( response => {
 
 				response = tsf.convertJSONResponse( response );
 
-				debug && console.log( response );
+				tsf.l10n.states.debug && console.log( response );
 
 				let data = response?.data,
 					type = response?.type;
@@ -518,7 +513,6 @@ window.tsfem_inpost = function( $ ) {
 			default:
 				// @TODO use ajaxOptions.status? i.e. 400, 401, 402, 503.
 				_error = i18n['UnknownError'];
-				break;
 		}
 
 		return _error;
@@ -723,6 +717,28 @@ window.tsfem_inpost = function( $ ) {
 		fadeIn( target, ms, args, false );
 	}
 
+	/**
+	 * Debounces the input function.
+	 *
+	 * @since 2.7.0
+	 * @access public
+	 *
+	 * @function
+	 * @param {CallableFunction} func
+	 * @param {Int} timeout
+	 * @return {Function}
+	 */
+	const debounce = ( func, timeout = 0 ) => {
+		let timeoutId;
+		return ( ...args ) => {
+			clearTimeout( timeoutId );
+			return {
+				timeoutId: timeoutId = setTimeout( () => func( ...args ), timeout ),
+				cancel: () => clearTimeout( timeoutId ),
+			};
+		};
+	}
+
 	return Object.assign( {
 		/**
 		 * Initialises all aspects of the scripts.
@@ -746,7 +762,6 @@ window.tsfem_inpost = function( $ ) {
 		nonce,
 		isPremium,
 		locale,
-		debug,
 		i18n
 	}, {
 		/**
@@ -754,6 +769,7 @@ window.tsfem_inpost = function( $ ) {
 		 * Don't overwrite these.
 		 *
 		 * @since 1.5.0
+		 * @since 2.7.0 Added debounce.
 		 * @access public
 		 */
 		isActionableElement,
@@ -764,7 +780,8 @@ window.tsfem_inpost = function( $ ) {
 		getAjaxError,
 		setIconClass,
 		fadeOut,
-		fadeIn
+		fadeIn,
+		debounce,
 	} );
 }( jQuery );
 window.tsfem_inpost.load();

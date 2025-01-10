@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -92,7 +92,6 @@ class Core {
 			'activate-free'     => 'activate-free',
 			'deactivate'        => 'deactivate',
 			'transfer-domain'   => 'transfer-domain',
-			'enable-feed'       => 'enable-feed',
 
 			// Extensions.
 			'activate-ext'      => 'activate-ext',
@@ -108,7 +107,6 @@ class Core {
 			'activate-external' => 'tsfem_nonce_action_external_account',
 			'deactivate'        => 'tsfem_nonce_action_deactivate_account',
 			'transfer-domain'   => 'tsfem_nonce_action_transfer_domain',
-			'enable-feed'       => 'tsfem_nonce_action_feed',
 
 			// Extensions.
 			'activate-ext'      => 'tsfem_nonce_action_activate_ext',
@@ -171,21 +169,16 @@ class Core {
 		$checksum = Extensions::get( 'extensions_checksum' );
 		$result   = $this->validate_extensions_checksum( $checksum );
 
-		if ( true !== $result ) :
-			switch ( $result ) {
-				case -2:
-					// Failed checksum.
-					$this->set_error_notice( [ 2002 => '' ] );
-					break;
-
-				case -1:
-					// No extensions have ever been active...
-					break;
+		if ( true !== $result ) {
+			// -2: failed checksum, -1: no extensions have ever been active.
+			if ( -2 === $result ) {
+				// Failed checksum.
+				$this->set_error_notice( [ 2002 => '' ] );
 			}
 
 			Extensions::reset();
 			return $loaded = false;
-		endif;
+		}
 
 		$extensions = Extensions::get( 'active_extensions_list' );
 
@@ -218,13 +211,10 @@ class Core {
 	 */
 	final protected function get_options_instance_key() {
 		static $instance;
-		// TODO PHP 7.4: ??=
-		return $instance ?? (
-			$instance = $this->get_option( '_instance' )
-				?: \wp_generate_password( 29, false )
-					. mt_rand( 12, 98 )
-					. mt_rand( 1, 9 ) // Remove likelihood of leading zeros.
-		);
+		return $instance ??= $this->get_option( '_instance' )
+			?: \wp_generate_password( 29, false )
+				. mt_rand( 12, 98 )
+				. mt_rand( 1, 9 ); // Remove likelihood of leading zeros.
 	}
 
 	/**
@@ -571,6 +561,8 @@ class Core {
 	 */
 	final protected function stop_class_filters( $current_filter, $key ) {
 
+		$current_filter = (array) $current_filter;
+
 		$_key   = key( $current_filter );
 		$filter = reset( $current_filter );
 
@@ -645,14 +637,14 @@ class Core {
 	 */
 	final public function _yield_verification_instance( $count, &$instance, &$bits ) {
 
-		if ( $this->_verify_instance( $instance, $bits[1] ) ) :
-			for ( $i = 0; $i < $count; $i++ ) :
+		if ( $this->_verify_instance( $instance, $bits[1] ) ) {
+			for ( $i = 0; $i < $count; $i++ ) {
 				yield [
 					'bits'     => $_bits = $this->get_bits(),
 					'instance' => $this->get_verification_instance( $_bits[1] ),
 				];
-			endfor;
-		endif;
+			}
+		}
 	}
 
 	/**
@@ -1422,7 +1414,7 @@ class Core {
 				return $this->ajax_is_tsf_extension_manager_page();
 			} else {
 				return ( $GLOBALS['page_hook'] ?? null ) === $this->seo_extensions_menu_page_hook
-					|| ( $_GET['page'] ?? null ) === $this->seo_extensions_menu_page_hook; // phpcs:ignore, WordPress.Security.NonceVerification;
+					|| ( $_GET['page'] ?? null ) === $this->seo_extensions_menu_page_hook; // phpcs:ignore, WordPress.Security.NonceVerification
 			}
 		}
 	}

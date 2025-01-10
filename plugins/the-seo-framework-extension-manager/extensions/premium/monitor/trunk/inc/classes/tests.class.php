@@ -15,7 +15,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -154,7 +154,7 @@ final class Tests {
 				if ( html_entity_decode( $_expected_title ) !== html_entity_decode( $first_found_title ) ) {
 					$content  = $this->wrap_info( \esc_html__( 'The homepage title is not as expected. You should activate the Title Fix extension.', 'the-seo-framework-extension-manager' ) );
 					$content .= $this->wrap_info(
-						sprintf(
+						\sprintf(
 							convert_markdown(
 								/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 								\esc_html__( 'Found: `%s`', 'the-seo-framework-extension-manager' ),
@@ -164,7 +164,7 @@ final class Tests {
 						)
 					);
 					$content .= $this->wrap_info(
-						sprintf(
+						\sprintf(
 							convert_markdown(
 								/* translators: Backticks are markdown for <code>Text</code>. Keep the backticks. */
 								\esc_html__( 'Expected: `%s`', 'the-seo-framework-extension-manager' ),
@@ -182,7 +182,7 @@ final class Tests {
 
 		if ( isset( $data['count'] ) && $data['count'] > 1 ) {
 			$state    = 'bad';
-			$content .= $this->wrap_info( sprintf(
+			$content .= $this->wrap_info( \sprintf(
 				/* translators: %d = the number "2" or greater */
 				\esc_html__( '%d title tags are found on the homepage.', 'the-seo-framework-extension-manager' ),
 				$data['count']
@@ -204,7 +204,7 @@ final class Tests {
 				$_dev = \esc_html__( 'theme developer', 'the-seo-framework-extension-manager' );
 			}
 
-			$content .= $this->wrap_info( sprintf(
+			$content .= $this->wrap_info( \sprintf(
 				/* translators: %s = theme developer */
 				\esc_html__( 'Please consult with your %s to fix the title.', 'the-seo-framework-extension-manager' ),
 				$_dev
@@ -252,7 +252,7 @@ final class Tests {
 
 		if ( isset( $data['count'] ) && $data['count'] > 1 ) {
 			$state    = 'bad';
-			$content .= $this->wrap_info( sprintf(
+			$content .= $this->wrap_info( \sprintf(
 				/* translators: %d = Always the number "2" or greater */
 				\esc_html__( '%d description meta tags are found on the homepage.', 'the-seo-framework-extension-manager' ),
 				$data['count']
@@ -274,7 +274,7 @@ final class Tests {
 				$_dev = \esc_html__( 'theme developer', 'the-seo-framework-extension-manager' );
 			}
 
-			$content .= $this->wrap_info( sprintf(
+			$content .= $this->wrap_info( \sprintf(
 				/* translators: %s = theme developer */
 				\esc_html__( 'Please consult with your %s to fix the duplicated description meta tags.', 'the-seo-framework-extension-manager' ),
 				$_dev
@@ -326,7 +326,7 @@ final class Tests {
 						? \tsf()->uri()->get_generated_url( [ 'id' => $id ] )
 						: \tsf()->create_canonical_url( [ 'id' => $id ] );
 
-					$links[] = sprintf( '<a href="%s" target=_blank rel=noopener>%s</a>', $url, $title );
+					$links[] = \sprintf( '<a href="%s" target=_blank rel=noopener>%s</a>', $url, $title );
 				}
 			}
 		}
@@ -338,11 +338,11 @@ final class Tests {
 		} else {
 			$state    = 'bad';
 			$content  = $this->wrap_info( \esc_html__( 'Something is causing a PHP error on your website. This prevents correctly closing of HTML tags.', 'the-seo-framework-extension-manager' ) );
-			$content .= sprintf( '<h4>%s</h4>', \esc_html( \_n( 'Affected page:', 'Affected pages:', \count( $links ), 'the-seo-framework-extension-manager' ) ) );
+			$content .= \sprintf( '<h4>%s</h4>', \esc_html( \_n( 'Affected page:', 'Affected pages:', \count( $links ), 'the-seo-framework-extension-manager' ) ) );
 
 			$content .= '<ul class=tsfem-ul-disc>';
 			foreach ( $links as $link ) {
-				$content .= sprintf( '<li>%s</li>', $link );
+				$content .= \sprintf( '<li>%s</li>', $link );
 			}
 			$content .= '</ul>';
 		}
@@ -557,15 +557,15 @@ final class Tests {
 				$_expected_scheme = 'http';
 		}
 
-		if ( empty( $data['canonical_url'] ) ) :
+		if ( empty( $data['canonical_url'] ) ) {
 			$state    = 'warning';
 			$content .= $this->wrap_info(
 				\esc_html__( 'No canonical URL is found.', 'the-seo-framework-extension-manager' )
 			);
-		elseif ( ! empty( $data['canonical_url_scheme'] ) ) :
-			if ( $_test_alt ) :
-				if ( ! empty( $data['canonical_url_scheme_alt'] ) ) :
-					if ( $data['canonical_url_scheme'] === $data['canonical_url_scheme_alt'] ) :
+		} elseif ( ! empty( $data['canonical_url_scheme'] ) ) {
+			if ( $_test_alt ) {
+				if ( ! empty( $data['canonical_url_scheme_alt'] ) ) {
+					if ( $data['canonical_url_scheme'] === $data['canonical_url_scheme_alt'] ) {
 						if ( $_expected_scheme === $data['canonical_url_scheme'] ) {
 							$state    = 'good';
 							$content .= $this->wrap_info(
@@ -577,7 +577,7 @@ final class Tests {
 								\esc_html__( 'Both versions of your site point to the insecure version. Is this intended?', 'the-seo-framework-extension-manager' )
 							);
 						}
-					else :
+					} else {
 						$state = 'bad';
 						if ( \wp_doing_ajax() )
 							\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
@@ -585,7 +585,7 @@ final class Tests {
 								: \tsf()->add_menu_link();
 						$content .= $this->wrap_info(
 							convert_markdown(
-								sprintf(
+								\sprintf(
 									/* translators: URLs are in markdown. %s = SEO Settings page admin URL. */
 									\esc_html__( 'The canonical URL scheme is automatically determined. Set the preferred scheme to either HTTP or HTTPS in the [General SEO settings](%s).', 'the-seo-framework-extension-manager' ),
 									\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
@@ -595,14 +595,14 @@ final class Tests {
 								[ 'a' ]
 							)
 						);
-					endif;
-				else :
+					}
+				} else {
 					$state    = 'bad';
 					$content .= $this->wrap_info(
 						\esc_html__( 'No canonical URL is found on the HTTPS version of your site.', 'the-seo-framework-extension-manager' )
 					);
-				endif;
-			else :
+				}
+			} else {
 				if ( $_expected_scheme === $data['canonical_url_scheme'] ) {
 					// Don't change state.
 					$content .= $this->wrap_info(
@@ -616,7 +616,7 @@ final class Tests {
 							: \tsf()->add_menu_link();
 					$content .= $this->wrap_info(
 						convert_markdown(
-							sprintf(
+							\sprintf(
 								/* translators: URLs are in markdown. %s = SEO Settings page admin URL. */
 								\esc_html__( 'The canonical URL scheme is set incorrectly. Set the preferred scheme to be detected automatically in the [General SEO settings](%s).', 'the-seo-framework-extension-manager' ),
 								\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
@@ -627,13 +627,13 @@ final class Tests {
 						)
 					);
 				}
-			endif;
-		else :
+			}
+		} else {
 			$state    = 'bad';
 			$content .= $this->wrap_info(
 				\esc_html__( 'The canonical URL does not seem to have a set scheme; so, the URL is invalid. The active theme, another plugin or an external service might be interfering.', 'the-seo-framework-extension-manager' )
 			);
-		endif;
+		}
 
 		if ( ! $content )
 			$content = $this->wrap_info( $this->no_issue_found() );
@@ -680,10 +680,10 @@ final class Tests {
 	 */
 	protected function no_issue_found() {
 		static $memo;
-		return $memo ?? ( $memo = sprintf(
+		return $memo ??= \sprintf(
 			'<span class=tsfem-description>%s</span>',
 			\esc_html__( 'No issues have been found.', 'the-seo-framework-extension-manager' )
-		) );
+		);
 	}
 
 	/**
@@ -695,10 +695,10 @@ final class Tests {
 	 */
 	protected function no_data_found() {
 		static $memo;
-		return $memo ?? ( $memo = sprintf(
+		return $memo ??= \sprintf(
 			'<span class=tsfem-description>%s</span>',
 			\esc_html__( 'No data has been found on this issue.', 'the-seo-framework-extension-manager' )
-		) );
+		);
 	}
 
 	/**
@@ -710,9 +710,9 @@ final class Tests {
 	 */
 	protected function small_sample_disclaimer() {
 		static $memo;
-		return $memo ?? ( $memo = sprintf(
+		return $memo ??= \sprintf(
 			'<span class=tsfem-description>%s</span>',
 			\esc_html__( 'This has been evaluated with a small sample size.', 'the-seo-framework-extension-manager' )
-		) );
+		);
 	}
 }

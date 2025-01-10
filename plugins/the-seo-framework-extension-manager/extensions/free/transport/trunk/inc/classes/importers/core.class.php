@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Importers;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -152,7 +152,7 @@ abstract class Core {
 	 * @return string|string[] The escaped variable. Returns array if array was inputted.
 	 */
 	final protected static function esc_sql_in( $var ) {
-		if ( ! is_scalar( $var ) )
+		if ( ! \is_scalar( $var ) )
 			$var = array_filter( (array) $var, 'is_scalar' );
 
 		return \esc_sql( $var );

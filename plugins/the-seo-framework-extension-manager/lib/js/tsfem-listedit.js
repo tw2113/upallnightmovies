@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2020-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2020 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -33,9 +33,8 @@
  * @since 2.5.0
  *
  * @constructor
- * @param {!jQuery} $ jQuery object.
  */
-window.tsfem_listedit = function( $ ) {
+window.tsfem_listedit = function () {
 
 	/**
 	 * Data property injected by WordPress l10n handler.
@@ -124,7 +123,7 @@ window.tsfem_listedit = function( $ ) {
 			_oldInlineEditCallback = 'edit' in window.inlineEditPost && window.inlineEditPost.edit;
 
 			if ( _oldInlineEditCallback ) {
-				window.inlineEditPost.edit = function( id ) {
+				window.inlineEditPost.edit = function ( id ) {
 					let ret = _oldInlineEditCallback.apply( this, arguments );
 
 					if ( typeof( id ) === 'object' )
@@ -142,7 +141,7 @@ window.tsfem_listedit = function( $ ) {
 			_oldInlineEditCallback = 'edit' in window.inlineEditTax && window.inlineEditTax.edit;
 
 			if ( _oldInlineEditCallback ) {
-				window.inlineEditTax.edit = function( id ) {
+				window.inlineEditTax.edit = function ( id ) {
 					let ret = _oldInlineEditCallback.apply( this, arguments );
 
 					if ( typeof( id ) === 'object' )
@@ -174,5 +173,5 @@ window.tsfem_listedit = function( $ ) {
 	}, {}, {
 		l10n
 	} );
-}( jQuery );
+}();
 window.tsfem_listedit.load();

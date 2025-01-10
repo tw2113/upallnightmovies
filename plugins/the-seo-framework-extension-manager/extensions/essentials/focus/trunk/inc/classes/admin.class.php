@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Focus extension for The SEO Framework
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -122,8 +122,9 @@ final class Admin extends Core {
 						// NOTE: Can't reliably fetch Gutenberg's from DOM. That's why we use a fill.
 					],
 					'pageContent'    => [
-						'#content'                 => 'append', // Classic Editor
-						'#tsfem-focus-gbc-content' => 'append', // Gutenberg fill
+						'.post-type-product #excerpt' => 'append', // WooCommerce Short Description (shown before content).
+						'#content'                    => 'append', // Classic Editor
+						'#tsfem-focus-gbc-content'    => 'append', // Gutenberg fill
 						// NOTE: Can't reliably fetch Gutenberg's from DOM. That's why we use a fill.
 					],
 					'seoTitle'       => [
@@ -190,8 +191,9 @@ final class Admin extends Core {
 		 */
 		$interval = (int) \apply_filters( 'the_seo_framework_focus_auto_interval', 45000 );
 
-		// see tsf()->query()->get_admin_post_id();
-		$post_id = \absint( $_GET['post'] ?? $_GET['post_id'] ?? 0 );
+		$post_id = \TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+			? \tsf()->query()->get_the_real_admin_id()
+			: \tsf()->get_the_real_admin_id();
 
 		$scripts[] = [
 			'id'       => 'tsfem-focus-inpost',
@@ -262,9 +264,15 @@ final class Admin extends Core {
 	 */
 	private function get_worker_file_location() {
 
-		$min = \SCRIPT_DEBUG ? '' : '.min';
+		if ( \SCRIPT_DEBUG ) {
+			$min = '';
+			$ext = '?' . uniqid( hrtime( true ) );
+		} else {
+			$min = '.min';
+			$ext = '';
+		}
 
-		return \esc_url( \set_url_scheme( \TSFEM_E_FOCUS_DIR_URL . "lib/js/tsfem-focus-parser.worker{$min}.js" ) );
+		return \esc_url( \set_url_scheme( \TSFEM_E_FOCUS_DIR_URL . "lib/js/tsfem-focus-parser.worker{$min}.js$ext" ) );
 	}
 
 	/**
@@ -285,7 +293,7 @@ final class Admin extends Core {
 			'pm_index' => $this->pm_index,
 			'post_id'  => \TSF_EXTENSION_MANAGER_USE_MODERN_TSF
 				? \tsf()->query()->get_the_real_admin_id()
-				: \tsf()->get_the_real_ID(),
+				: \tsf()->get_the_real_admin_id(),
 			'kw'       => [
 				'label'        => [
 					'title' => \__( 'Subject Analysis', 'the-seo-framework-extension-manager' ),
@@ -394,12 +402,9 @@ final class Admin extends Core {
 			return null;
 
 		// Fills missing data to maintain consistency.
-		foreach ( [ 0, 1, 2 ] as $k ) {
-			// PHP 7.4: ??=
-			if ( ! isset( $output[ $k ] ) ) {
-				$output[ $k ] = $this->pm_defaults['kw'][ $k ];
-			}
-		}
+		foreach ( [ 0, 1, 2 ] as $k )
+			$output[ $k ] ??= $this->pm_defaults['kw'][ $k ];
+
 		return $output ?: null;
 	}
 
@@ -439,7 +444,7 @@ final class Admin extends Core {
 						// Convert to float, have 2 f decimals, trim trailing zeros, trim trailing dots, convert to string.
 						// 2x rtrim: first trim trailing 0's, then trim remainder . (if any);
 						// don't trim both at the same time, otherwise 90.0 -> 9, instead of 90.0 -> 90
-						$value[ $_t ] = (string) ( rtrim( rtrim( sprintf( '%.2F', (float) $_v ), '0' ), '.' ) ?: 0 );
+						$value[ $_t ] = (string) ( rtrim( rtrim( \sprintf( '%.2F', (float) $_v ), '0' ), '.' ) ?: 0 );
 					}
 				}
 				break;

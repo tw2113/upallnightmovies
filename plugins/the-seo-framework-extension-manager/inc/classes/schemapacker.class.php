@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -312,9 +312,6 @@ final class SchemaPacker {
 
 				case 'kill_this':
 					continue 2;
-
-				default:
-					break;
 			}
 
 			isset( $key, $data ) and $_[ $key ] = $data;
@@ -361,7 +358,6 @@ final class SchemaPacker {
 
 			case 'iterate':
 				$value = $this->make_iteration( $schema );
-				break;
 		}
 
 		if ( isset( $schema->_handlers->_escape ) )
@@ -434,14 +430,9 @@ final class SchemaPacker {
 
 			case 'concat':
 				$value = $this->concat( $schema->_data->_config );
-				break;
-
-			default:
-				$value = null;
-				break;
 		}
 
-		return $value;
+		return $value ?? null;
 	}
 
 	/**
@@ -665,14 +656,9 @@ final class SchemaPacker {
 
 			case 'type_not':
 				$action = \gettype( $v ) !== $c->_value;
-				break;
-
-			default:
-				$action = false;
-				break;
 		}
 
-		if ( ! $action )
+		if ( empty( $action ) )
 			return $value;
 
 		switch ( $c->_do ) {
@@ -683,11 +669,11 @@ final class SchemaPacker {
 				return null;
 
 			case 'set':
-				if ( '$it' === $c->_to ) :
+				if ( '$it' === $c->_to ) {
 					return $this->it;
-				elseif ( '$level' === $c->_to ) :
+				} elseif ( '$level' === $c->_to ) {
 					return $this->level;
-				endif;
+				}
 				return $c->_to;
 
 			case 'current':

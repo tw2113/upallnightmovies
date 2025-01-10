@@ -5,11 +5,11 @@
 
 namespace TSF_Extension_Manager;
 
-\defined( 'TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE' ) or die;
+\defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -24,31 +24,39 @@ namespace TSF_Extension_Manager;
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-\add_action( 'plugins_loaded', __NAMESPACE__ . '\\_init_locale', 4 );
-/**
- * Loads plugin locale: 'the-seo-framework-extension-manager'
- * Locale folder: the-seo-framework-extension-manager/language/
- *
- * @since 1.0.0
- * @access private
- *
- * @param bool $ignore Whether to load locale outside of the admin area.
- * @return void Early if already loaded.
- */
-function _init_locale( $ignore = false ) {
-	if ( \is_admin() || $ignore ) {
-		if ( \TSF_Extension_Manager\has_run( __METHOD__ ) )
-			return;
+\add_action( 'init', __NAMESPACE__ . '\\_load_tsfem', 0 );
 
-		\load_plugin_textdomain(
-			'the-seo-framework-extension-manager',
-			false,
-			\dirname( \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ) . \DIRECTORY_SEPARATOR . 'language'
-		);
+/**
+ * Loads the plugin.
+ *
+ * @hook init 0
+ * @since 2.7.0
+ * @access private
+ */
+function _load_tsfem() {
+
+	\load_plugin_textdomain(
+		'the-seo-framework-extension-manager',
+		false,
+		\dirname( \TSF_EXTENSION_MANAGER_PLUGIN_BASENAME ) . \DIRECTORY_SEPARATOR . 'language',
+	);
+
+	if ( ! \function_exists( 'tsf' ) ) {
+		if ( \is_admin() )
+			require \TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'install-tsf.php';
+		return;
 	}
+
+	// Prepare plugin upgrader before the plugin loads. TODO: Make downgrading possible.
+	if ( \tsf_extension_manager_db_version() < \TSF_EXTENSION_MANAGER_DB_VERSION )
+		require \TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'upgrade.php';
+
+	\TSF_Extension_Manager\_protect_options();
+	\TSF_Extension_Manager\_register_autoloader();
+
+	\add_action( 'the_seo_framework_init', __NAMESPACE__ . '\\_init_tsf_extension_manager', 0 );
 }
 
-\TSF_Extension_Manager\_protect_options();
 /**
  * Prevents option handling outside of the plugin's scope.
  * Warning: When you remove these filters or actions, the plugin will delete all its options on first sight.
@@ -58,11 +66,10 @@ function _init_locale( $ignore = false ) {
  * This is because the required traits files aren't loaded yet. The autoloader treats traits
  * as classes.
  *
- * Also defines \PHP_INT_MIN when not defined. This is used further internally.
+ * TODO remove this. It's stupid. We need a better way to store the API key, such as oAuth.
  *
  * @since 1.0.0
  * @access private
- * @uses constant \PHP_INT_MIN, available from PHP 7.0
  */
 function _protect_options() {
 
@@ -112,7 +119,6 @@ function _pre_execute_protect_option( $new_value, $old_value, $option ) {
 	return SecureOption::verify_option_instance( $new_value, $old_value, $option );
 }
 
-\add_action( 'plugins_loaded', __NAMESPACE__ . '\\_init_tsf_extension_manager', 6 );
 /**
  * Loads TSF_Extension_Manager\LoadAdmin class when in admin.
  * Loads TSF_Extension_Manager\LoadFront class on the front-end.
@@ -120,14 +126,9 @@ function _pre_execute_protect_option( $new_value, $old_value, $option ) {
  * Also directly initializes extensions after the class constructors have run.
  * This will allow all extensions and functions to run exactly after The SEO Framework has been initialized.
  *
- * Priority 6: Use anything above 6, or any action later than plugins_loaded and
- *             you can access the class and functions. Failing to do so will perform wp_die().
- *             This makes sure The SEO Framework has been initialized correctly as well.
- *             So you can use function `tsf()` at all times.
- *
- * Performs wp_die() when called prior to action `plugins_loaded`.
- *
+ * @hook the_seo_framework_init 0
  * @since 1.0.0
+ * @since 2.7.0 Moved from plugins_loaded 6 to the_seo_framework_init (init 0).
  * @access private
  * @factory
  *
@@ -141,12 +142,22 @@ function _init_tsf_extension_manager() {
 	if ( $tsfem )
 		return $tsfem;
 
-	if ( ! \doing_action( 'plugins_loaded' ) ) {
-		\wp_die( 'Use tsfem() after action `plugins_loaded` priority 6.' );
-		exit;
-	}
+	if ( version_compare( \THE_SEO_FRAMEWORK_VERSION, '4.2.8', '<' ) )
+		return null;
 
-	if ( \TSF_Extension_Manager\can_load_class() ) {
+	/**
+	 * @since 1.0.0
+	 * @param bool $can_load
+	 */
+	if ( \apply_filters( 'tsf_extension_manager_enabled', true ) ) {
+		/**
+		 * @since 2.6.3
+		 * @internal
+		 */
+		\define( 'TSF_EXTENSION_MANAGER_USE_MODERN_TSF', version_compare( \THE_SEO_FRAMEWORK_VERSION, '4.3.0', '>=' ) );
+
+		// Load TSF v5.0 transition functions file.
+		require TSF_EXTENSION_MANAGER_DIR_PATH_FUNCTION . 'transition.php';
 
 		/**
 		 * Load class overloading traits.
@@ -171,19 +182,11 @@ function _init_tsf_extension_manager() {
 		 * @since 1.5.0
 		 */
 		\do_action( 'tsfem_extensions_initialized' );
-	} elseif ( ! \function_exists( 'tsf' ) ) {
-		/**
-		 * Nothing is loaded at this point; not even The SEO Framework.
-		 *
-		 * @since 2.2.0
-		 */
-		\do_action( 'tsfem_needs_the_seo_framework' );
 	}
 
 	return $tsfem;
 }
 
-\TSF_Extension_Manager\_register_autoloader();
 /**
  * Registers The SEO Framework extension manager's autoloader.
  *
@@ -211,47 +214,6 @@ function _register_autoloader() {
 	 * This will make sure the website crashes when extensions try to bypass WordPress's loop.
 	 */
 	spl_autoload_register( __NAMESPACE__ . '\\_autoload_classes', true, true );
-}
-
-/**
- * Determines whether we can load the the plugin.
- * Memoizes the result.
- *
- * @since 1.0.0
- * @since 1.5.0 Now requires TSF 2.8+ to load.
- * @since 2.0.2 Now requires TSF 3.1+ to load.
- * @since 2.2.0 Now requires TSF 3.3+ to load.
- * @since 2.5.0 Now requires TSF 4.1.2+ to load.
- * @since 2.5.1 Now requires TSF 4.1.4+ to load.
- * @since 2.6.0 Now requires TSF 4.2.0+ to load.
- * @since 2.6.2 Now requires TSF 4.2.8+ to load.
- *
- * @return bool Whether the plugin can load. Always returns false on the front-end.
- */
-function can_load_class() {
-
-	static $can_load;
-
-	if ( isset( $can_load ) )
-		return $can_load;
-
-	if ( \did_action( 'the_seo_framework_loaded' ) ) {
-		/**
-		 * @since 2.6.3
-		 * @internal
-		 */
-		\define( 'TSF_EXTENSION_MANAGER_USE_MODERN_TSF', version_compare( \THE_SEO_FRAMEWORK_VERSION, '4.3.0', '>=' ) );
-
-		if ( version_compare( \THE_SEO_FRAMEWORK_VERSION, '4.2.8', '>=' ) ) {
-			/**
-			 * @since 1.0.0
-			 * @param bool $can_load
-			 */
-			return $can_load = (bool) \apply_filters( 'tsf_extension_manager_enabled', true );
-		}
-	}
-
-	return false;
 }
 
 /**

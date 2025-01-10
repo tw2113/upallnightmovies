@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Transport;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -86,26 +86,5 @@ namespace TSF_Extension_Manager\Extension\Transport;
 if ( ! \tsfem()->_init_early_extension_autoloader( \TSFEM_E_TRANSPORT_PATH_CLASS, 'Transport', $_instance, $bits ) )
 	return;
 
-\add_action( 'plugins_loaded', __NAMESPACE__ . '\\transport_init', 11 );
-/**
- * Initializes the extension.
- *
- * @since 1.0.0
- *
- * @return bool True if class is loaded.
- */
-function transport_init() {
-
-	static $loaded;
-
-	// Don't init the class twice.
-	if ( isset( $loaded ) )
-		return $loaded;
-
-	if ( \is_admin() ) {
-		new Admin;
-		return $loaded = true;
-	}
-
-	return $loaded = false;
-}
+if ( \is_admin() )
+	new Admin;

@@ -9,7 +9,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -70,18 +70,18 @@ window.tsfemForm = {
 	 * @param {string} data The data type.
 	 * @return {(Object|string)} JSON decoded object or string.
 	 */
-	parseElementData: function( element, data ) {
+	parseElementData: ( element, data ) => {
 
 		let value = tsfemForm.getElementData( element, data ),
-			ret = void 0;
+			ret   = void 0;
 
 		try {
 			ret = value && JSON.parse( value );
-		} catch (e) {
+		} catch ( e ) {
 			ret = value;
-		} finally {
-			return ret;
 		}
+
+		return ret;
 	},
 
 	/**
@@ -95,7 +95,7 @@ window.tsfemForm = {
 	 * @param {string} data The data type.
 	 * @return {(string|boolean)} The data if existent. False otherwise.
 	 */
-	getElementData: function( element, data ) {
+	getElementData: ( element, data ) => {
 
 		if ( data.indexOf( "data-" ) === 0 ) {
 			data = jQuery.camelCase( data.slice( 5 ) );
@@ -120,7 +120,7 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	setupIterations: function() {
+	setupIterations: () => {
 
 		let $items = jQuery( '.tsfem-form-iterator-selector-wrap input' );
 
@@ -201,7 +201,7 @@ window.tsfemForm = {
 		 * fIt = Function Iterations.
 		 * @param {jQuery.event} e The input event.
 		 */
-		fIt = function( e ) {
+		fIt = e => {
 
 			// (re)set visual countdown timer.
 			clearInterval( vBuffer );
@@ -303,13 +303,13 @@ window.tsfemForm = {
 	 * @param {event.target} target The iteration input target.
 	 * @return {undefined}
 	 */
-	unloadIterations: function( target ) {
+	unloadIterations: target => {
 
 		if ( ! target )
 			return;
 
 		// Get ID without '[count]', '[number]', or any other current iteration key.
-		let itId = target.id.slice( 0, target.id.lastIndexOf( '[' ) ),
+		let itId          = target.id.slice( 0, target.id.lastIndexOf( '[' ) ),
 			outputWrapper = document.getElementById( itId + '-wrapper' );
 
 		outputWrapper.style.willChange = 'contents';
@@ -334,7 +334,7 @@ window.tsfemForm = {
 	 * @param {event.target} target The target iteration loader input.
 	 * @return {undefined}
 	 */
-	loadIterations: function( target ) {
+	loadIterations: target => {
 
 		if ( ! target )
 			return;
@@ -344,11 +344,11 @@ window.tsfemForm = {
 
 		// Wrap outer items.
 		let $loader = jQuery( target ).closest( '.tsfem-pane-wrap' ).find( '.tsfem-pane-header .tsfem-ajax' ),
-			status = 0, loaderText = '';
+			status  = 0, loaderText = '';
 
 		// Wrap inner items.
 		let outputWrapper = document.getElementById( itId + '-wrapper' ),
-			waiter = document.createElement( 'div' );
+			waiter        = document.createElement( 'div' );
 
 		waiter.className = 'tsfem-flex-status-loading tsfem-flex tsfem-flex-center';
 		waiter.appendChild( document.createElement( 'span' ) );
@@ -386,7 +386,6 @@ window.tsfemForm = {
 			 * item count fetching.
 			 */
 			timeout: 10000,
-			async: true,
 		} ).done( ( response, _status, xhr ) => {
 			const contentType = xhr.getResponseHeader( 'content-type' ),
 				  $window     = jQuery( window );
@@ -427,7 +426,7 @@ window.tsfemForm = {
 	 * @param {jQuery.element} $items jQuery input selectors
 	 * @return {undefined}
 	 */
-	prepareItItems: function( $items ) {
+	prepareItItems: $items => {
 
 		// Sets last known iteration values.
 		$items.each( ( i, el ) => {
@@ -446,7 +445,7 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	setupGeo: function() {
+	setupGeo: () => {
 
 		if ( ! jQuery( '[data-geo-api-component=action]' ).length )
 			return;
@@ -480,9 +479,9 @@ window.tsfemForm = {
 		 * @param {object} data The address data.
 		 * @return {undefined}
 		 */
-		const fillAddress = function( target, data ) {
+		const fillAddress = ( target, data ) => {
 
-			let $wrap = jQuery( target ).closest( '[data-geo-api-component=action]' ),
+			let $wrap   = jQuery( target ).closest( '[data-geo-api-component=action]' ),
 				$fields = getFields( $wrap );
 
 			// Prevent re-checking own fields when filling.
@@ -551,7 +550,7 @@ window.tsfemForm = {
 		 * @param {object|array} data
 		 * @return {undefined}
 		 */
-		const selectAddress = function( target, data ) {
+		const selectAddress = ( target, data ) => {
 
 			let _optionValues = {},
 				_optionFields = {};
@@ -642,7 +641,7 @@ window.tsfemForm = {
 					tsfemForm.enableButton( target );
 					_events._close();
 				}
-				_events._confirm = function( e ) {
+				_events._confirm = e => {
 					if ( 'checked' in e.detail ) {
 						let _dataFill = _optionValues[ e.detail.checked ];
 						if ( void 0 !== _dataFill ) fillAddress( target, _dataFill );
@@ -665,7 +664,7 @@ window.tsfemForm = {
 		 * @param {event} event The button click event.
 		 * @return {undefined}
 		 */
-		const requestGeoData = function( event ) {
+		const requestGeoData = event => {
 
 			let $wrap = jQuery( event.target ).closest( '[data-geo-api-component=action]' ),
 				$fields = getFields( $wrap ),
@@ -701,7 +700,7 @@ window.tsfemForm = {
 		 * @param {number} valid If 2, it will warn about reverse Geocoding
 		 * @return {undefined}
 		 */
-		const loadButton = function( $wrap, formId, valid ) {
+		const loadButton = ( $wrap, formId, valid ) => {
 
 			valid = void 0 === valid ? 1 : valid;
 
@@ -751,7 +750,7 @@ window.tsfemForm = {
 		 * @param {number} valid If 2, it will warn about reverse Geocoding
 		 * @return {undefined}
 		 */
-		const updateButton = function( $wrap, formId, valid ) {
+		const updateButton = ( $wrap, formId, valid ) => {
 			loadButton( $wrap, formId, valid );
 		}
 		/**
@@ -760,12 +759,12 @@ window.tsfemForm = {
 		 * @param {jQuery.element} $wrap The target wrap.
 		 * @return {undefined}
 		 */
-		const unloadButton = function( $wrap ) {
+		const unloadButton = $wrap => {
 			let $target = $wrap && $wrap.find( '.tsfem-form-multi-setting-label-inner-wrap' ) || void 0;
 
 			$target && $target.find(
 				$target.children( '[data-geo-api-is-button-wrap], [data-geo-api-is-button-warning]' )
-			).fadeOut( 300, function() {
+			).fadeOut( 300, function () {
 				this.remove();
 				$wrap.removeData( 'geo-api-has-button' );
 			} );
@@ -776,16 +775,14 @@ window.tsfemForm = {
 		 * @param {jQuery.element} $wrap The geodata parent button wrapper.
 		 * @return {jQuery.element} The fields
 		 */
-		const getFields = function( $wrap ) {
-			return $wrap.find( '[data-geo-api="1"]' );
-		}
+		const getFields = $wrap => $wrap.find( '[data-geo-api="1"]' );
 		/**
 		 * Validate Address fields. Returns 2 if lat/lng are valid. 1 or 0 otherwise.
 		 *
 		 * @param {jQuery.element} $wrap The geodata parent button wrapper.
 		 * @return {number} Whether the field is valid. 2, 1 or 0.
 		 */
-		const validateFields = function( $wrap ) {
+		const validateFields = $wrap => {
 
 			let $fields = getFields( $wrap );
 
@@ -793,8 +790,8 @@ window.tsfemForm = {
 				return 0;
 
 			let valid = 0,
-				lat = $fields.filter( '[data-geo-api-component=lat]' ).first().val(),
-				lng = $fields.filter( '[data-geo-api-component=lng]' ).first().val(),
+				lat   = $fields.filter( '[data-geo-api-component=lat]' ).first().val(),
+				lng   = $fields.filter( '[data-geo-api-component=lng]' ).first().val(),
 				route;
 
 			$fields.each( ( index, element ) => {
@@ -889,12 +886,13 @@ window.tsfemForm = {
 	 * @param {object} completeData The callbacks for form completion and event data.
 	 * @return {jQuery.ajax} The jQuery AJAX response object.
 	 */
-	getGeoData: function( input, formId, completeData ) {
+	getGeoData: ( input, formId, completeData ) => {
 
 		let form = document.getElementById( formId );
 
-		let $loader = jQuery( form ).closest( '.tsfem-pane-wrap' ).find( '.tsfem-pane-header .tsfem-ajax' ),
-			status = 0, loaderText = '';
+		let $loader    = jQuery( form ).closest( '.tsfem-pane-wrap' ).find( '.tsfem-pane-header .tsfem-ajax' ),
+			status     = 0,
+			loaderText = '';
 
 		// Disable form submission.
 		tsfemForm.disableSubmit( form );
@@ -911,13 +909,12 @@ window.tsfemForm = {
 			url: ajaxurl,
 			dataType: 'json',
 			data: {
-				'action' : 'tsfemForm_get_geocode',
-				'nonce' : tsfemForm.nonce,
-				'input' : JSON.stringify( input ),
+				action: 'tsfemForm_get_geocode',
+				nonce: tsfemForm.nonce,
+				input: JSON.stringify( input ),
 			},
 			processData: true,
 			timeout: 14000,
-			async: true,
 		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
@@ -960,9 +957,9 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	prepareCollapseItems: function() {
+	prepareCollapseItems: () => {
 
-		const prepareItems = function( event ) {
+		const prepareItems = event => {
 			tsfemForm.prepareCollapseTitles( event );
 			tsfemForm.prepareCollapseValidity( event );
 		}
@@ -983,14 +980,14 @@ window.tsfemForm = {
 	 * @param {event} event The button activation event.
 	 * @return {undefined}
 	 */
-	prepareCollapseTitles: function( event ) {
+	prepareCollapseTitles: event => {
 
 		/**
 		 * Changes title based on single input.
 		 *
 		 * @param {event} event The target input field change.
 		 */
-		const doTitleChangeSingle = function( event ) {
+		const doTitleChangeSingle = event => {
 
 			let $label = jQuery( event.data._tsfemFormLabel ),
 				$title = $label.find( '.tsfem-form-collapse-title' ),
@@ -1008,7 +1005,7 @@ window.tsfemForm = {
 		 *
 		 * @param {event} event The target input field change.
 		 */
-		const doTitleChangeCheckbox = function( event ) {
+		const doTitleChangeCheckbox = event => {
 
 			let checked = event.target.checked || false;
 
@@ -1027,7 +1024,7 @@ window.tsfemForm = {
 		 *
 		 * @param {event} event The target input fields change.
 		 */
-		const doTitleChangePlural = function( event ) {
+		const doTitleChangePlural = event => {
 
 			let $label = jQuery( event.data._tsfemFormLabel ),
 				$title = $label.find( '.tsfem-form-collapse-title' ),
@@ -1052,7 +1049,7 @@ window.tsfemForm = {
 		 *
 		 * @param {event} event The button activation event.
 		 */
-		const prepareTitleChange = function( event ) {
+		const prepareTitleChange = event => {
 
 			let $label = jQuery( event.target ).siblings( 'label' ),
 				type   = $label.data( 'dyntitletype' ),
@@ -1092,7 +1089,6 @@ window.tsfemForm = {
 							doTitleChangePlural
 						)
 						.trigger( action );
-					break;
 			}
 		}
 		prepareTitleChange( event );
@@ -1108,7 +1104,7 @@ window.tsfemForm = {
 	 * @param {event} event The button activation event.
 	 * @return {undefined}
 	 */
-	prepareCollapseValidity: function( event ) {
+	prepareCollapseValidity: event => {
 
 		/**
 		 * Adjusts classes for headers and the icons based on errors found.
@@ -1116,7 +1112,7 @@ window.tsfemForm = {
 		 * @param {jQuery.element} $headers The headers set classes for.
 		 * @param {boolean} hasErrors Whether errors are present.
 		 */
-		const setClasses = function( $header, hasErrors ) {
+		const setClasses = ( $header, hasErrors ) => {
 
 			let errorClass = 'tsfem-form-collapse-header-error',
 				goodClass = 'tsfem-form-collapse-header-good';
@@ -1143,13 +1139,13 @@ window.tsfemForm = {
 		 * @param {jQuery.element} $headers The headers to count errors for.
 		 * @param {number} _i The addition (or subtraction).
 		 */
-		const countErrors = function( $headers, _i ) {
+		const countErrors = ( $headers, _i ) => {
 
 			let $header,
 				newCount;
 
 			$headers.each( ( i, element ) => {
-				$header = jQuery( element );
+				$header  = jQuery( element );
 				newCount = ( +$header.data( 'tsfemErrorCount' ) || 0 ) + _i;
 
 				$header.data( 'tsfemErrorCount', newCount );
@@ -1161,7 +1157,7 @@ window.tsfemForm = {
 		 *
 		 * @param {event} event The input change event.
 		 */
-		const checkValidity = function( event ) {
+		const checkValidity = event => {
 
 			let wasValid = 0;
 			if ( 'tsfemWasValid' in event.target.dataset ) {
@@ -1208,7 +1204,7 @@ window.tsfemForm = {
 		 * @param {Element} button The label wrap checkbox button.
 		 * @param {!jQuery} $items The label wrap items.
 		 */
-		const doFirstCheck = function( button, $items ) {
+		const doFirstCheck = ( button, $items ) => {
 
 			let didCheck = button.dataset.tsfemDidInitialValidation || 0;
 
@@ -1228,7 +1224,7 @@ window.tsfemForm = {
 		 *
 		 * @param {event} event The checkbox button activation event.
 		 */
-		const prepareChecks = function( event ) {
+		const prepareChecks = event => {
 
 			let $items = jQuery( event.target ).siblings( '.tsfem-form-collapse-content' ).find( 'input, select, textarea' ).not( '.tsfem-form-collapse-checkbox' );
 
@@ -1262,7 +1258,7 @@ window.tsfemForm = {
 	 * @param {requestCallback} checkValidityCb The validity checker callback
 	 * @return {undefined}
 	 */
-	prepareCustomChecks: function( checkValidityCb ) {
+	prepareCustomChecks: checkValidityCb => {
 
 		/**
 		 * Triggers listener for custom validation checks.
@@ -1275,7 +1271,7 @@ window.tsfemForm = {
 		 *                      and isn't attached to DOM.
 		 * @return {undefined} Early if item details aren't specified.
 		 */
-		const customChecks = function( event, element ) {
+		const customChecks = ( event, element ) => {
 
 			if ( ! element )
 				return;
@@ -1337,7 +1333,7 @@ window.tsfemForm = {
 	 * @param {Element} item
 	 * @return {undefined}
 	 */
-	triggerCustomValidation: function( item ) {
+	triggerCustomValidation: item => {
 		if ( item instanceof HTMLElement )
 			jQuery( window ).trigger( 'tsfemForm.customValidationChecks', [ item ] );
 	},
@@ -1356,7 +1352,7 @@ window.tsfemForm = {
 	 * @param {requestCallback} checkValidityCb The validity checker callback
 	 * @return {undefined}
 	 */
-	prepareDeiterationValidityChecks: function( checkValidityCb ) {
+	prepareDeiterationValidityChecks: checkValidityCb => {
 
 		/**
 		 * Disables all invalid items and revalidates them.
@@ -1366,7 +1362,7 @@ window.tsfemForm = {
 		 * @param {!jQuery} $toRemove The '.tsfem-form-collapse' headers to be removed.
 		 * @return {undefined}
 		 */
-		const disableAndValidate = function( event, target, $toRemove ) {
+		const disableAndValidate = ( event, target, $toRemove ) => {
 
 			if ( ! $toRemove )
 				return;
@@ -1404,7 +1400,7 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	setupSpecialRequired: function() {
+	setupSpecialRequired: () => {
 
 		let trapClass = 'tsfem-form-checkbox-required';
 
@@ -1423,7 +1419,7 @@ window.tsfemForm = {
 		 * @param {jQuery.element} $box The a11y required box.
 		 * @param {number} _i The addition (or subtraction).
 		 */
-		const countChecked = function( $box, _i ) {
+		const countChecked = ( $box, _i ) => {
 			let newCount = ( +$box.data( 'required-check-count' ) || 0 ) + _i;
 			$box.data( 'required-check-count', newCount );
 			return newCount;
@@ -1433,7 +1429,7 @@ window.tsfemForm = {
 		 *
 		 * @param {jQuery.element} $box The a11y required box.
 		 */
-		const addTrap = function( $box ) {
+		const addTrap = $box => {
 			if ( ! $box.children( `.${trapClass}` ).length ) {
 				let newTrap = trap.cloneNode( false );
 				newTrap.setCustomValidity( tsfemForm.i18n['requiredSelectAny'] );
@@ -1447,7 +1443,7 @@ window.tsfemForm = {
 		 *
 		 * @param {jQuery.element} $box The a11y required box.
 		 */
-		const removeTrap = function( $box ) {
+		const removeTrap = $box => {
 			let $_trap = $box.children( `.${trapClass}` );
 			if ( $_trap.length ) {
 				/**
@@ -1476,7 +1472,7 @@ window.tsfemForm = {
 		 *
 		 * @param {jQuery.event} event The checkbox input change event.
 		 */
-		const testChecked = function( event ) {
+		const testChecked = event => {
 			// We can't test disabled. RC harness for showif. See tsfemForm.setupShowIfListener
 			if ( event.target.disabled )
 				return;
@@ -1542,7 +1538,7 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	setupTypeListener: function() {
+	setupTypeListener: () => {
 
 		/**
 		 * Matches setter to value. When found, it returns the value to set type.
@@ -1551,7 +1547,7 @@ window.tsfemForm = {
 		 * @param {(string|number)} value The value to match.
 		 * @return {(false|string|number)} False if not found. Value otherwise.
 		 */
-		const matchType = function( setter, value ) {
+		const matchType = ( setter, value ) => {
 			let _v;
 
 			if ( 'object' === typeof setter ) {
@@ -1574,7 +1570,7 @@ window.tsfemForm = {
 		 * @param {jQuery.event} event The change event
 		 * @return {undefined}
 		 */
-		const setType = function( event ) {
+		const setType = event => {
 			let value, setter;
 
 			const target = event.target;
@@ -1639,7 +1635,7 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	setupShowIfListener: function() {
+	setupShowIfListener: () => {
 
 		let input = 'input, select, textarea';
 
@@ -1647,10 +1643,10 @@ window.tsfemForm = {
 			duration: 150,
 			easing: 'linear',
 			queue: false,
-			start: function() {
+			start: function () {
 				this.style.willChange = 'opacity';
 			},
-			done: function() {
+			done: function () {
 				// Prevent non-queue style-retain glitch on paint lag.
 				let display = this.style.display;
 
@@ -1935,7 +1931,7 @@ window.tsfemForm = {
 	 * @function
 	 * @return {undefined}
 	 */
-	adjustSubmit: function() {
+	adjustSubmit: () => {
 
 		let $forms = jQuery( 'form.tsfem-form' );
 
@@ -1956,13 +1952,13 @@ window.tsfemForm = {
 	 * @param {string} notification The notification shown above invalid wrappers.
 	 * @return {Boolean} True if form is valid. False otherwise.
 	 */
-	doValidityRoutine: function( form, notification ) {
+	doValidityRoutine: ( form, notification ) => {
 
 		notification ||= tsfemFormL10n.i18n['collapseValidate'];
 
 		if ( ! form.checkValidity() ) {
-			let firstInvalid = form.querySelector( 'input:invalid, select:invalid, textarea:invalid' );
-			let enclosed = false;
+			let firstInvalid = form.querySelector( 'input:invalid, select:invalid, textarea:invalid' ),
+				enclosed     = false;
 
 			/**
 			 * Tries validation report on the first invalid field found.
@@ -1995,7 +1991,7 @@ window.tsfemForm = {
 			 */
 			const tryAdvancedReport = () => {
 				let $headers = jQuery( firstInvalid ).parents( '.tsfem-form-collapse' ),
-					depth = -1;
+					depth    = -1;
 
 				// Reverse the stack
 				$headers = jQuery( $headers.get().reverse() );
@@ -2022,7 +2018,7 @@ window.tsfemForm = {
 				$checkbox = $header.find( '.tsfem-form-collapse-checkbox' ).first();
 
 				let scrollToTimeout;
-				const scrollTo = function( $to ) {
+				const scrollTo = $to => {
 					// Let the tooltip be painted first.
 					clearTimeout( scrollToTimeout );
 					scrollToTimeout = setTimeout( () => {
@@ -2046,7 +2042,7 @@ window.tsfemForm = {
 						}
 					}, 50 );
 				}
-				const removeToolTip = function( event ) {
+				const removeToolTip = event => {
 					let $el = jQuery( event.target );
 
 					tsfTT.removeTooltip( $el.siblings( '.tsfem-form-collapse-header' ) );
@@ -2082,7 +2078,7 @@ window.tsfemForm = {
 	 * @param {jQuery.event} event jQuery event
 	 * @return {(undefined|boolean)} void If form isn't valid. True on AJAX completion.
 	 */
-	saveInput: function( event ) {
+	saveInput: event => {
 		// TODO if we want to save all input, we need a new method, because 'let form, $loader' only handles one form and loader.
 		// Or, we could walk over the event, and grab multiple formIds
 
@@ -2137,7 +2133,6 @@ window.tsfemForm = {
 			},
 			processData: true,
 			timeout: 14000,
-			async: true,
 		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
@@ -2193,7 +2188,7 @@ window.tsfemForm = {
 	 * @param {jQuery.event} event jQuery event
 	 * @return {boolean} false
 	 */
-	preventSubmit: function( event ) {
+	preventSubmit: event => {
 		event.preventDefault();
 		event.stopPropagation();
 		return false;
@@ -2209,7 +2204,7 @@ window.tsfemForm = {
 	 * @param {event.target} target The button(s) to enable.
 	 * @return {boolean} false
 	 */
-	enableButton: function( target ) {
+	enableButton: target => {
 		// setTimeout prevents paint lag.
 		setTimeout( () => {
 			let $target = jQuery( target );
@@ -2229,7 +2224,7 @@ window.tsfemForm = {
 	 * @param {boolean} loading Whether to hint it's disabled.
 	 * @return {boolean} false
 	 */
-	disableButton: function( target, loading ) {
+	disableButton: ( target, loading ) => {
 
 		loading = void 0 === loading ? true : loading;
 
@@ -2253,7 +2248,7 @@ window.tsfemForm = {
 	 * @param {Element} form The form to enable submit from.
 	 * @return {boolean} false
 	 */
-	enableSubmit: function( form ) {
+	enableSubmit: form => {
 		if ( form?.id )
 			tsfemForm.enableButton( `[form="${form.id}"]` );
 	},
@@ -2269,7 +2264,7 @@ window.tsfemForm = {
 	 * @param {boolean} loading Whether to hint it's disabled.
 	 * @return {boolean} false
 	 */
-	disableSubmit: function( form, loading ) {
+	disableSubmit: ( form, loading ) => {
 		if ( form?.id )
 			tsfemForm.enableButton( `[form="${form.id}"]`, loading );
 	},
@@ -2282,7 +2277,7 @@ window.tsfemForm = {
 	 *
 	 * @function
 	 */
-	doReady: function() {
+	doReady: () => {
 
 		// Prepare AJAX iterations.
 		tsfemForm.setupIterations();

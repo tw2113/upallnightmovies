@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -97,7 +97,7 @@ class Core {
 	 */
 	protected static function is_organization() {
 		static $is;
-		return $is ?? ( $is = 'organization' === \tsf()->get_option( 'knowledge_type' ) );
+		return $is ??= 'organization' === \tsf()->get_option( 'knowledge_type' );
 	}
 
 	/**

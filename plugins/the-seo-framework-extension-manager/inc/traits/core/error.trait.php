@@ -13,7 +13,7 @@ use function \TSF_Extension_Manager\Transition\{
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -237,10 +237,10 @@ trait Error {
 		}
 
 		/* translators: 1: 'Error code:', 2: The error code. */
-		$status = sprintf( \esc_html__( '%1$s %2$s', 'the-seo-framework-extension-manager' ), $status_i18n, $code );
+		$status = \sprintf( \esc_html__( '%1$s %2$s', 'the-seo-framework-extension-manager' ), $status_i18n, $code );
 
 		/* translators: %s = Error code */
-		$before = sprintf( \__( '<strong>%s</strong> &mdash;', 'the-seo-framework-extension-manager' ), $status );
+		$before = \sprintf( \__( '<strong>%s</strong> &mdash;', 'the-seo-framework-extension-manager' ), $status );
 
 		/* translators: 1: Error code, 2: Error message, 3: Additional info */
 		$output = vsprintf( \esc_html__( '%1$s %2$s %3$s', 'the-seo-framework-extension-manager' ),
@@ -331,7 +331,7 @@ trait Error {
 
 			case 303: // license not found
 			case 307: // email/license mismatch
-				$message = sprintf(
+				$message = \sprintf(
 					/* translators: %s = My Account */
 					\esc_html__( 'Invalid API license key. Login to the %s page to find a valid API License Key.', 'the-seo-framework-extension-manager' ),
 					$this->get_my_account_link() // can never be WCM; user isn't connected yet.
@@ -387,7 +387,7 @@ trait Error {
 				break;
 
 			case 305:
-				$message = sprintf(
+				$message = \sprintf(
 					/* translators: %s = My Account */
 					\esc_html__( 'Exceeded maximum number of activations. Login to the %s page to manage your sites.', 'the-seo-framework-extension-manager' ),
 					$this->get_my_account_link() // can never be WCM; user isn't connected yet.
@@ -430,11 +430,6 @@ trait Error {
 				$type    = 'updated';
 				break;
 
-			case 702:
-				$message = \esc_html__( 'The feed has been enabled.', 'the-seo-framework-extension-manager' );
-				$type    = 'updated';
-				break;
-
 			case 801:
 				$message = \esc_html__( 'Successfully deactivated.', 'the-seo-framework-extension-manager' );
 				$type    = 'updated';
@@ -450,7 +445,7 @@ trait Error {
 					// Headless. User cannot inspect key. Edge case -- user gets disconnected right before this error.
 					$message = \esc_html__( "Your subscription instance couldn't be verified.", 'the-seo-framework-extension-manager' );
 				} else {
-					$message = sprintf(
+					$message = \sprintf(
 						/* translators: %s = My Account */
 						\esc_html__( "Your subscription instance couldn't be verified. Login to the %s page and verify if this site is still connected.", 'the-seo-framework-extension-manager' ),
 						$this->get_my_account_link() // this can be WCM, which is troubling.
@@ -481,8 +476,12 @@ trait Error {
 			case 7002:
 			case 7101:
 			case 7102:
-				$message = \esc_html__( 'An error occured while verifying the options. The local instance is out of sync and enabled extensions are now inactive. If this error keeps coming back, please disconnect your account at "Account and Actions" and try again.', 'the-seo-framework-extension-manager' );
-				$type    = 'error';
+				if ( \TSF_EXTENSION_MANAGER_API_INFORMATION ) {
+					$message = \esc_html__( 'An error occured while verifying the options. The local instance is out of sync and enabled extensions are now inactive.', 'the-seo-framework-extension-manager' );
+				} else {
+					$message = \esc_html__( 'An error occured while verifying the options. The local instance is out of sync and enabled extensions are now inactive. If this error keeps coming back, please disconnect your account at "Account and Actions" and try again.', 'the-seo-framework-extension-manager' );
+				}
+				$type = 'error';
 				break;
 
 			// IT'S OVER NINE THOUSAAAAAAAAAAAAAAAAAAAAAAND!!one!1!!
@@ -529,6 +528,7 @@ trait Error {
 				break;
 
 			case 10015:
+			case 10016:
 				$message = \esc_html__( "This domain isn't connected to the API. Transfer the license and try again.", 'the-seo-framework-extension-manager' );
 				$type    = 'error';
 				break;
@@ -598,7 +598,7 @@ trait Error {
 
 			case 1010305:
 			case 1010506:
-				$message = \esc_html__( 'Crawl has been requested successfully. It can take up to three minutes to be processed.', 'the-seo-framework-extension-manager' );
+				$message = \esc_html__( 'Crawl has been requested successfully. It can take up to two minutes to be processed.', 'the-seo-framework-extension-manager' );
 				$type    = 'updated';
 				break;
 
@@ -741,6 +741,11 @@ trait Error {
 			case 1100102:
 			case 1100105:
 				$message = \esc_html__( 'No definitions found. Check your spelling.', 'the-seo-framework-extension-manager' );
+				$type    = 'warning';
+				break;
+
+			case 1100111:
+				$message = \esc_html__( 'No definitions found. Check your spelling and consider using simple or compound words only.', 'the-seo-framework-extension-manager' );
 				$type    = 'warning';
 				break;
 

@@ -3,7 +3,7 @@
  * Plugin Name: The SEO Framework - Extension Manager
  * Plugin URI: https://theseoframework.com/extension-manager/
  * Description: Add more powerful SEO features to The SEO Framework. Right from your WordPress dashboard.
- * Version: 2.6.3
+ * Version: 2.7.1
  * Author: The SEO Framework Team
  * Author URI: https://theseoframework.com/
  * License: GPLv3
@@ -11,7 +11,6 @@
  * Domain Path: /language
  * Requires at least: 5.9
  * Requires PHP: 7.4.0
- * GitHub Plugin URI: https://github.com/sybrew/The-SEO-Framework-Extension-Manager
  *
  * @package TSF_Extension_Manager\Bootstrap
  */
@@ -20,7 +19,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -36,24 +35,18 @@ defined( 'ABSPATH' ) or die;
  */
 
 /**
- * @NOTE This file MUST be written according to WordPress's minimum PHP requirements.
- *       Which is PHP 5.6.
- * TODO This will become PHP 7.0 in WP 6.3?
- */
-
-/**
  * The plugin version. Always 3 point.
  *
  * @since 1.0.0
  */
-define( 'TSF_EXTENSION_MANAGER_VERSION', '2.6.3' );
+define( 'TSF_EXTENSION_MANAGER_VERSION', '2.7.1' );
 
 /**
  * The plugin's database version.
  *
  * @since 1.5.0
  */
-define( 'TSF_EXTENSION_MANAGER_DB_VERSION', '2500' );
+define( 'TSF_EXTENSION_MANAGER_DB_VERSION', '2700' );
 
 /**
  * The plugin file, absolute unix path.
@@ -79,27 +72,14 @@ define(
 	dirname( TSF_EXTENSION_MANAGER_PLUGIN_BASE_FILE ) . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR
 );
 
-// Defines environental constants.
+// Define environental constants.
 require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'define.php';
 
-// Load plugin API file.
+// Load plugin API functions.
 require TSF_EXTENSION_MANAGER_DIR_PATH_FUNCTION . 'api.php';
 
-// Load internal functions file.
-require TSF_EXTENSION_MANAGER_DIR_PATH_FUNCTION . 'internal.php';
+// Load plugin updater.
+require \TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'update.php';
 
-// Load internal functions file.
-require TSF_EXTENSION_MANAGER_DIR_PATH_FUNCTION . 'transition.php';
-
-// Prepare plugin upgrader before the plugin loads.
-if ( tsf_extension_manager_db_version() < TSF_EXTENSION_MANAGER_DB_VERSION )
-	require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'upgrade.php';
-
-if ( is_admin() || wp_doing_cron() )
-	require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'update.php';
-
-if ( is_admin() )
-	require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'install.php';
-
-// Load plugin files.
+// Load plugin.
 require TSF_EXTENSION_MANAGER_BOOTSTRAP_PATH . 'load.php';

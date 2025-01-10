@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Logger;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -127,10 +127,8 @@ final class Server {
 
 		\add_filter(
 			'wp_die_ajax_handler',
-			function() {
-				return [ $this, '_wp_die_handler' ];
-			},
-			9999
+			fn() => [ $this, '_wp_die_handler' ],
+			9999,
 		);
 
 		\TSF_EXTENSION_MANAGER_USE_MODERN_TSF

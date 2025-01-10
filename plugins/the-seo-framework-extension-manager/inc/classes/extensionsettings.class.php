@@ -13,7 +13,7 @@ use function \TSF_Extension_Manager\Transition\{
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -252,6 +252,7 @@ final class ExtensionSettings {
 	 * Action is called in TSF_Extension_Manager\LoadAdmin::_wp_ajax_tsfemForm_save().
 	 * It has already checked referrer and capability.
 	 *
+	 * @hook tsfem_form_do_ajax_save 20
 	 * @since 2.2.0
 	 * @access private
 	 * @see \TSF_Extension_Manager\FormGenerator
@@ -268,8 +269,7 @@ final class ExtensionSettings {
 		\do_action( 'tsfem_register_settings_sanitization', static::class );
 
 		// phpcs:ignore, WordPress.Security.NonceVerification -- Already done at _wp_ajax_tsfemForm_save()
-		$post_data = $_POST['data'] ?? '';
-		parse_str( $post_data, $data );
+		parse_str( $_POST['data'] ?? '', $data );
 
 		$store = [];
 
@@ -363,9 +363,6 @@ final class ExtensionSettings {
 		) return;
 
 		\add_filter( 'the_seo_framework_scripts', [ $this, '_register_scripts' ], 10, 3 );
-
-		// Add something special for Vivaldi & Android.
-		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 
 		/**
 		 * @see trait TSF_Extension_Manager\Error
@@ -484,7 +481,7 @@ final class ExtensionSettings {
 	private function get_save_all_button() {
 		return '';
 		// phpcs:disable
-		return sprintf(
+		return \sprintf(
 			'<button type=submit name=tsf-extension-manager-extension-settings form=tsf-extension-manager-extension-settings class="tsfem-button-primary tsfem-button-upload" onclick="tsfemForm.saveAll()">%s</button>',
 			\esc_html__( 'Save All', 'the-seo-framework-extension-manager' )
 		);

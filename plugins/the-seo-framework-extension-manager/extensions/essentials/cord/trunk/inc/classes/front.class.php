@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -46,55 +46,37 @@ final class Front extends Core {
 
 		$a_options = $this->get_option( 'analytics' );
 
-		if ( ! empty( $a_options['google_analytics']['tracking_id'] ) )
-			\add_action( 'init', [ $this, '_prepare_google_analytics_output' ] );
+		if ( ! empty( $a_options['google_analytics']['tracking_id'] ) ) {
+			/**
+			 * This filter is great for GDPR cookie consent, where you can dynamically enable
+			 * the analytics script based on visitor preferences.
+			 *
+			 * @since 1.0.0
+			 * @param bool $enabled
+			 */
+			if ( \apply_filters( 'the_seo_framework_cord_ga_enabled', true ) ) {
+				// TODO use filter 'wp_resource_hints' instead? This allows collapsing to unique resource URIs.
+				\add_action( 'wp_head', [ $this, '_output_google_analytics_preconnect_links' ], 0 );
 
-		if ( ! empty( $a_options['facebook_pixel']['pixel_id'] ) )
-			\add_action( 'init', [ $this, '_prepare_facebook_pixel_output' ] );
-	}
-
-	/**
-	 * Prepares Google Anlytics output.
-	 *
-	 * @since 1.0.0
-	 */
-	public function _prepare_google_analytics_output() {
-
-		/**
-		 * This filter is great for GDPR cookie consent, where you can dynamically enable
-		 * the analytics script based on visitor preferences.
-		 *
-		 * @since 1.0.0
-		 * @param bool $enabled
-		 */
-		if ( \apply_filters( 'the_seo_framework_cord_ga_enabled', true ) ) {
-			// TODO use filter 'wp_resource_hints' instead? This allows collapsing to unique resource URIs.
-			\add_action( 'wp_head', [ $this, '_output_google_analytics_preconnect_links' ], 0 );
-
-			\add_action( 'wp_body_open', [ $this, '_output_google_analytics_tracking' ], 0 );
-			\add_action( 'wp_footer', [ $this, '_output_google_analytics_tracking' ], 0 );
+				\add_action( 'wp_body_open', [ $this, '_output_google_analytics_tracking' ], 0 );
+				\add_action( 'wp_footer', [ $this, '_output_google_analytics_tracking' ], 0 );
+			}
 		}
-	}
 
-	/**
-	 * Prepares Facebook pixel output.
-	 *
-	 * @since 1.0.0
-	 */
-	public function _prepare_facebook_pixel_output() {
+		if ( ! empty( $a_options['facebook_pixel']['pixel_id'] ) ) {
+			/**
+			 * This filter is great for GDPR cookie consent, where you can dynamically enable
+			 * the analytics script based on visitor preferences.
+			 *
+			 * @since 1.0.0
+			 * @param bool $enabled
+			 */
+			if ( \apply_filters( 'the_seo_framework_cord_fbp_enabled', true ) ) {
+				// Don't set preconnection. The Facebook pixel script is based on a connection and cookie.
 
-		/**
-		 * This filter is great for GDPR cookie consent, where you can dynamically enable
-		 * the analytics script based on visitor preferences.
-		 *
-		 * @since 1.0.0
-		 * @param bool $enabled
-		 */
-		if ( \apply_filters( 'the_seo_framework_cord_fbp_enabled', true ) ) {
-			// Don't set preconnection. The Facebook pixel script is based on a connection and cookie.
-
-			// It must be outputted in the header, because the Facebook script needs to initialize itself before first paint.
-			\add_action( 'wp_head', [ $this, '_output_facebook_pixel_tracking' ], 99 );
+				// It must be outputted in the header, because the Facebook script needs to initialize itself before first paint.
+				\add_action( 'wp_head', [ $this, '_output_facebook_pixel_tracking' ], 99 );
+			}
 		}
 	}
 
@@ -178,7 +160,7 @@ final class Front extends Core {
 			gtag( 'js', new Date );
 
 			gtag( 'config', '{$tracking_id}', $config );
-		JS;
+			JS;
 
 		$script = $this->minify_script( $script );
 
@@ -187,7 +169,7 @@ final class Front extends Core {
 		echo <<<HTML
 			<script async="async" src="https://www.googletagmanager.com/gtag/js?id={$tracking_id}"></script>
 			<script>$script</script>
-		HTML;
+			HTML;
 		// phpcs:enable, WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedScript
 	}
 
@@ -218,12 +200,12 @@ final class Front extends Core {
 		$script = <<<JS
 			!function(f,b,e,v,n,t,s) {
 				if ( f.fbq ) return;
-				n = f.fbq = function() {
-					n.callMethod?n.callMethod.apply( n, arguments ) : n.queue.push( arguments )
+				n = f.fbq = function () {
+					n.callMethod ? n.callMethod.apply( n, arguments ) : n.queue.push( arguments )
 				};
 				t = b.createElement( e );
 
-				if ( !f._fbq )
+				if ( ! f._fbq )
 					f._fbq = n;
 
 				n.push    = n;
@@ -239,14 +221,14 @@ final class Front extends Core {
 
 			fbq( 'init', '{$pixel_id_js}' );
 			fbq( 'track', 'PageView' );
-JS;
+			JS;
 
 		$script = $this->minify_script( $script );
 
 		// Keep XHTML valid!
 		$noscript = <<<NOJS
 			<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={$pixel_id_attr}&ev=PageView&noscript=1" />
-NOJS;
+			NOJS;
 
 		$noscript = str_replace( [ "\n", "\t" ], '', $noscript );
 
@@ -270,6 +252,7 @@ NOJS;
 		// Get omni-spaced first!
 		$s_and_r = [
 			' ? '  => '?',
+			' ! '  => '!',
 			' :'   => ':',
 			': '   => ':',
 			' = '  => '=',

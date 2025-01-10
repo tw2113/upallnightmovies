@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -44,17 +44,9 @@ trait Schema_Packer {
 	 * @return bool
 	 */
 	private function should_change_precision() {
-
 		static $cache;
-
-		if ( isset( $cache ) )
-			return $cache;
-
 		// -1 means it's optimized correctly. 7 to 14 would also do, actually.
-		if ( -1 !== (int) ini_get( 'serialize_precision' ) )
-			return $cache = true;
-
-		return $cache = false;
+		return $cache ??= -1 !== (int) ini_get( 'serialize_precision' );
 	}
 
 	/**
@@ -66,7 +58,7 @@ trait Schema_Packer {
 	 */
 	private function can_change_precision() {
 		static $cache;
-		return $cache ?? ( $cache = \wp_is_ini_value_changeable( 'serialize_precision' ) );
+		return $cache ??= \wp_is_ini_value_changeable( 'serialize_precision' );
 	}
 
 	/**

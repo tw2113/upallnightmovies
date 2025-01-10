@@ -15,7 +15,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Articles extension for The SEO Framework
- * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -78,18 +78,7 @@ final class Sitemap extends Core {
 			\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_delete_news_sitemap_transient' ] );
 		}
 
-		// Don't use action `the_seo_framework_ping_search_engines`; News Sitemaps don't have a ping threshold.
-		// Don't allow prerendering; News Sitemaps are small for a reason!
-		// Don't discern the post. For the cron callback to work, that'd be unreliable.
-		if ( \tsf()->get_option( 'ping_use_cron' ) ) {
-			\add_action( 'tsf_sitemap_cron_hook', [ $this, '_ping_google_news' ] );
-		} else {
-			if ( \TSF_EXTENSION_MANAGER_USE_MODERN_TSF ) {
-				\add_action( 'the_seo_framework_cleared_sitemap_transients', [ $this, '_ping_google_news' ] );
-			} else {
-				\add_action( 'the_seo_framework_delete_cache_sitemap', [ $this, '_ping_google_news' ] );
-			}
-		}
+		// Note to self: Do not add prerendering support. The sitemap is small, so it can be generated and read quickly.
 	}
 
 	/**
@@ -204,19 +193,6 @@ final class Sitemap extends Core {
 	 */
 	public function _delete_news_sitemap_transient() {
 		\delete_transient( $this->get_sitemap_transient_name() );
-	}
-
-	/**
-	 * Pings Google News whenever a post is updated. Albeit News Article or not.
-	 *
-	 * @since 2.0.0
-	 * @access private
-	 */
-	public function _ping_google_news() {
-		$pingurl = 'https://www.google.com/ping?sitemap=' . rawurlencode(
-			sitemap_registry()->get_expected_sitemap_endpoint_url( 'news' )
-		);
-		\wp_safe_remote_get( $pingurl, [ 'timeout' => 3 ] );
 	}
 
 	/**

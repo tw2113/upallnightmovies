@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -34,7 +34,7 @@
  * @constructor
  * @param {!jQuery} $ jQuery object.
  */
-window.tsfem = function( $ ) {
+window.tsfem = function ( $ ) {
 
 	/**
 	 * @since 1.0.0
@@ -124,7 +124,6 @@ window.tsfem = function( $ ) {
 			default:
 				newclass = 'tsfem-error';
 				fade     = 10000;
-				break;
 		}
 
 		$( target ).removeClass( 'tsfem-loading' ).addClass( newclass ).text(
@@ -173,7 +172,6 @@ window.tsfem = function( $ ) {
 
 			default:
 				resetAjaxLoader( target );
-				break;
 		}
 	}
 
@@ -219,7 +217,6 @@ window.tsfem = function( $ ) {
 			default:
 				// @TODO use ajaxOptions.status? i.e. 400, 401, 402, 503.
 				_error = tsfem.i18n['UnknownError'];
-				break;
 		}
 
 		return _error;

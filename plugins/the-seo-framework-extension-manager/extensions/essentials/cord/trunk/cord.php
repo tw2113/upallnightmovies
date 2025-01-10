@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Cord;
 
 /**
  * Cord extension for The SEO Framework
- * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -95,27 +95,8 @@ if ( ! \tsfem()->_init_early_extension_autoloader( \TSFEM_E_CORD_PATH_CLASS, 'Co
 // }
 // phpcs:enable
 
-\add_action( 'plugins_loaded', __NAMESPACE__ . '\\_cord_init', 11 );
-/**
- * Initializes the extension.
- *
- * @since 1.0.0
- * @access private
- *
- * @return bool True if class is loaded.
- */
-function _cord_init() {
-
-	static $loaded;
-
-	if ( isset( $loaded ) )
-		return $loaded;
-
-	if ( \is_admin() ) {
-		new Admin;
-	} else {
-		new Front;
-	}
-
-	return $loaded = true;
+if ( \is_admin() ) {
+	new Admin;
+} else {
+	new Front;
 }

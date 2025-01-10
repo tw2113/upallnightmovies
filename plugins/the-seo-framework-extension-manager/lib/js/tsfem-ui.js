@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -35,7 +35,7 @@
  * @constructor
  * @param {!jQuery} $ jQuery object.
  */
-window.tsfem_ui = function( $ ) {
+window.tsfem_ui = function ( $ ) {
 
 	/**
 	 * Engages switcher button reset toggle.
@@ -197,7 +197,6 @@ window.tsfem_ui = function( $ ) {
 				'tsfem-notice-has-msg': hasMsg,
 			},
 			timeout: 7000,
-			async: true,
 		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );

@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Local;
  * Extension Name: Local
  * Extension URI: https://theseoframework.com/extensions/local/
  * Extension Description: The Local extension lets you set up important local business information for search engines to consume.
- * Extension Version: 1.2.0
+ * Extension Version: 1.3.1
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -20,7 +20,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -41,7 +41,7 @@ namespace TSF_Extension_Manager\Extension\Local;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_LOCAL_VERSION', '1.2.0' );
+\define( 'TSFEM_E_LOCAL_VERSION', '1.3.1' );
 
 /**
  * The extension database version.
@@ -97,29 +97,10 @@ if ( \TSFEM_E_LOCAL_DB_VERSION > \tsf_extension_manager_db_version( 'local' ) ) 
 	require \TSFEM_E_LOCAL_DIR_PATH . 'upgrade.php';
 }
 
-\add_action( 'plugins_loaded', __NAMESPACE__ . '\\_local_init', 11 );
-/**
- * Initializes the extension.
- *
- * @since 1.0.0
- * @access private
- *
- * @return bool True if class is loaded.
- */
-function _local_init() {
-
-	static $loaded;
-
-	if ( isset( $loaded ) )
-		return $loaded;
-
-	if ( \is_admin() ) {
-		new Admin;
-	} else {
-		new Front;
-	}
-
-	return $loaded = true;
+if ( \is_admin() ) {
+	new Admin;
+} else {
+	new Front;
 }
 
 /**

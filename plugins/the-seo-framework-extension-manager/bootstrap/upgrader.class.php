@@ -5,11 +5,11 @@
 
 namespace TSF_Extension_Manager;
 
-\defined( 'TSF_EXTENSION_MANAGER_DB_VERSION' ) or die;
+\defined( 'TSF_EXTENSION_MANAGER_PRESENT' ) or die;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -42,7 +42,7 @@ namespace TSF_Extension_Manager;
  * @see EOF. Because of the trait calling, we can't do it before the class is read.
  * @link https://bugs.php.net/bug.php?id=75771
  */
-$_load_upgrader_class = function() {
+$_load_upgrader_class = function () {
 	new Upgrader(); // phpcs:ignore, TSF.Performance.Opcodes.ShouldHaveNamespaceEscape -- correct scope.
 };
 
@@ -104,8 +104,8 @@ final class Upgrader {
 		$this->increase_available_memory();
 
 		// These are not available to extensions.
-		\add_action( 'plugins_loaded', [ $this, '_load_critical_hook' ], 0 );
-		\add_action( 'plugins_loaded', [ $this, '_parse_critical' ], 1 );
+		$this->_load_critical_hook();
+		$this->_parse_critical();
 
 		\add_action( 'tsfem_extensions_initialized', [ $this, '_load_hooks' ], 10 );
 		\add_action( 'tsfem_extensions_initialized', [ $this, '_parse' ], 11 );

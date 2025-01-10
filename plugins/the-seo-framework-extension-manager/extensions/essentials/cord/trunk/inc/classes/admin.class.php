@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Cord extension for The SEO Framework
- * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -91,7 +91,7 @@ final class Admin extends Core {
 						'_type'    => 'plain_multi',
 						'_desc'    => [
 							\__( 'Google Analytics', 'the-seo-framework-extension-manager' ),
-							sprintf(
+							\sprintf(
 								/* translators: %s = Measurement ID documentation link. Markdown. */
 								\__( 'Start tracking with [Google Analytics](%s) by filling in a Measurement ID.', 'the-seo-framework-extension-manager' ),
 								'https://analytics.google.com/analytics/web/'
@@ -108,7 +108,7 @@ final class Admin extends Core {
 								'_pattern' => '\bG-[A-Z0-9]{4,15}', // Google doesn't specify length, assume 4~15 (norm is 10)
 								'_desc'    => [
 									\__( 'Measurement ID', 'the-seo-framework-extension-manager' ),
-									sprintf(
+									\sprintf(
 										/* translators: %s = Measurement/Pixel ID documentation link. Markdown. */
 										\__( 'Get your [Measurement ID](%s).', 'the-seo-framework-extension-manager' ),
 										'https://support.google.com/analytics/answer/12270356'
@@ -141,7 +141,7 @@ final class Admin extends Core {
 						'_type'    => 'plain_multi',
 						'_desc'    => [
 							\__( 'Meta Pixel', 'the-seo-framework-extension-manager' ),
-							sprintf(
+							\sprintf(
 								/* translators: %s = Measurement/Pixel ID documentation link. Markdown. */
 								\__( 'Start tracking with [Meta pixel](%s) by filling in a Pixel ID.', 'the-seo-framework-extension-manager' ),
 								'https://www.facebook.com/business/help/952192354843755'
@@ -158,7 +158,7 @@ final class Admin extends Core {
 								'_pattern' => '[0-9]+',
 								'_desc'    => [
 									\__( 'Pixel ID', 'the-seo-framework-extension-manager' ),
-									sprintf(
+									\sprintf(
 										/* translators: %s = Measurement/Pixel ID documentation link. Markdown. */
 										\__( 'Get your [Pixel ID](%s).', 'the-seo-framework-extension-manager' ),
 										'https://www.facebook.com/ads/manager/pixel/facebook_pixel'

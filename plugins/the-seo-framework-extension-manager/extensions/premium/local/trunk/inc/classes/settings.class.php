@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -294,9 +294,6 @@ final class Settings {
 
 		\add_filter( 'the_seo_framework_scripts', [ $this, '_register_local_scripts' ], 10, 3 );
 
-		// Add something special for Vivaldi & Android.
-		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
-
 		/**
 		 * Initialize UI calls.
 		 *
@@ -404,9 +401,9 @@ final class Settings {
 	 * @return string The validation button.
 	 */
 	private function get_test_button() {
-		return sprintf(
+		return \sprintf(
 			'<button type=button name=tsfem-e-local-validateFormJson form="%s" class="%s">%s</button>',
-			sprintf( '%s[%s]', \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index ),
+			\sprintf( '%s[%s]', \TSF_EXTENSION_MANAGER_EXTENSION_OPTIONS, $this->o_index ),
 			'hide-if-no-tsf-js tsfem-button tsfem-button-external',
 			\esc_html__( 'See Markup', 'the-seo-framework-extension-manager' )
 		);

@@ -15,7 +15,7 @@ use function \TSF_Extension_Manager\Transition\{
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -69,6 +69,8 @@ final class LoadAdmin extends AdminPages {
 	 * Tries activating the account via a contstant.
 	 *
 	 * @since 2.0.0
+	 * @since 2.7.0 1. Now automatically disconnects when the options aren't valid. This allows for automatic reconnection.
+	 *              2. Reduced the reconnection timeout from 5 to 3 minutes.
 	 * @access private
 	 */
 	public function _check_constant_activation() {
@@ -79,13 +81,10 @@ final class LoadAdmin extends AdminPages {
 		];
 
 		if ( $this->is_connected_user() ) {
-
-			// Future: we need this here, but then whilst keeping the activated extensions?
-			// -> We should split the option indexes, activated extensions in one (unencrypted), and activation data in another.
-			// if ( ! $this->are_options_valid() ) {
-			// 	$this->do_deactivation();
-			//  return;
-			// }
+			if ( ! $this->are_options_valid() ) {
+				$this->do_deactivation();
+				return;
+			}
 
 			$current = $this->get_subscription_status();
 			$equals  = array_intersect_assoc( $current, $data );
@@ -106,7 +105,7 @@ final class LoadAdmin extends AdminPages {
 		} else {
 			$timeout = \get_transient( 'tsf-extension-manager-auto-activate-timeout' );
 			if ( $timeout ) return;
-			\set_transient( 'tsf-extension-manager-auto-activate-timeout', 1, \MINUTE_IN_SECONDS * 5 );
+			\set_transient( 'tsf-extension-manager-auto-activate-timeout', 1, \MINUTE_IN_SECONDS * 3 );
 
 			$args = [
 				'activation_email' => $data['email'],
@@ -177,7 +176,7 @@ final class LoadAdmin extends AdminPages {
 
 		do_dismissible_notice(
 			convert_markdown(
-				sprintf(
+				\sprintf(
 					/* translators: Markdown. %s = API URL */
 					\esc_html__(
 						'This website is blocking external requests, this means it will not be able to connect to the API services. Please add `%s` to `WP_ACCESSIBLE_HOSTS`.',
@@ -281,22 +280,16 @@ final class LoadAdmin extends AdminPages {
 				}
 				break;
 
-			case $this->request_name['enable-feed']:
-				$success = $this->update_option( '_enable_feed', true );
-				$this->set_error_notice( [ $success ? 702 : 703 => '' ] );
-				break;
-
 			case $this->request_name['activate-ext']:
-				$success = $this->activate_extension( $options );
+				$this->activate_extension( $options );
 				break;
 
 			case $this->request_name['deactivate-ext']:
-				$success = $this->deactivate_extension( $options );
+				$this->deactivate_extension( $options );
 				break;
 
 			default:
 				$this->set_error_notice( [ 708 => '' ] );
-				break;
 		}
 
 		// Adds action to the URI. It's only used to visualize what has happened.
@@ -572,12 +565,12 @@ final class LoadAdmin extends AdminPages {
 
 				case 'data':
 					foreach ( $value as $k => $v ) {
-						$parts[] = sprintf( 'data-%s="%s"', \esc_attr( $k ), \esc_attr( $v ) );
+						$parts[] = \sprintf( 'data-%s="%s"', \esc_attr( $k ), \esc_attr( $v ) );
 					}
 			}
 		}
 
-		return sprintf( '<a %s>%s</a>', implode( ' ', $parts ), \esc_html( $content ) );
+		return \sprintf( '<a %s>%s</a>', implode( ' ', $parts ), \esc_html( $content ) );
 	}
 
 	/**
@@ -690,7 +683,6 @@ final class LoadAdmin extends AdminPages {
 
 				$class  = 'tsfem-button';
 				$class .= $icon ? ' tsfem-button-external' : '';
-				break;
 		}
 
 		return $this->get_link( [
@@ -826,9 +818,9 @@ final class LoadAdmin extends AdminPages {
 
 		Extensions::reset();
 
-		if ( $status['success'] ) :
+		if ( $status['success'] ) {
 			if ( 2 === $status['case'] ) { // Extension and license == Premium/Essentials OK.
-				switch ( $this->validate_remote_subscription_license() ) {
+				switch ( $this->revalidate_subscription( true ) ) {
 					case 6: // Enterprise.
 					case 5: // Premium.
 					case 4: // Essentials.
@@ -840,6 +832,9 @@ final class LoadAdmin extends AdminPages {
 
 					case 2: // Disconnected from API.
 					case 1: // Connected user, but verification failed.
+						$ajax or $this->set_error_notice( [ 10016 => '' ] );
+						return $ajax ? $this->get_ajax_notice( false, 10016 ) : false;
+
 					case 0: // Free user.
 					default: // ???
 						$ajax or $this->set_error_notice( [ 10004 => '' ] );
@@ -862,7 +857,7 @@ final class LoadAdmin extends AdminPages {
 				$ajax or $this->set_error_notice( [ 10006 => '' ] );
 				return $ajax ? $this->get_ajax_notice( false, 10006 ) : false;
 			}
-		endif;
+		}
 
 		switch ( $status['case'] ) {
 			case 1:
@@ -893,7 +888,6 @@ final class LoadAdmin extends AdminPages {
 			default:
 				// Unknown case.
 				$code = 10011;
-				break;
 		}
 
 		$ajax or $this->register_extension_state_change_notice( $code, $slug );
@@ -954,9 +948,9 @@ final class LoadAdmin extends AdminPages {
 	 */
 	protected function register_extension_state_change_notice( $code, $slug ) {
 		$this->set_error_notice( [
-			$code => sprintf(
+			$code => \sprintf(
 				'<strong><em>(%s)</em></strong>',
-				sprintf(
+				\sprintf(
 					/* translators: %s = extension slug */
 					\esc_html__( 'Extension slug: %s', 'the-seo-framework-extension-manager' ),
 					$slug
@@ -1062,6 +1056,7 @@ final class LoadAdmin extends AdminPages {
 	 * Disables or enables an extension through options.
 	 *
 	 * @since 1.0.0
+	 * @since 2.7.0 Now uses a new option key.
 	 *
 	 * @param string $slug The extension slug.
 	 * @param bool   $enable Whether to enable or disable the extension.
@@ -1069,13 +1064,10 @@ final class LoadAdmin extends AdminPages {
 	 */
 	protected function update_extension( $slug, $enable = false ) {
 
-		$extensions = $this->get_option( 'active_extensions' ) ?: [];
+		$extensions = (array) \get_option( \TSF_EXTENSION_MANAGER_ACTIVE_EXTENSIONS_OPTIONS, [] );
 
 		$extensions[ $slug ] = (bool) $enable;
 
-		// Kill options on failure when enabling.
-		$kill = $enable;
-
-		return $this->update_option( 'active_extensions', $extensions, $kill );
+		return \update_option( \TSF_EXTENSION_MANAGER_ACTIVE_EXTENSIONS_OPTIONS, $extensions );
 	}
 }

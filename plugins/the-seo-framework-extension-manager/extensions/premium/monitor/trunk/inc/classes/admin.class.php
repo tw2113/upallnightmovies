@@ -27,7 +27,7 @@ if ( false === \TSFEM_E_MONITOR_API_ACCESS_KEY )
 
 /**
  * Monitor extension for The SEO Framework
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -296,9 +296,6 @@ final class Admin extends Api {
 		 */
 		$this->init_errors();
 
-		// Add something special for Vivaldi & Android.
-		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
-
 		return true;
 	}
 
@@ -418,42 +415,40 @@ final class Admin extends Api {
 	 */
 	public function _wp_ajax_update_settings() {
 
-		if ( \wp_doing_ajax() ) :
-			if ( \TSF_Extension_Manager\can_do_extension_settings() ) :
-				$tsfem  = \tsfem();
-				$option = '';
-				$send   = [];
-				if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
-					// Option is cleaned and requires unpacking.
-					$option = isset( $_POST['option'] ) ? $tsfem->s_ajax_string( $_POST['option'] ) : ''; // Sanitization, input var OK.
-					$value  = isset( $_POST['value'] ) ? \absint( $_POST['value'] ) : 0;                  // Input var OK.
-				} else {
-					$send['results'] = $this->get_ajax_notice( false, 1019002 );
+		if ( \TSF_Extension_Manager\can_do_extension_settings() ) {
+			$tsfem  = \tsfem();
+			$option = '';
+			$send   = [];
+			if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
+				// Option is cleaned and requires unpacking.
+				$option = isset( $_POST['option'] ) ? $tsfem->s_ajax_string( $_POST['option'] ) : ''; // Sanitization, input var OK.
+				$value  = isset( $_POST['value'] ) ? \absint( $_POST['value'] ) : 0;                  // Input var OK.
+			} else {
+				$send['results'] = $this->get_ajax_notice( false, 1019002 );
+			}
+
+			if ( $option ) {
+				// Unpack option.
+				$_option = \TSF_Extension_Manager\FormFieldParser::get_last_value( \TSF_Extension_Manager\FormFieldParser::umatosa( $option ) );
+				$options = [
+					$_option => $value,
+				];
+
+				$response = $this->api_update_remote_settings( $options, true );
+
+				// Get new options, regardless of response.
+				foreach ( [ 'uptime_setting', 'performance_setting' ] as $setting ) {
+					$send['settings'][ $setting ] = $this->get_option( $setting, 0 );
 				}
 
-				if ( $option ) {
-					// Unpack option.
-					$_option = \TSF_Extension_Manager\FormFieldParser::get_last_value( \TSF_Extension_Manager\FormFieldParser::umatosa( $option ) );
-					$options = [
-						$_option => $value,
-					];
+				$type            = empty( $response['success'] ) ? 'failure' : 'success';
+				$send['results'] = $response;
+			} else {
+				$send['results'] = $this->get_ajax_notice( false, 1010702 );
+			}
 
-					$response = $this->api_update_remote_settings( $options, true );
-
-					// Get new options, regardless of response.
-					foreach ( [ 'uptime_setting', 'performance_setting' ] as $setting ) {
-						$send['settings'][ $setting ] = $this->get_option( $setting, 0 );
-					}
-
-					$type            = empty( $response['success'] ) ? 'failure' : 'success';
-					$send['results'] = $response;
-				} else {
-					$send['results'] = $this->get_ajax_notice( false, 1010702 );
-				}
-
-				$tsfem->send_json( $send, $type ?? 'failure' );
-			endif;
-		endif;
+			$tsfem->send_json( $send, $type ?? 'failure' );
+		}
 
 		exit;
 	}
@@ -468,77 +463,78 @@ final class Admin extends Api {
 	 */
 	public function _wp_ajax_fetch_data() {
 
-		if ( \wp_doing_ajax() ) :
-			if ( \TSF_Extension_Manager\can_do_extension_settings() ) :
+		if ( \TSF_Extension_Manager\can_do_extension_settings() ) {
 
-				if ( ! \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
+			if ( ! \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
+				$status = [
+					'content' => null,
+					'type'    => 'unknown',
+					'notice'  => \esc_html__( 'Something went wrong. Please reload the page.', 'the-seo-framework-extension-manager' ),
+				];
+			} else {
+				$timeout = isset( $_POST['remote_data_timeout'] ) ? \absint( $_POST['remote_data_timeout'] ) : 0; // Input var OK.
+
+				$current_timeout = $this->get_remote_data_timeout();
+
+				if (
+						$this->is_remote_data_expired()
+					|| ( $timeout + $this->get_remote_data_buffer() ) < $current_timeout
+				) {
+					// There's possibly new data found. This should certainly be true with statistics.
+					$api = $this->api_get_remote_data( true );
+
+					switch ( $api['code'] ) {
+						case 1010602:
+						case 1010603:
+							$type = 'requires_fix';
+							break;
+
+						default:
+							$type = $api['success'] ? 'success' : 'failure';
+					}
+
 					$status = [
-						'content' => null,
-						'type'    => 'unknown',
-						'notice'  => \esc_html__( 'Something went wrong. Please reload the page.', 'the-seo-framework-extension-manager' ),
-					];
-				} else {
-					$timeout = isset( $_POST['remote_data_timeout'] ) ? \absint( $_POST['remote_data_timeout'] ) : 0; // Input var OK.
-
-					$current_timeout = $this->get_remote_data_timeout();
-
-					if ( $this->is_remote_data_expired() || ( $timeout + $this->get_remote_data_buffer() ) < $current_timeout ) :
-						// There's possibly new data found. This should certainly be true with statistics.
-						$api = $this->api_get_remote_data( true );
-
-						switch ( $api['code'] ) {
-							case 1010602:
-							case 1010603:
-								$type = 'requires_fix';
-								break;
-
-							default:
-								$type = $api['success'] ? 'success' : 'failure';
-						}
-
-						$status = [
-							'content' => [
-								'issues'   => $this->ajax_get_issues_data(),
-								'lc'       => $this->get_last_crawled_field(),
-								'settings' => [
-									'uptime_setting'      => $this->get_option( 'uptime_setting', 0 ),
-									'performance_setting' => $this->get_option( 'performance_setting', 0 ),
-								],
+						'content' => [
+							'issues'   => $this->ajax_get_issues_data(),
+							'lc'       => $this->get_last_crawled_field(),
+							'settings' => [
+								'uptime_setting'      => $this->get_option( 'uptime_setting', 0 ),
+								'performance_setting' => $this->get_option( 'performance_setting', 0 ),
 							],
-							'type'    => $type,
-							'notice'  => $api['notice'],
-							'code'    => $api['code'],
-							// Get new timeout.
-							'timeout' => $current_timeout = $this->get_remote_data_timeout(),
-						];
-					else :
-						// No new data has been found.
-						$seconds = $current_timeout + $this->get_remote_data_buffer() - time();
-						$status  = [
-							'content' => null,
-							'type'    => 'yield_unchanged',
-							'notice'  => $this->get_try_again_notice( $seconds ),
-							'timeout' => $current_timeout,
-						];
-					endif;
-				}
-
-				if ( \WP_DEBUG ) {
-					$response = [
-						'status'   => $status,
-						'timeout'  => [
-							'old' => $timeout ?? null,
-							'new' => $current_timeout ?? null,
 						],
-						'response' => isset( $api ) ? [ 'response' => $api ] : [],
+						'type'    => $type,
+						'notice'  => $api['notice'],
+						'code'    => $api['code'],
+						// Get new timeout.
+						'timeout' => $current_timeout = $this->get_remote_data_timeout(),
 					];
 				} else {
-					$response = [ 'status' => $status ];
+					// No new data has been found.
+					$seconds = $current_timeout + $this->get_remote_data_buffer() - time();
+					$status  = [
+						'content' => null,
+						'type'    => 'yield_unchanged',
+						'notice'  => $this->get_try_again_notice( $seconds ),
+						'timeout' => $current_timeout,
+					];
 				}
+			}
 
-				\tsfem()->send_json( $response, null );
-			endif;
-		endif;
+			if ( \WP_DEBUG ) {
+				$response = [
+					'status'   => $status,
+					'timeout'  => [
+						'old' => $timeout ?? null,
+						'new' => $current_timeout ?? null,
+					],
+					'response' => isset( $api ) ? [ 'response' => $api ] : [],
+				];
+			} else {
+				$response = [ 'status' => $status ];
+			}
+
+			\tsfem()->send_json( $response, null );
+		}
 
 		exit;
 	}
@@ -553,75 +549,76 @@ final class Admin extends Api {
 	 */
 	public function _wp_ajax_request_crawl() {
 
-		if ( \wp_doing_ajax() ) :
-			if ( \TSF_Extension_Manager\can_do_extension_settings() ) :
+		if ( \TSF_Extension_Manager\can_do_extension_settings() ) {
 
-				$timeout = null;
+			$timeout = null;
 
-				if ( ! \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
-					$status = [
-						'type'   => 'unknown',
-						'notice' => \esc_html__( 'Something went wrong. Please reload the page.', 'the-seo-framework-extension-manager' ),
-					];
-				} else {
-					$timeout = isset( $_POST['remote_crawl_timeout'] ) ? \absint( $_POST['remote_crawl_timeout'] ) : 0; // Input var OK.
+			if ( ! \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
+				$status = [
+					'type'   => 'unknown',
+					'notice' => \esc_html__( 'Something went wrong. Please reload the page.', 'the-seo-framework-extension-manager' ),
+				];
+			} else {
+				$timeout = isset( $_POST['remote_crawl_timeout'] ) ? \absint( $_POST['remote_crawl_timeout'] ) : 0; // Input var OK.
 
+				$current_timeout = $this->get_remote_crawl_timeout();
+
+				if (
+					   $this->can_request_next_crawl()
+					|| ( $timeout + $this->get_request_next_crawl_buffer() ) < $current_timeout
+				) {
+					// Crawl can be requested.
+					$api = $this->api_request_crawl( true );
+
+					switch ( $api['code'] ) {
+						case 1010504:
+							$type = 'yield_unchanged';
+							break;
+
+						case 1010502:
+						case 1010503:
+							$type = 'requires_fix';
+							break;
+
+						default:
+							$type = $api['success'] ? 'success' : 'failure';
+					}
+
+					// Get new timeout.
 					$current_timeout = $this->get_remote_crawl_timeout();
 
-					if ( $this->can_request_next_crawl() || ( $timeout + $this->get_request_next_crawl_buffer() ) < $current_timeout ) :
-						// Crawl can be requested.
-						$api = $this->api_request_crawl( true );
-
-						switch ( $api['code'] ) {
-							case 1010504:
-								$type = 'yield_unchanged';
-								break;
-
-							case 1010502:
-							case 1010503:
-								$type = 'requires_fix';
-								break;
-
-							default:
-								$type = $api['success'] ? 'success' : 'failure';
-						}
-
-						// Get new timeout.
-						$current_timeout = $this->get_remote_crawl_timeout();
-
-						$status = [
-							'type'    => $type,
-							'code'    => $api['code'],
-							'notice'  => $api['notice'],
-							'timeout' => $current_timeout,
-						];
-					else :
-						// Crawl has already been requested recently.
-						$seconds = $current_timeout + $this->get_request_next_crawl_buffer() - time();
-						$status  = [
-							'type'    => 'yield_unchanged',
-							'notice'  => $this->get_try_again_notice( $seconds ),
-							'timeout' => $current_timeout,
-						];
-					endif;
-				}
-
-				if ( \WP_DEBUG ) {
-					$response = [
-						'status'   => $status,
-						'timeout'  => [
-							'old' => $timeout ?? null,
-							'new' => $current_timeout ?? null,
-						],
-						'response' => isset( $api ) ? [ 'response' => $api ] : [],
+					$status = [
+						'type'    => $type,
+						'code'    => $api['code'],
+						'notice'  => $api['notice'],
+						'timeout' => $current_timeout,
 					];
 				} else {
-					$response = [ 'status' => $status ];
+					// Crawl has already been requested recently.
+					$seconds = $current_timeout + $this->get_request_next_crawl_buffer() - time();
+					$status  = [
+						'type'    => 'yield_unchanged',
+						'notice'  => $this->get_try_again_notice( $seconds ),
+						'timeout' => $current_timeout,
+					];
 				}
+			}
 
-				\tsfem()->send_json( $response, null );
-			endif;
-		endif;
+			if ( \WP_DEBUG ) {
+				$response = [
+					'status'   => $status,
+					'timeout'  => [
+						'old' => $timeout ?? null,
+						'new' => $current_timeout ?? null,
+					],
+					'response' => isset( $api ) ? [ 'response' => $api ] : [],
+				];
+			} else {
+				$response = [ 'status' => $status ];
+			}
+
+			\tsfem()->send_json( $response, null );
+		}
 
 		exit;
 	}
@@ -635,24 +632,22 @@ final class Admin extends Api {
 	 */
 	public function _wp_ajax_get_requires_fix() {
 
-		if ( \wp_doing_ajax() ) {
-			if ( \TSF_Extension_Manager\can_do_extension_settings() ) {
+		if ( \TSF_Extension_Manager\can_do_extension_settings() ) {
 
-				$send = [];
+			$send = [];
 
-				if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
-					// Initialize menu hooks.
-					\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
-						? \tsf()->admin()->menu()->register_top_menu_page()
-						: \tsf()->add_menu_link();
+			if ( \check_ajax_referer( 'tsfem-e-monitor-ajax-nonce', 'nonce', false ) ) {
+				// Initialize menu hooks.
+				\TSF_EXTENSION_MANAGER_USE_MODERN_TSF
+					? \tsf()->admin()->menu()->register_top_menu_page()
+					: \tsf()->add_menu_link();
 
-					$this->_add_menu_link();
+				$this->_add_menu_link();
 
-					$send['html'] = $this->get_site_fix_fields();
-				}
-
-				\tsfem()->send_json( $send, null );
+				$send['html'] = $this->get_site_fix_fields();
 			}
+
+			\tsfem()->send_json( $send, null );
 		}
 
 		exit;
@@ -695,7 +690,7 @@ final class Admin extends Api {
 			'type'     => 'css',
 			'deps'     => [ 'tsf-tt', 'tsfem-ui' ],
 			'autoload' => true,
-			'hasrtl'   => true,
+			'hasrtl'   => false,
 			'name'     => 'tsfem-monitor',
 			'base'     => \TSFEM_E_MONITOR_DIR_URL . 'lib/css/',
 			'ver'      => \TSFEM_E_MONITOR_VERSION,
@@ -811,13 +806,13 @@ final class Admin extends Api {
 			$output = Output::get_instance()->_build_pane_html( $issues, 'issues' );
 
 		if ( ! $output ) {
-			$output = sprintf(
+			$output = \sprintf(
 				'<div class=tsfem-e-monitor-issues-wrap-line><h4 class=tsfem-status-title>%s</h4></div>',
 				$this->get_string_no_data_found()
 			);
 		}
 
-		return sprintf( '<div class="tsfem-pane-inner-wrap tsfem-e-monitor-issues-wrap">%s</div>', $output );
+		return \sprintf( '<div class="tsfem-pane-inner-wrap tsfem-e-monitor-issues-wrap">%s</div>', $output );
 	}
 
 	/**
@@ -840,7 +835,7 @@ final class Admin extends Api {
 
 		if ( empty( $data['info'] ) ) {
 			$found = false;
-			$data  = sprintf(
+			$data  = \sprintf(
 				'<div class=tsfem-e-monitor-issues-wrap-line><h4 class=tsfem-status-title>%s</h4></div>',
 				$this->get_string_no_data_found()
 			);
@@ -860,7 +855,7 @@ final class Admin extends Api {
 	 * @return string The parsed Control Panel overview HTML data.
 	 */
 	protected function get_cp_overview() {
-		return sprintf( '<div class="tsfem-pane-inner-wrap tsfem-e-monitor-cp-wrap">%s</div>', $this->get_cp_output() );
+		return \sprintf( '<div class="tsfem-pane-inner-wrap tsfem-e-monitor-cp-wrap">%s</div>', $this->get_cp_output() );
 	}
 
 	/**
@@ -871,7 +866,7 @@ final class Admin extends Api {
 	 * @return string The Control Panel pane output.
 	 */
 	protected function get_cp_output() {
-		return sprintf(
+		return \sprintf(
 			'<div class="tsfem-e-monitor-cp tsfem-flex">%s</div>',
 			$this->get_account_information()
 				. $this->get_site_actions_view()
@@ -889,7 +884,7 @@ final class Admin extends Api {
 	 */
 	protected function get_site_actions_view() {
 
-		$title   = sprintf( '<h4 class=tsfem-cp-title>%s</h4>', \esc_html__( 'Actions', 'the-seo-framework-extension-manager' ) );
+		$title   = \sprintf( '<h4 class=tsfem-cp-title>%s</h4>', \esc_html__( 'Actions', 'the-seo-framework-extension-manager' ) );
 		$content = '';
 
 		$buttons = [
@@ -898,9 +893,9 @@ final class Admin extends Api {
 		];
 
 		foreach ( $buttons as $button )
-			$content .= sprintf( '<div class=tsfem-cp-buttons>%s</div>', $button );
+			$content .= \sprintf( '<div class=tsfem-cp-buttons>%s</div>', $button );
 
-		return sprintf( '<div class="tsfem-e-monitor-cp-actions tsfem-pane-section">%s%s</div>', $title, $content );
+		return \sprintf( '<div class="tsfem-e-monitor-cp-actions tsfem-pane-section">%s%s</div>', $title, $content );
 	}
 
 	/**
@@ -912,12 +907,12 @@ final class Admin extends Api {
 	 */
 	protected function get_site_settings_view() {
 
-		$title = sprintf( '<h4 class=tsfem-cp-title>%s</h4>', \esc_html__( 'Settings', 'the-seo-framework-extension-manager' ) );
+		$title = \sprintf( '<h4 class=tsfem-cp-title>%s</h4>', \esc_html__( 'Settings', 'the-seo-framework-extension-manager' ) );
 
 		$content = '';
 		$form_id = 'tsfem-e-monitor-update-settings';
 
-		$content .= sprintf(
+		$content .= \sprintf(
 			'<p><small>%s</small></p>',
 			\esc_html__( 'These settings are in development. Enable these to participate in the beta tests.', 'the-seo-framework-extension-manager' )
 		);
@@ -1010,7 +1005,7 @@ final class Admin extends Api {
 			);
 		}
 
-		$content .= sprintf( '<div class="tsfem-flex-account-setting-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $_rows );
+		$content .= \sprintf( '<div class="tsfem-flex-account-setting-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $_rows );
 
 		$nonce_action = $this->_get_nonce_action_field( 'update' );
 		$nonce        = $this->_get_nonce_field( 'update' );
@@ -1021,7 +1016,7 @@ final class Admin extends Api {
 			'tsfem-button-primary tsfem-button-cloud'
 		);
 
-		$content .= sprintf(
+		$content .= \sprintf(
 			'<form action=%s method=post id=%s class="%s" autocomplete=off data-form-type=other>%s</form>',
 			\menu_page_url( $this->monitor_page_slug, false ),
 			$form_id,
@@ -1029,7 +1024,7 @@ final class Admin extends Api {
 			$nonce_action . $nonce . $submit
 		);
 
-		return sprintf( '<div class="tsfem-e-monitor-cp-settings tsfem-pane-section">%s%s</div>', $title, $content );
+		return \sprintf( '<div class="tsfem-e-monitor-cp-settings tsfem-pane-section">%s%s</div>', $title, $content );
 	}
 
 	/**
@@ -1123,13 +1118,13 @@ final class Admin extends Api {
 	 */
 	protected function get_account_data_fields() {
 
-		$title   = sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Overview', 'the-seo-framework-extension-manager' ) );
+		$title   = \sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Overview', 'the-seo-framework-extension-manager' ) );
 		$content = '';
 
 		$domain  = \tsfem()->get_current_site_domain();
 		$_domain = $this->get_expected_domain();
 		$class   = $_domain === $domain ? 'tsfem-success' : 'tsfem-error';
-		$domain  = sprintf( '<span class="tsfem-dashicon %s">%s</span>', \esc_attr( $class ), \esc_html( $_domain ) );
+		$domain  = \sprintf( '<span class="tsfem-dashicon %s">%s</span>', \esc_attr( $class ), \esc_html( $_domain ) );
 
 		$content .= \TSF_Extension_Manager\Layout::wrap_row_content(
 			\esc_html__( 'Connected site:', 'the-seo-framework-extension-manager' ),
@@ -1142,10 +1137,10 @@ final class Admin extends Api {
 			false
 		);
 
-		return sprintf(
+		return \sprintf(
 			'<div class="tsfem-account-info tsfem-pane-section">%s%s</div>',
 			$title,
-			sprintf( '<div class="tsfem-flex-account-info-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $content )
+			\sprintf( '<div class="tsfem-flex-account-info-rows tsfem-flex tsfem-flex-nogrowshrink">%s</div>', $content )
 		);
 	}
 
@@ -1166,7 +1161,7 @@ final class Admin extends Api {
 			? static::get_rectified_date_i18n( 'F j, Y, g:i A (\G\M\TP)', $last_crawl )
 			: \__( 'No completed crawl has been recorded yet.', 'the-seo-framework-extension-manager' );
 
-		return sprintf(
+		return \sprintf(
 			'<time class="tsfem-dashicon tsf-tooltip-item %s" id=tsfem-e-monitor-last-crawled datetime=%s title="%s">%s</time>',
 			\esc_attr( $class ),
 			\esc_attr( gmdate( 'c', $last_crawl ) ),
@@ -1196,13 +1191,13 @@ final class Admin extends Api {
 				$description = \esc_html__( 'The instance ID of your site does not match the remote server.', 'the-seo-framework-extension-manager' );
 			}
 
-			$title = sprintf( '<h4 class=tsfem-info-title>%s</h4>', $title );
+			$title = \sprintf( '<h4 class=tsfem-info-title>%s</h4>', $title );
 
 			$output  = '';
-			$output .= sprintf( '<p class=tsfem-description>%s</p>', $description );
+			$output .= \sprintf( '<p class=tsfem-description>%s</p>', $description );
 			$output .= $this->get_fix_button();
 
-			return sprintf( '<div class="tsfem-account-fix tsfem-pane-section">%s%s</div>', $title, $output );
+			return \sprintf( '<div class="tsfem-account-fix tsfem-pane-section">%s%s</div>', $title, $output );
 		}
 
 		return '';
@@ -1260,11 +1255,11 @@ final class Admin extends Api {
 		];
 
 		$switcher = '<div class=tsfem-switch-button-container-wrap><div class=tsfem-switch-button-container>'
-						. sprintf(
+						. \sprintf(
 							'<input type=checkbox id="%s-action" value=1 />',
 							$s_field_id
 						)
-						. sprintf(
+						. \sprintf(
 							'<label for="%s-action" title="%s" class="tsfem-button tsfem-button-flag">%s</label>',
 							$s_field_id,
 							\esc_attr( $i18n['da_ays'] ),
@@ -1281,15 +1276,15 @@ final class Admin extends Api {
 						)
 					. '</div></div>';
 
-		$button = sprintf(
+		$button = \sprintf(
 			'<form name=deactivate action="%s" method=post id=tsfem-e-monitor-disconnect-form autocomplete=off data-form-type=other>%s</form>',
 			\menu_page_url( $this->monitor_page_slug, false ),
 			$nonce_action . $nonce . $switcher
 		);
 
-		$title = sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Disconnect site', 'the-seo-framework-extension-manager' ) );
+		$title = \sprintf( '<h4 class=tsfem-info-title>%s</h4>', \esc_html__( 'Disconnect site', 'the-seo-framework-extension-manager' ) );
 
-		return sprintf( '<div class="tsfem-account-disconnect tsfem-pane-section">%s%s</div>', $title, $button );
+		return \sprintf( '<div class="tsfem-account-disconnect tsfem-pane-section">%s%s</div>', $title, $button );
 	}
 
 	/**

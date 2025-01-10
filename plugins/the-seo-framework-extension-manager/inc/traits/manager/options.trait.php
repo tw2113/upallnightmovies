@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -97,6 +97,8 @@ trait Options {
 	 * @since 1.0.0
 	 * @since 1.5.0 Option reversal has been forwarded to option verification,
 	 *              so the verification key no longers gets out of sync.
+	 * @since 2.7.0 1. Now unsets the `active_extensions` key, which has been migrated to its own option.
+	 *              2. Now unsets the `_enable_feed` key, which is no longer supported.
 	 *
 	 * @param string $option The option name.
 	 * @param mixed  $value The option value.
@@ -119,13 +121,15 @@ trait Options {
 
 		$this->initialize_option_update_instance();
 
-		// TODO add Ajax response? "Enable account -> open new tab, disable account in it -> load feed in first tab."
 		if ( empty( $options['_instance'] ) ) {
 			\wp_die( 'Error 7008: Supply an instance key before updating other options.' );
 			return false;
 		}
 
-		// Effervescently evergreen. This will stop users "deciphering" the "local instance" gimmick ad futility.
+		// Legacy. We can remove the unsetting later, but no harm is done keeping it.
+		unset( $options['active_extensions'], $options['_enable_feed'] );
+
+		// Effervescently evergreen. This will stop users "deciphering" the "local instance" gimmick ad futilis.
 		$options['_timestamp'] = time();
 
 		$success          = \update_option( \TSF_EXTENSION_MANAGER_SITE_OPTIONS, $options );

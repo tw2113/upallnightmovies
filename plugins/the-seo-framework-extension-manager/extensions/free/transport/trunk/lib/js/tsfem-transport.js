@@ -9,7 +9,7 @@
 
 /**
  * Import extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -35,7 +35,7 @@
  *
  * @constructor
  */
-window.tsfem_e_import = function() {
+window.tsfem_e_import = function () {
 
 	/**
 	 * @since 1.0.0
@@ -80,7 +80,6 @@ window.tsfem_e_import = function() {
 				break;
 			case 'end':
 				tsfem.updatedResponse( loggerLoaderQuery, success, notice );
-				break;
 		}
 	}
 
@@ -120,7 +119,7 @@ window.tsfem_e_import = function() {
 		handler(
 			'import',
 			formData,
-			( new Date() ).toLocaleTimeString() + " :: " + l10n.i18n.logMessages.requestImport.replace(
+			( new Date() ).toLocaleTimeString() + ' :: ' + l10n.i18n.logMessages.requestImport.replace(
 				'%s',
 				form.querySelector( `[value="${formData.get( `${formNs}[choosePlugin]` )}"]` )?.dataset.title
 			)
@@ -227,11 +226,9 @@ window.tsfem_e_import = function() {
 				data: formData && ( new URLSearchParams( [ ...formData.entries() ] ) ).toString(),
 			}
 		).done( data => {
-			console.log( data );
 			resolve( data?.results?.notice );
 			_log( data?.logMsg, 2 );
 		} ).fail( response => {
-			console.log( data );
 			reject( response.data?.results?.notice );
 			_log( response.data?.logMsg, 2 );
 		} );

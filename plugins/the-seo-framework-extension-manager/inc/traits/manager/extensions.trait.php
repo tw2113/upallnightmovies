@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -72,8 +72,8 @@ trait Extensions_Properties {
 		 * and have cost me literally thousands of hours to get where they are now.
 		 *
 		 * Coding is extremely difficult, as you might know (why else are you reading
-		 * this?), so build something positive from those skills! Become an awesome
-		 * part of this awesome WordPress.org community :). Or build your own :D.
+		 * this?), so build something positive with those skills! Become an awesome
+		 * part of this awesome WordPress.org community :). Go build your own :D.
 		 */
 		return [
 			'focus'     => [
@@ -83,11 +83,11 @@ trait Extensions_Properties {
 				'area'         => 'audit, content, keywords',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1674791061',
+				'last_updated' => '1716207115',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'articles'  => [
 				'slug'         => 'articles',
@@ -96,11 +96,11 @@ trait Extensions_Properties {
 				'area'         => 'blogging, news',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1698798295',
+				'last_updated' => '1732059998',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'transport' => [
 				'slug'         => 'transport',
@@ -111,9 +111,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1687363584',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'honeypot'  => [
 				'slug'         => 'honeypot',
@@ -122,11 +122,11 @@ trait Extensions_Properties {
 				'area'         => 'anti-spam',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1664173453',
+				'last_updated' => '1731979506',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'cord'      => [
 				'slug'         => 'cord',
@@ -137,9 +137,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1698798295',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'local'     => [
 				'slug'         => 'local',
@@ -148,11 +148,11 @@ trait Extensions_Properties {
 				'area'         => 'business',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1675716878',
+				'last_updated' => '1732058931',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'amp'       => [
 				'slug'         => 'amp',
@@ -161,11 +161,11 @@ trait Extensions_Properties {
 				'area'         => 'general',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1675763035',
+				'last_updated' => '1731979291',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'monitor'   => [
 				'slug'         => 'monitor',
@@ -174,11 +174,11 @@ trait Extensions_Properties {
 				'area'         => 'syntax',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1698186295',
+				'last_updated' => '1731979291',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'incognito' => [
 				'slug'         => 'incognito',
@@ -189,9 +189,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1515109560',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'origin'    => [
 				'slug'         => 'origin',
@@ -202,9 +202,9 @@ trait Extensions_Properties {
 				'party'        => 'first',
 				'last_updated' => '1541601833',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 			'title-fix' => [
 				'slug'         => 'title-fix',
@@ -213,11 +213,11 @@ trait Extensions_Properties {
 				'area'         => 'theme',
 				'author'       => 'Sybre Waaijer',
 				'party'        => 'first',
-				'last_updated' => '1572496812',
+				'last_updated' => '1731979291',
 				'requires'     => '5.9',
-				'tested'       => '6.4',
+				'tested'       => '6.7',
 				'requires_tsf' => '4.2.8',
-				'tested_tsf'   => '5.0.0',
+				'tested_tsf'   => '5.1.0',
 			],
 		];
 	}
@@ -235,9 +235,9 @@ trait Extensions_Properties {
 	 */
 	private static function get_external_extensions_checksum() {
 		return [
-			'sha256' => '43993343a45032973e8ac111794ab1ea64d08d16c78e68196d490e5b5c8cfa1e',
-			'sha1'   => '27402afff0f9aa7ec77800f022bffb8259bd875e',
-			'md5'    => 'b395c1ae746bcdd3b775e1adfba5a76a',
+			'sha256' => '493894ade1034929652a57986b75e570c2eea2b8acff8d2b368a7a632e0be454',
+			'sha1'   => '55269d30baf6fa7d85684e4bc553551982c00d96',
+			'md5'    => 'e625d21f770c11c3a9364d731e6912ef',
 		];
 	}
 
@@ -495,7 +495,7 @@ trait Extensions_Actions {
 		if ( isset( $memo ) )
 			return $memo;
 
-		$extensions = \get_option( \TSF_EXTENSION_MANAGER_SITE_OPTIONS, [] )['active_extensions'] ?? [];
+		$extensions = \get_option( \TSF_EXTENSION_MANAGER_ACTIVE_EXTENSIONS_OPTIONS, [] );
 
 		if ( \TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS )
 			$extensions = array_merge( $extensions, \TSF_EXTENSION_MANAGER_FORCED_EXTENSIONS );
@@ -667,6 +667,7 @@ trait Extensions_Actions {
 	 *
 	 * @since 2.1.0
 	 * @since 2.3.1 Now compares leniently.
+	 * @since 2.7.0 Now includes an unmodified $wp_version parameter.
 	 * @uses static::version_compare_lenient()
 	 * @global string $wp_version
 	 *
@@ -687,18 +688,27 @@ trait Extensions_Actions {
 
 		$compatibility = 0;
 
-		$_tsf_version = \THE_SEO_FRAMEWORK_VERSION;
-		$_wp_version  = $GLOBALS['wp_version'];
+		static $version_cache;
 
-		if ( static::version_compare_lenient( $_tsf_version, $extension['requires_tsf'], '<' ) ) {
+		if ( empty( $version_cache ) ) {
+			// include an unmodified $wp_version
+			include \ABSPATH . \WPINC . '/version.php';
+
+			$version_cache = [
+				'tsf' => \THE_SEO_FRAMEWORK_VERSION,
+				'wp'  => $wp_version, // phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- included
+			];
+		}
+
+		if ( static::version_compare_lenient( $version_cache['tsf'], $extension['requires_tsf'], '<' ) ) {
 			$compatibility |= \TSFEM_EXTENSION_TSF_INCOMPATIBLE;
-		} elseif ( static::version_compare_lenient( $_tsf_version, $extension['tested_tsf'], '>' ) ) {
+		} elseif ( static::version_compare_lenient( $version_cache['tsf'], $extension['tested_tsf'], '>' ) ) {
 			$compatibility |= \TSFEM_EXTENSION_TSF_UNTESTED;
 		}
 
-		if ( static::version_compare_lenient( $_wp_version, $extension['requires'], '<' ) ) {
+		if ( static::version_compare_lenient( $version_cache['wp'], $extension['requires'], '<' ) ) {
 			$compatibility |= \TSFEM_EXTENSION_WP_INCOMPATIBLE;
-		} elseif ( static::version_compare_lenient( $_wp_version, $extension['tested'], '>' ) ) {
+		} elseif ( static::version_compare_lenient( $version_cache['wp'], $extension['tested'], '>' ) ) {
 			$compatibility |= \TSFEM_EXTENSION_WP_UNTESTED;
 		}
 
@@ -892,7 +902,7 @@ trait Extensions_Actions {
 		$tests     = empty( $json->test ) ? [] : (array) $json->test;
 
 		foreach ( $tests as $_class => $_file ) {
-			// Base file is already tested.
+			// Base file is already tested at basetest.
 			if ( '_base' === $_class )
 				continue;
 
@@ -1047,11 +1057,10 @@ trait Extensions_Actions {
 		$advanced_error_notice = \esc_html( $error['message'] ) . ' in file <strong>' . \esc_html( $error['file'] ) . '</strong> on line <strong>' . \esc_html( $error['line'] ) . '</strong>.';
 
 		if ( \wp_doing_ajax() ) {
-			// TODO send slug?
 			\tsfem()->send_json(
 				[
 					'results'     => \TSF_Extension_Manager\get_ajax_notice( false, $error_notice, 10005 ),
-					'fatal_error' => sprintf( '<strong>Error message:</strong> %s', $advanced_error_notice ),
+					'fatal_error' => \sprintf( '<strong>Error message:</strong> %s', $advanced_error_notice ),
 				],
 				'failure'
 			);
@@ -1145,24 +1154,26 @@ trait Extensions_Actions {
 	 * @since 1.0.0
 	 * @since 2.2.0 Now allows for persistent shared-class tests (thanks to _once).
 	 * @since 2.5.1 Added memoization, speeds up loading.
+	 * @since 2.7.0 Now tests for strict false on inclusion return.
 	 *
 	 * @param string $file      The extension file to include.
 	 * @param string $_instance The verification instance. Propagates to inclusion file. Passed by reference.
 	 * @param array  $bits      The verification instance bits. Propagates to inclusion file. Passed by reference.
-	 * @return bool True on success, false on failure.
+	 * @return true
 	 */
 	private static function include_extension( $file, &$_instance, &$bits ) { // phpcs:ignore, VariableAnalysis.CodeAnalysis -- includes
 
-		static $loaded = [];
+		static $included = [];
 
-		if ( isset( $loaded[ $file ] ) ) {
+		if ( isset( $included[ $file ] ) ) {
 			// Tick the instance for we bypass inclusion.
 			\tsfem()->_verify_instance( $_instance, $bits[1] );
 
-			return $loaded[ $file ];
+			return $included[ $file ];
 		}
 
-		return $loaded[ $file ] = (bool) include $file;
+		// Allow `return;` but not return false;
+		return $included[ $file ] = false !== include $file;
 	}
 
 	/**

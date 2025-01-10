@@ -11,7 +11,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -45,36 +45,10 @@ final class Front extends Core {
 	 * @since 1.0.0
 	 */
 	private function construct() {
-		\add_action( 'the_seo_framework_do_before_output', [ $this, '_init' ], 10 );
-		\add_action( 'the_seo_framework_do_before_amp_output', [ $this, '_init' ], 10 );
-	}
+		\add_action( 'the_seo_framework_after_meta_output', [ $this, '_output_local_json' ] );
 
-	/**
-	 * Initializes front-end hooks.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 */
-	public function _init() {
-		if ( $this->is_amp() ) {
-			// Initialize output in The SEO Framework's front-end AMP meta object.
-			\add_action( 'the_seo_framework_amp_pro', [ $this, '_local_hook_amp_output' ] );
-		} else {
-			\add_action( 'the_seo_framework_after_meta_output', [ $this, '_output_local_json' ] );
-		}
-	}
-
-	/**
-	 * Outputs the AMP Local script.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @param string $output The current AMP pro output.
-	 * @return string The added local script.
-	 */
-	public function _local_hook_amp_output( $output = '' ) {
-		return $output .= $this->_get_local_json_output();
+		if ( ! \TSF_EXTENSION_MANAGER_USE_MODERN_TSF )
+			\add_action( 'the_seo_framework_do_after_amp_output', [ $this, '_output_local_json' ] );
 	}
 
 	/**
@@ -198,7 +172,7 @@ final class Front extends Core {
 
 		// Empty JSON is only 2 characters long.
 		if ( $json && \strlen( $json ) > 2 )
-			return sprintf( '<script type="application/ld+json">%s</script>', $json ) . "\n"; // Keep XHTML Valid!
+			return \sprintf( '<script type="application/ld+json">%s</script>', $json ) . "\n"; // Keep XHTML Valid!
 
 		return '';
 	}

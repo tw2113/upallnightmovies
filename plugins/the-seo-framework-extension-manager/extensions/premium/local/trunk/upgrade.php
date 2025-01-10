@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Local;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -44,11 +44,11 @@ function _do_admin_upgrade( $upgrader ) {
 		$upgrader->_register_upgrade(
 			'local',
 			'1100',
-			function( $version ) {
+			function ( $version ) { // phpcs:ignore, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- hint
 				// Defer: If it crashes, nothing happens.
 				\add_action(
 					'shutdown',
-					function() {
+					function () {
 						\TSF_Extension_Manager\Extension\Local\Settings::get_instance()->_reprocess_all_stored_data();
 					}
 				);

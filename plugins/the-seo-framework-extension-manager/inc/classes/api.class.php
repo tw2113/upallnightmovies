@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2016 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -248,7 +248,6 @@ class API extends Core {
 			case 'global':
 			default:
 				$uri = \TSF_EXTENSION_MANAGER_PREMIUM_URI;
-				break;
 		}
 
 		return $uri . ltrim( $path, ' \\/' );
@@ -385,29 +384,29 @@ class API extends Core {
 		// If the user's already using a free account, don't deactivate.
 		$registered_free = $this->is_plugin_activated() && ! $this->is_connected_user();
 
-		if ( 'status' !== $args['request'] ) {
-			if ( 'activation' === $args['request'] ) :
-				$_response = $this->handle_premium_activation( $args, $results );
-			elseif ( 'deactivation' === $args['request'] ) :
-				$_response = $this->handle_premium_disconnection( $args, $results );
-			endif;
-		} else {
+		$is_status_request = 'status' === $args['request'];
+
+		if ( $is_status_request ) {
 			$_response = $results;
+		} elseif ( 'activation' === $args['request'] ) {
+			$_response = $this->handle_premium_activation( $args, $results );
+		} elseif ( 'deactivation' === $args['request'] ) {
+			$_response = $this->handle_premium_disconnection( $args, $results );
 		}
 
 		if ( ! empty( $results['code'] ) ) {
 			switch ( $results['code'] ) {
-				case 106: // Inactive/expired subscription.
+				case 106: // Inactive/expired subscription. Treat as temporary error.
 					$this->set_error_notice( [ 308 => '' ] );
-					$registered_free or $this->do_deactivation( false, true );
+					$registered_free or $this->do_deactivation( true, true );
 					break;
 				case 105: // Mismatching license key from other data.
 					$this->set_error_notice( [ 307 => '' ] );
 					$registered_free or $this->do_deactivation( false, true );
 					break;
-				case 104: // Invalid instance ID.
+				case 104: // Invalid instance ID. Treat as temporary error.
 					$this->set_error_notice( [ 306 => '' ] );
-					$registered_free or $this->do_deactivation( false, true );
+					$registered_free or $this->do_deactivation( true, true );
 					break;
 				case 103: // Exceeded number of activations.
 					$this->set_error_notice( [ 305 => '' ] );
@@ -415,7 +414,7 @@ class API extends Core {
 					break;
 				case 102: // Miscellaneous software error on TSF servers.
 					$this->set_error_notice( [ 304 => '' ] );
-					$registered_free or $this->do_deactivation( false, true );
+					$registered_free or $this->do_deactivation( true, true );
 					break;
 				case 101: // Invalid license key inputted.
 					$this->set_error_notice( [ 303 => '' ] );
@@ -424,7 +423,6 @@ class API extends Core {
 				case 100: // Unspecified error. Set $moe to true.
 					$this->set_error_notice( [ 302 => '' ] );
 					$registered_free or $this->do_deactivation( true, true );
-					break;
 			}
 		}
 

@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Importers\PostMeta;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -55,14 +55,9 @@ abstract class Base extends \TSF_Extension_Manager\Extension\Transport\Importers
 	 * @return string[] List of taxonomy names.
 	 */
 	final protected function get_taxonomy_list_with_pt_support() {
-
-		$taxonomies = array_filter(
+		return array_keys( array_filter(
 			\get_taxonomies( [], 'objects' ),
-			static function ( $t ) {
-				return ! empty( $t->hierarchical );
-			}
-		);
-
-		return array_keys( $taxonomies );
+			static fn( $t ) => ! empty( $t->hierarchical ),
+		) );
 	}
 }

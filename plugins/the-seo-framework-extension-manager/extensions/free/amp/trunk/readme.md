@@ -59,14 +59,19 @@ Here you can find the available filters for AMP.
 Add your own meta data, with either `the_seo_framework_do_before_amp_output` (before) or `the_seo_framework_do_after_amp_output` (after).
 
 ```php
-add_action( 'the_seo_framework_do_before_amp_output', function() {
-
+add_action( 'the_seo_framework_do_before_amp_output', function () {
 	// Add your own meta tags.
 	echo '&amp;lt;meta name="author" content="John Doe" /&amp;gt;' . PHP_EOL;
 } );
 ```
 
 ## Changelog
+
+### 1.3.0
+
+[tsfep-release time="November 19th, 2024"]
+
+* **Dev:** The extension file ands its classes are now loaded independently.
 
 ### 1.2.1
 

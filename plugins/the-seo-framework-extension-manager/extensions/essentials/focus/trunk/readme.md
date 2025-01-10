@@ -240,7 +240,7 @@ Here you can find the available filters for Focus.
 #### Adjust supported focus elements
 
 ```php
-add_filter( 'the_seo_framework_focus_elements', function( $elements ) {
+add_filter( 'the_seo_framework_focus_elements', function ( $elements ) {
 
 	// Add an overriding (dominating) element for pageTitle.
 	$elements['pageTitle'] += [ '#my-element > input' => 'dominate' ];
@@ -260,7 +260,7 @@ add_filter( 'the_seo_framework_focus_elements', function( $elements ) {
 _Note: When you set this value lower than 5000, the auto-parser will be disabled._
 
 ```php
-add_filter( 'the_seo_framework_focus_auto_interval', function( $interval ) {
+add_filter( 'the_seo_framework_focus_auto_interval', function ( $interval ) {
 	return 10000; // Set to 10 seconds. Default is 45000 (ms, equals 45s).
 } );
 ```
@@ -310,6 +310,23 @@ document.addEventListener( 'tsfem-focus-gutenberg-content-store-setup', () => {
 ```
 
 ## Changelog
+
+### 1.6.0
+
+[tsfep-release time="November 19th, 2024"]
+
+* **Improved:** WordPress 6.5 removed the pointer cursor from labels. To make it clear again that inflections and synonyms are clickable, they now display a tiny border on-hover to indicate this affordance.
+* **Improved:** WooCommerce's "Product short description" is now considered for subject assessments. The "Product short description" is considered to be placed before the "Product description."
+* **Improved:** Added screen reader titles to selection fields.
+* **Improved:** Classic Editor's parsing delay has been cut in half (from 1 second to 0.5 seconds) because it's prone to already wait a while after typing before relaying updates.
+* **Improved:** When a dictionary lookup fails and you use a space, we now tell you about using [single or compound words only](#faq/are-phrases-supported).
+* **Fixed:** Resolved an issue where API requests didn't resolve when creating a new posts via the Block Editor (this regressed in WordPress 6.4).
+* **Fixed:** Resolved an issue where a dependency was missing from the Block Editor (lodash), the analyser no longer automatically updated.
+* **Fixed:** Resolved an issue during typing, the parser wouldn't refresh assessments for 10 seconds due to a race condition after clearing worker events to save memory.
+* **Fixed:** Resolved an issue when either inflections or synonyms are available, but not both, the parser would crash and the word selection would appear broken after saving and reloading the page. This fix is applied retroactively.
+* **Fixed:** Resolved an issue when no synonyms and inflections are found, the dictionary editor would still show up. Now, it will not be available.
+* **Fixed:** Inflections that are a homonym of the keyword in a different case is now correctly preselected. This ties in with the API change below.
+* **API (for all versions):** 2024-06-05: We now filter duplicated words from inflections and synonyms in a case-insensitive manner. Focus also parses content without case sensitivity, so duplicated words wouldn't be helpful anyway.
 
 ### 1.5.3
 
@@ -409,7 +426,7 @@ document.addEventListener( 'tsfem-focus-gutenberg-content-store-setup', () => {
 * **Improved:** The JS version requirements are upgraded, and as such, all known Unicode punctuation can be excluded correctly.
 * **Improved:** The subject density rater is now more accurate, as it removes more redundant information than before.
 * **Fixed:** Purposeless keywords are no longer (incorrectly) parsed, like an emoji or a dot.
-* **Fixed:** The rater is no longer affected by race conditions, which might cause it to display old information.
+* **Fixed:** The rater is no longer affected by race conditions, which could've caused it to display old information.
 
 ### 1.2.0
 

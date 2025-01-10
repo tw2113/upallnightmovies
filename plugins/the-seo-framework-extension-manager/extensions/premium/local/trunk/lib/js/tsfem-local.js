@@ -8,7 +8,7 @@
 
 /**
  * Local extension for The SEO Framework
- * Copyright (C) 2017-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2017 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -108,12 +108,11 @@ window.tsfem_e_local = {
 			},
 			processData: true,
 			timeout: 14000,
-			async: true,
 		} ).done( response => {
 
 			response = tsf.convertJSONResponse( response );
 
-			if ( tsf.l10n.states.debug ) console.log( response );
+			tsf.l10n.states.debug && console.log( response );
 
 			let data = response?.data,
 				type = response?.type;

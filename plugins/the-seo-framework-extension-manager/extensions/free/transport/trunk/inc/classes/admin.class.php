@@ -15,7 +15,7 @@ if ( \tsfem()->_blocked_extension_file( $_instance, $bits[1] ) ) return;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -125,7 +125,7 @@ final class Admin {
 	private function get_importers() {
 		return [
 			''                 => [
-				'title'     => sprintf(
+				'title'     => \sprintf(
 					'&mdash; %s &mdash;',
 					\__( 'Select plugin', 'the-seo-framework-extension-manager' )
 				),
@@ -362,8 +362,6 @@ final class Admin {
 	 */
 	public function _wp_ajax_transport() {
 
-		if ( ! \wp_doing_ajax() ) exit;
-
 		if ( ! \TSF_Extension_Manager\can_do_extension_settings() || ! \check_ajax_referer( $this->ajax_nonce_action, 'nonce', false ) )
 			\tsfem()->send_json( [ 'results' => $this->get_ajax_notice( false, 1069001 ) ], 'failure' ); // nice
 
@@ -455,8 +453,14 @@ final class Admin {
 	 * @return string
 	 */
 	private function get_sse_worker_location() {
-		$min = \SCRIPT_DEBUG ? '' : '.min';
-		return \esc_url( \set_url_scheme( \TSFEM_E_TRANSPORT_DIR_URL . "lib/js/sse.worker{$min}.js" ) );
+		if ( \SCRIPT_DEBUG ) {
+			$min = '';
+			$ext = '?' . uniqid( hrtime( true ) );
+		} else {
+			$min = '.min';
+			$ext = '';
+		}
+		return \esc_url( \set_url_scheme( \TSFEM_E_TRANSPORT_DIR_URL . "lib/js/sse.worker{$min}.js$ext" ) );
 	}
 
 	/**
@@ -489,9 +493,6 @@ final class Admin {
 		 * @see trait TSF_Extension_Manager\Error
 		 */
 		$this->init_errors();
-
-		// Add something special for Vivaldi & Android.
-		\add_action( 'admin_head', [ \tsfem(), '_output_theme_color_meta' ], 0 );
 
 		return true;
 	}

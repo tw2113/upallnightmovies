@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Transformers;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -240,7 +240,7 @@ class SEO_By_Rank_Math extends Core {
 			} elseif (
 				   ! \in_array( $type, static::$preserve, true )
 				&& ! preg_match(
-					sprintf( '/^(%s)/', static::$prefix_preserve_preg_quoted ),
+					\sprintf( '/^(%s)/', static::$prefix_preserve_preg_quoted ),
 					$type
 				)
 			) {

@@ -22,7 +22,7 @@ if ( false === \TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY )
 
 /**
  * Focus extension for The SEO Framework
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -97,7 +97,7 @@ final class Ajax {
 	private function get_api_response( $type, $data ) {
 		return \tsfem()->_get_protected_api_response(
 			$this,
-			TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY,
+			\TSFEM_E_FOCUS_AJAX_API_ACCESS_KEY,
 			[
 				'request' => "extension/focus/$type",
 				'data'    => $data,
@@ -127,7 +127,6 @@ final class Ajax {
 
 		$results = $this->get_ajax_notice( false, 1109001 );
 		$tsfem->send_json( compact( 'results' ), 'failure' );
-		exit;
 	}
 
 	/**
@@ -160,7 +159,14 @@ final class Ajax {
 			if ( empty( $response->success ) ) {
 				switch ( $response->data->error ?? '' ) {
 					case 'WORD_NOT_FOUND':
-						$send['results'] = $this->get_ajax_notice( false, 1100102 );
+						// $keyword is trimmed via `s_ajax_string`
+						// Note that JS converts Unicode spacing to ASCII, so if the dictionary API includes more languages, we may need to adjust.
+						if ( preg_match( '/[\p{Z}\h\v]/', $keyword ) ) {
+							// Suggest not using spaces.
+							$send['results'] = $this->get_ajax_notice( false, 1100111 );
+						} else {
+							$send['results'] = $this->get_ajax_notice( false, 1100102 );
+						}
 						break;
 
 					case 'REQUEST_LIMIT_REACHED':
@@ -179,7 +185,6 @@ final class Ajax {
 					case 'REMOTE_API_BODY_ERROR':
 					case 'REMOTE_API_ERROR':
 						$send['results'] = $this->get_ajax_notice( false, 1100103 );
-						break;
 				}
 			} elseif ( ! isset( $response->data ) ) {
 				$send['results'] = $this->get_ajax_notice( false, 1100104 );
@@ -272,19 +277,20 @@ final class Ajax {
 				$_data = \is_string( $response->data ) ? json_decode( $response->data ) : (object) $response->data;
 
 				if ( isset( $_data->inflections ) ) {
-					$type = 'success'; // The API responded as intended, although the data may not be useful.
-
 					$send['data']['inflections'] = $_data->inflections ?: [];
 
 					// When no inflections are returned, or if the one returned is only of the same kind as the keyword, fail.
 					// NOTE: Uses weak non-UTF8 strtolower. Users are smart enough to ignore useless data.
 					if (
 						   ! $send['data']['inflections']
-						|| \count( $send['data']['inflections'] ) < 2
-						&& strtolower( $send['data']['inflections'][0] ) === strtolower( $keyword )
+						|| (
+							   \count( $send['data']['inflections'] ) < 2
+							&& strtolower( $send['data']['inflections'][0] ) === strtolower( $keyword )
+						)
 					) {
 						$send['results'] = $this->get_ajax_notice( false, 1100306 );
 					} else {
+						$type            = 'success';
 						$send['results'] = $this->get_ajax_notice( true, 1100307 );
 					}
 				} else {

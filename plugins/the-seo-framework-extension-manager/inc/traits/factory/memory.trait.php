@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -65,8 +65,9 @@ class Memory_Cache {
 
 		if ( isset( $memo ) ) return $memo;
 
+		// Do not condense; we need to extract the quantifier and then parse int.
 		$limit      = trim( ini_get( 'memory_limit' ) );
-		$quantifier = strtolower( $limit[ \strlen( $limit ) - 1 ] );
+		$quantifier = strtolower( $limit[-1] );
 		$limit      = filter_var( $limit, \FILTER_SANITIZE_NUMBER_INT );
 
 		switch ( $quantifier ) {
@@ -78,7 +79,6 @@ class Memory_Cache {
 				// No break. Run next calculation.
 			case 'k':
 				$limit *= 1024;
-				break;
 		}
 
 		return $memo = $limit;

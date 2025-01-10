@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2020-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2020 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -33,7 +33,7 @@ namespace TSF_Extension_Manager;
  * @see EOF. Because of the autoloader and trait calling, we can't do it before the class is read.
  * @link https://bugs.php.net/bug.php?id=75771
  */
-$_load_listedit_class = function() {
+$_load_listedit_class = function () {
 	new ListEdit(); // phpcs:ignore, TSF.Performance.Opcodes.ShouldHaveNamespaceEscape -- correct scope.
 };
 
@@ -534,7 +534,7 @@ final class ListEdit {
 	 * @return string The option prefix.
 	 */
 	public static function get_quick_option_key( $option, $index ) {
-		return sprintf( '%s[%s][%s]', static::META_PREFIX_QUICK, $index, $option );
+		return \sprintf( '%s[%s][%s]', static::META_PREFIX_QUICK, $index, $option );
 	}
 
 	/**
@@ -549,7 +549,7 @@ final class ListEdit {
 	 * @return string The option prefix.
 	 */
 	public static function get_bulk_option_key( $option, $index ) {
-		return sprintf( '%s[%s][%s]', static::META_PREFIX_BULK, $index, $option );
+		return \sprintf( '%s[%s][%s]', static::META_PREFIX_BULK, $index, $option );
 	}
 }
 

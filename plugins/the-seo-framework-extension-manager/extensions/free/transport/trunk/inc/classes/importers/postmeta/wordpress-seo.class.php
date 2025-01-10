@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager\Extension\Transport\Importers\PostMeta;
 
 /**
  * Transport extension for The SEO Framework
- * copyright (C) 2022-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * copyright (C) 2022 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -47,8 +47,6 @@ final class WordPress_SEO extends Base {
 		$transformer_class = \get_class(
 			\TSF_Extension_Manager\Extension\Transport\Transformers\WordPress_SEO::get_instance()
 		);
-
-		$tsf = \tsf();
 
 		/**
 		 * [ $from_table, $from_index ]

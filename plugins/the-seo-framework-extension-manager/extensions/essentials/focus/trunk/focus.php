@@ -8,8 +8,8 @@ namespace TSF_Extension_Manager\Extension\Focus;
 /**
  * Extension Name: Focus
  * Extension URI: https://theseoframework.com/extensions/focus/
- * Extension Description: The Focus extension guides you through the process of writing targeted content that ranks with focus keywords, and for Premium users also their inflections and synonyms.
- * Extension Version: 1.5.3
+ * Extension Description: The Focus extension guides you through the process of writing targeted content that ranks with focus keywords, inflections, and synonyms.
+ * Extension Version: 1.6.0
  * Extension Author: Sybre Waaijer
  * Extension Author URI: https://cyberwire.nl/
  * Extension License: GPLv3
@@ -19,7 +19,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
 
 /**
  * Focus extension for The SEO Framework
- * Copyright (C) 2018-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2018 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -40,7 +40,7 @@ namespace TSF_Extension_Manager\Extension\Focus;
  * @since 1.0.0
  * NOTE: The presence does NOT guarantee the extension is loaded!!!
  */
-\define( 'TSFEM_E_FOCUS_VERSION', '1.5.3' );
+\define( 'TSFEM_E_FOCUS_VERSION', '1.6.0' );
 
 /**
  * The extension file, absolute unix path.
@@ -78,26 +78,5 @@ namespace TSF_Extension_Manager\Extension\Focus;
 if ( ! \tsfem()->_init_early_extension_autoloader( \TSFEM_E_FOCUS_PATH_CLASS, 'Focus', $_instance, $bits ) )
 	return;
 
-\add_action( 'admin_init', __NAMESPACE__ . '\\_focus_init', 10 );
-/**
- * Initializes the extension.
- *
- * @since 1.0.0
- * @access private
- *
- * @return bool True if class is loaded.
- */
-function _focus_init() {
-
-	static $loaded;
-
-	if ( isset( $loaded ) )
-		return $loaded;
-
-	if ( \is_admin() ) {
-		new Admin;
-		$loaded = true;
-	}
-
-	return $loaded = (bool) $loaded;
-}
+if ( \is_admin() )
+	new Admin;

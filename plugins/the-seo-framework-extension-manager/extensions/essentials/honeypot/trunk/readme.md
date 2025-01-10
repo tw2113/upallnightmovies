@@ -3,7 +3,7 @@ Location: https://theseoframework.com/extensions/honeypot/
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-This privacy-focussed extension catches comment spammers with a 99.99% catch-rate using five lightweight yet powerful methods that won't leak data from your site.
+This privacy-focussed extension catches comment spammers with a 99.99% catch-rate using six lightweight yet powerful methods that won't leak data from your site.
 
 ## Overview
 
@@ -25,9 +25,9 @@ This extension protects all WordPress themes and plugins that implement the defa
 
 Honeypot also has an unmeasurably low footprint on server memory and CPU usage, it adds roughly 1kB to your pages.
 
-### Five powerful methods, zero false positives
+### Six powerful methods, zero false positives
 
-Robots leave spammy comments via various techniques, and Honeypot counters almost all of them by adding five powerful barriers to your site.
+Robots leave spammy comments via various techniques, and Honeypot counters almost all of them by adding six powerful barriers to your site.
 
 Only a human that uses a modern browser can pass these tests:
 
@@ -35,13 +35,14 @@ Only a human that uses a modern browser can pass these tests:
 1. Randomized CSS-hidden fields using HTML5 and time-limited IDs. Targets the same bots as above, but other bots that scrape comment forms for postponed abuse will also get caught.
 1. Randomized JavaScript. Most bots don't use a real browser that supports JavaScript, so they'll fail this test. Humans that don't use JavaScript are asked kindly to empty a field.
 1. Verification nonces. With this, bots can no longer abuse easily exposed endpoints in WordPress to leave comments.
-1. GPU timers. The bot must actually render the page to pass this test, blocking spam from many emulated browsers.
+1. GPU timer. The bot must actually render the page to pass this test, blocking spam from many emulated browsers.
+1. Timestamp. Bots can speed up GPU timers, but they can't speed up this one. Fast typers will pass this enciphered timestamp test, but faster bots won't.
 
-All five methods are entirely randomized and use secure authentication methods, so no robot can learn how to bypass Honeypot. These methods combined block a broad spectrum of robot spamming techniques. Hence, Honeypot has a **99.99% catch-rate**. Now you can finally uninstall and delete Akismet.
+All six methods are entirely randomized and use secure authentication methods, so no robot can learn how to bypass Honeypot. These methods combined block a broad spectrum of robot spamming techniques. Hence, Honeypot has a **99.99% catch-rate**. Now you can finally uninstall and delete Akismet.
 
 ## FAQ
 
-### How do the five methods help me?
+### How do the six methods help me?
 
 Below you find an overview of each method implemented in Honeypot.
 
@@ -89,6 +90,14 @@ The timer works using JavaScript's animation frame-timers: the timer starts coun
 
 This field is unique per site and per page ID. The field's value will change as it counts down using pseudorandom numbers to throw off countdown detection. The frame-timer runs sporadically between 3.33~10Hz to nullify any performance penalty.
 
+### Sixth method: Timestamp
+
+The Timestamp honeypot is a server-sided test that uses a ciphered timestamp, the output is the current time plus 5.33 seconds. This timestamp is created when the page is requested and is then added as a hidden field to the comment form.
+
+When the visitor submits a comment, the timestamp is deciphered and checked against the current time. If the time hasn't passed since the page was first generated, the submitted comment is automatically rejected.
+
+This field won't work with caching plugins because cached pages can be much older than 5.33 seconds, leading to the use of an outdated timestamp that passes the test automatically.
+
 ## Usage
 
 [tsfep-bundled]
@@ -128,21 +137,21 @@ Most robots don't know that they need to clear this field. Real visitors should.
 The fields are self-explanatory, translatable, and you're free to change them.
 
 ```php
-add_filter( 'the_seo_framework_honeypot_label', function( $text = '' ) {
+add_filter( 'the_seo_framework_honeypot_label', function ( $text = '' ) {
 	// Text displayed above the input, as a label.
 	return __( 'Comments for robots', 'the-seo-framework-extension-manager' );
 } );
 ```
 
 ```php
-add_filter( 'the_seo_framework_honeypot_input', function( $text = '' ) {
+add_filter( 'the_seo_framework_honeypot_input', function ( $text = '' ) {
 	// Text displayed that asks the visitor to clear the field.
 	return __( "Please remove this comment to prove you're human.", 'the-seo-framework-extension-manager' );
 } );
 ```
 
 ```php
-add_filter( 'the_seo_framework_honeypot_placeholder', function( $text = '' ) {
+add_filter( 'the_seo_framework_honeypot_placeholder', function ( $text = '' ) {
 	// Text displayed when the visitor clears the field.
 	return __( 'You are human!', 'the-seo-framework-extension-manager' );
 } );
@@ -157,14 +166,14 @@ When the "hardcore"-mode is enabled, field names and values are rotated more oft
 These values have been carefully tuned and shouldn't have to be changed.
 
 ```php
-add_filter( 'the_seo_framework_honeypot_hardcore', function( $hardcore = true ) {
+add_filter( 'the_seo_framework_honeypot_hardcore', function ( $hardcore = true ) {
 	// Toggle hardcore mode. Below is the default value.
 	return ! WP_CACHE;
 } );
 ```
 
 ```php
-add_filter( 'the_seo_framework_honeypot_field_scale', function( $scale = 3600 ) {
+add_filter( 'the_seo_framework_honeypot_field_scale', function ( $scale = 3600 ) {
 	/**
 	 * This filter only works when hardcore-mode is enabled. Otherwise, unique
 	 * IDs are created on a per-page basis, which is used indefinitely.
@@ -184,7 +193,7 @@ add_filter( 'the_seo_framework_honeypot_field_scale', function( $scale = 3600 ) 
 ```
 
 ```php
-add_filter( 'the_seo_framework_honeypot_nonce_scale', function( $scale = 43200, $hardcore = true ) {
+add_filter( 'the_seo_framework_honeypot_nonce_scale', function ( $scale = 43200, $hardcore = true ) {
 	/**
 	 * This is the minimum time a visitor has to submit a comment on your site.
 	 * The maximum time is twice the value returned.
@@ -214,7 +223,7 @@ This means the timer should not need tweaking to accommodate slow servers or the
 This value has been carefully tuned and shouldn't need changing.
 
 ```php
-add_filter( 'the_seo_framework_honeypot_countdown_time', function( $time = 5.33 ) {
+add_filter( 'the_seo_framework_honeypot_countdown_time', function ( $time = 5.33 ) {
 	/**
 	 * This is the minimum time a visitor has to wait before submitting a comment on your site.
 	 * A random floating-point number between 0 and 1 is added to this number. The number
@@ -234,7 +243,35 @@ add_filter( 'the_seo_framework_honeypot_countdown_time', function( $time = 5.33 
 } );
 ```
 
+There's also another timestamp that uses this tuned delay value.
+
+```php
+add_filter( 'the_seo_framework_honeypot_timestamp_wait', function ( $time = 5.33 ) {
+	/**
+	 * This is the minimum time a visitor has to wait before submitting a comment on your site.
+	 * This will then be ciphered and added as a value to a hidden comment field.
+	 *
+	 * If the time hasn't passed since the page was first generated, the submitted comment is automatically rejected.
+	 *
+	 * Higher than 10 seconds is not recommended, as advanced users might copy and paste
+	 * the comment from a failed (crashed) page-state.
+	 *
+	 * Floating points merely add entropy based on microtime: 5.33 may result in 5 or 6 seconds wait time.
+	 * This value shouldn't be used to fend off human commenters.
+	 *
+	 * Below is the default value.
+	 */
+	return 5.33; // seconds
+} );
+```
+
 ## Changelog
+
+### 2.1.0
+
+[tsfep-release time="November 19th, 2024"]
+
+* **Added:** Added a new ciphered server-sided timestamp test to counter speedhacks bypassing the GPU timer.
 
 ### 2.0.1
 

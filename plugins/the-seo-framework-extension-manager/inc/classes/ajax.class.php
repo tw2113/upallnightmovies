@@ -9,7 +9,7 @@ namespace TSF_Extension_Manager;
 
 /**
  * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2019-2023 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2019 - 2024 Sybre Waaijer, CyberWire B.V. (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -343,7 +343,6 @@ final class AJAX extends Secure_Abstract {
 								default:
 									// Undefined error.
 									$send['results'] = static::$instance->get_ajax_notice( false, 17011 );
-									break;
 							}
 						} else {
 							$send['results'] = static::$instance->get_ajax_notice( false, 17012 );
